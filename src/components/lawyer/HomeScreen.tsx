@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import type { ViewType } from '@/lib/types';
 import { getTodayStr, getTodayCases, getCasesWithPendingFee, getTodayExpenses, formatCurrency } from '@/lib/utils-lawyer';
-import { CalendarDays, FolderOpen, IndianRupee, Receipt, Plus } from 'lucide-react';
+import { CalendarDays, FolderOpen, Receipt, Plus } from 'lucide-react';
 
 interface FeatureBoxProps {
   icon: React.ReactNode;
@@ -105,7 +105,7 @@ export default function HomeScreen() {
           onClick={() => navigate('all')}
         />
         <FeatureBox
-          icon={<IndianRupee className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />}
+          icon={<span className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 font-bold text-base sm:text-lg leading-none flex items-center justify-center">Rs</span>}
           label="Pending Fee"
           count={pendingFeeTotal}
           subText={totalPendingAmount > 0 ? formatCurrency(totalPendingAmount) : undefined}
