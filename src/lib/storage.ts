@@ -2,7 +2,7 @@ import LZString from 'lz-string';
 import type { CaseEntry, ExpenseEntry, CaseHistoryEntry } from './types';
 
 const DB_NAME = 'lawtrack_db';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const CASES_STORE = 'cases';
 const EXPENSES_STORE = 'expenses';
 const META_STORE = 'meta';
@@ -40,6 +40,13 @@ function openDB(): Promise<IDBDatabase> {
           es.createIndex('lawyerName', 'lawyerName', { unique: false });
           es.createIndex('date', 'date', { unique: false });
           es.createIndex('createdAt', 'createdAt', { unique: false });
+          es.createIndex('category', 'category', { unique: false });
+        } else {
+          // Version 3: add category index
+          const es = tx.transaction.objectStore(EXPENSES_STORE);
+          if (!es.indexNames.contains('category')) {
+            es.createIndex('category', 'category', { unique: false });
+          }
         }
         if (!db.objectStoreNames.contains(META_STORE)) {
           db.createObjectStore(META_STORE, { keyPath: 'key' });
@@ -177,7 +184,14 @@ export async function loadExpenses(): Promise<ExpenseEntry[]> {
     const req = store.getAll();
     return new Promise((resolve) => {
       req.onsuccess = () => {
-        resolve(Array.isArray(req.result) ? req.result : []);
+        const raw = Array.isArray(req.result) ? req.result : [];
+        // Add default category for old expenses
+        for (let i = 0; i < raw.length; i++) {
+          if (!raw[i].category) {
+            raw[i].category = raw[i].caseId === 'CHAMBER' ? 'chamber_expense' : 'case_expense';
+          }
+        }
+        resolve(raw);
       };
       req.onerror = () => resolve([]);
     });

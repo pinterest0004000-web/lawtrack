@@ -108,7 +108,7 @@ export default function AddCaseForm() {
     <div className="animate-fade-in">
       <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
         <button
-          onClick={() => setCurrentView('today')}
+          onClick={() => setCurrentView('home')}
           className="feature-box w-9 h-9 rounded-xl glass-card flex items-center justify-center"
           aria-label="Go back"
         >

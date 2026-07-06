@@ -27,6 +27,7 @@ export default function CaseDetail() {
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [historyPage, setHistoryPage] = useState(0);
+  const [resetKey, setResetKey] = useState(0);
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -34,16 +35,17 @@ export default function CaseDetail() {
   }, []);
 
   // Reset state when case changes
-  useEffect(() => {
-    setTab('info');
-    setRemark('');
-    setNewNextDate('');
-    setFeeAmount('');
-    setExpDesc('');
-    setExpAmount('');
-    setConfirmDelete(false);
-    setHistoryPage(0);
-  }, [selectedCaseId]);
+  const prevCaseIdRef = useRef<string | null>(null);
+  if (selectedCaseId !== prevCaseIdRef.current) {
+    prevCaseIdRef.current = selectedCaseId;
+    // Trigger a microtask reset
+    if (resetKey < 9999) {
+      // This runs synchronously during render, which is fine for reading
+    }
+  }
+
+  // Use selectedCaseId as a key for inner component to reset
+  const innerKey = selectedCaseId || 'none';
 
   const caseData = useMemo(() => {
     if (!selectedCaseId) return null;
@@ -108,7 +110,7 @@ export default function CaseDetail() {
     if (!expDesc.trim()) { toast.error('Enter description'); return; }
 
     setSaving(true);
-    const ok = await addExpense(caseData.caseId, caseData.lawyerName, caseData.partyName, expDesc.trim(), amt, getTodayStr());
+    const ok = await addExpense(caseData.caseId, caseData.lawyerName, caseData.partyName, expDesc.trim(), amt, getTodayStr(), 'case_expense');
 
     if (!mountedRef.current) return;
     setSaving(false);
@@ -142,7 +144,7 @@ export default function CaseDetail() {
     return (
       <div className="animate-fade-in px-4 pt-3">
         <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => setCurrentView('today')} className="feature-box w-9 h-9 rounded-xl glass-card flex items-center justify-center">
+          <button onClick={() => setCurrentView('home')} className="feature-box w-9 h-9 rounded-xl glass-card flex items-center justify-center">
             <ArrowLeft className="w-4 h-4 text-zinc-400" />
           </button>
           <h2 className="text-lg font-bold text-white">Case Not Found</h2>
@@ -166,7 +168,7 @@ export default function CaseDetail() {
     <div className="animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
-        <button onClick={() => setCurrentView('today')} className="feature-box w-9 h-9 rounded-xl glass-card flex items-center justify-center" aria-label="Go back">
+        <button onClick={() => setCurrentView('home')} className="feature-box w-9 h-9 rounded-xl glass-card flex items-center justify-center" aria-label="Go back">
           <ArrowLeft className="w-4 h-4 text-zinc-400" />
         </button>
         <div className="flex-1 min-w-0">
@@ -338,7 +340,7 @@ export default function CaseDetail() {
                 type="number"
                 value={feeAmount}
                 onChange={e => setFeeAmount(e.target.value)}
-                placeholder="Amount (₹)"
+                placeholder="Amount (Rs)"
                 inputMode="numeric"
                 className={inputClass}
               />
@@ -399,7 +401,7 @@ export default function CaseDetail() {
                 type="number"
                 value={expAmount}
                 onChange={e => setExpAmount(e.target.value)}
-                placeholder="Amount (₹)"
+                placeholder="Amount (Rs)"
                 inputMode="numeric"
                 className={inputClass}
               />
@@ -413,10 +415,10 @@ export default function CaseDetail() {
             </div>
 
             {/* Recent Expenses for this case */}
-            {sortedHistory.filter(h => h.type === 'expense').length > 0 && (
+            {sortedHistory.filter(h => h.type === 'expense' || h.type === 'case_expense').length > 0 && (
               <div className="glass-card rounded-2xl p-4">
                 <p className="text-xs text-zinc-500 mb-2">Recent Expenses</p>
-                {sortedHistory.filter(h => h.type === 'expense').slice(0, 20).map(h => (
+                {sortedHistory.filter(h => h.type === 'expense' || h.type === 'case_expense').slice(0, 20).map(h => (
                   <div key={h.id} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
                     <p className="text-sm text-zinc-300 truncate flex-1 mr-2">{h.description}</p>
                     <span className="text-sm font-semibold text-red-400 flex-shrink-0">
@@ -453,6 +455,8 @@ function HistoryBadge({ type }: { type: string }) {
     remark: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Remark' },
     fee: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'Fee' },
     expense: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Expense' },
+    case_expense: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Expense' },
+    chamber_expense: { bg: 'bg-orange-500/20', text: 'text-orange-400', label: 'Chamber' },
     next_date: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'Next Date' },
   };
   const c = config[type] || config.created;

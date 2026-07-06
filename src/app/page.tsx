@@ -1,15 +1,18 @@
 'use client';
 
-import React, { useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import { getTodayCases } from '@/lib/utils-lawyer';
 import HomeScreen from '@/components/lawyer/HomeScreen';
 import CaseList from '@/components/lawyer/CaseList';
 import PendingFeeList from '@/components/lawyer/PendingFeeList';
 import ExpenseList from '@/components/lawyer/ExpenseList';
+import ExpenseByCase from '@/components/lawyer/ExpenseByCase';
+import ExpenseChamber from '@/components/lawyer/ExpenseChamber';
 import AddCaseForm from '@/components/lawyer/AddCaseForm';
 import CaseDetail from '@/components/lawyer/CaseDetail';
 import SyncButton from '@/components/lawyer/SyncButton';
+import { reportError } from '@/lib/firebase';
 
 function ViewRouter() {
   const currentView = useLawyerStore(s => s.currentView);
@@ -18,6 +21,8 @@ function ViewRouter() {
   const getTodayCasesMemo = useCallback(() => getTodayCases(cases), [cases]);
 
   switch (currentView) {
+    case 'home':
+      return <HomeScreen />;
     case 'today':
       return <CaseList title="Today's Cases" getCases={getTodayCasesMemo} showSearch />;
     case 'all':
@@ -26,6 +31,10 @@ function ViewRouter() {
       return <PendingFeeList />;
     case 'expenses':
       return <ExpenseList />;
+    case 'expenses-by-case':
+      return <ExpenseByCase />;
+    case 'expenses-chamber':
+      return <ExpenseChamber />;
     case 'add-case':
       return <AddCaseForm />;
     case 'case-detail':
@@ -38,23 +47,27 @@ function ViewRouter() {
 export default function Home() {
   const init = useLawyerStore(s => s.init);
   const initialized = useLawyerStore(s => s.initialized);
-  const currentView = useLawyerStore(s => s.currentView);
   const initRef = useRef(false);
 
   useEffect(() => {
     if (!initRef.current) {
       initRef.current = true;
-      init().catch(() => {});
+      init().catch((e) => {
+        reportError(e instanceof Error ? e : new Error(String(e)), 'StoreInit');
+      });
     }
   }, [init]);
 
-  // Global error handler
+  // Global error handler for Crashlytics
   useEffect(() => {
     const handler = (e: ErrorEvent) => {
-      console.error('Uncaught error:', e.error);
+      reportError(e.error instanceof Error ? e.error : new Error(String(e.error)), 'GlobalError');
     };
     const rejectionHandler = (e: PromiseRejectionEvent) => {
-      console.error('Unhandled rejection:', e.reason);
+      reportError(
+        e.reason instanceof Error ? e.reason : new Error(String(e.reason)),
+        'UnhandledRejection'
+      );
     };
     window.addEventListener('error', handler);
     window.addEventListener('unhandledrejection', rejectionHandler);
@@ -72,8 +85,6 @@ export default function Home() {
       </div>
     );
   }
-
-  const isHomeScreen = currentView === 'today' || currentView === 'all' || currentView === 'pending-fee' || currentView === 'expenses' || currentView === 'add-case' || currentView === 'case-detail';
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f]">

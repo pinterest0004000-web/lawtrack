@@ -30,7 +30,7 @@ export function getTodayExpenses(expenses: ExpenseEntry[]): ExpenseEntry[] {
 }
 
 export function formatCurrency(amount: number): string {
-  return '₹' + Number(amount || 0).toLocaleString('en-IN');
+  return 'Rs ' + Number(amount || 0).toLocaleString('en-PK');
 }
 
 export function formatDate(dateStr: string): string {

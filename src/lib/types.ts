@@ -19,7 +19,7 @@ export interface CaseEntry {
 
 export interface CaseHistoryEntry {
   id: string;
-  type: 'fee' | 'expense' | 'remark' | 'next_date' | 'created';
+  type: 'fee' | 'case_expense' | 'chamber_expense' | 'remark' | 'next_date' | 'created';
   date: string;
   timestamp: number;
   description: string;
@@ -27,6 +27,8 @@ export interface CaseHistoryEntry {
   remark?: string;
   newNextDate?: string;
 }
+
+export type ExpenseCategory = 'case_expense' | 'chamber_expense';
 
 export interface ExpenseEntry {
   id: string;
@@ -37,9 +39,10 @@ export interface ExpenseEntry {
   amount: number;
   date: string;
   createdAt: number;
+  category: ExpenseCategory;
 }
 
-export type ViewType = 'today' | 'all' | 'pending-fee' | 'expenses' | 'add-case' | 'case-detail';
+export type ViewType = 'home' | 'today' | 'all' | 'pending-fee' | 'expenses' | 'expenses-by-case' | 'expenses-chamber' | 'add-case' | 'case-detail';
 
 export interface AppState {
   cases: CaseEntry[];

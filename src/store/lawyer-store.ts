@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { CaseEntry, ExpenseEntry, ViewType, CaseHistoryEntry } from '@/lib/types';
+import type { CaseEntry, ExpenseEntry, ViewType, CaseHistoryEntry, ExpenseCategory } from '@/lib/types';
 import {
   loadCases, saveCases, loadExpenses, saveExpenses,
   createHistoryEntry, upsertCase, deleteCaseFromDB,
@@ -23,7 +23,7 @@ interface LawyerStore {
   addCase: (c: Omit<CaseEntry, 'createdAt' | 'updatedAt' | 'history' | 'pendingFee' | 'totalFeeReceived'>) => Promise<boolean>;
   updateCaseNextDate: (caseId: string, judgeRemark: string, newNextDate: string) => Promise<boolean>;
   addFeeRecord: (caseId: string, amount: number, isPending: boolean) => Promise<boolean>;
-  addExpense: (caseId: string, lawyerName: string, partyName: string, description: string, amount: number, date: string) => Promise<boolean>;
+  addExpense: (caseId: string, lawyerName: string, partyName: string, description: string, amount: number, date: string, category: ExpenseCategory) => Promise<boolean>;
   deleteCase: (caseId: string) => Promise<boolean>;
 
   getCasesForSync: () => { cases: CaseEntry[]; expenses: ExpenseEntry[] };
@@ -34,7 +34,7 @@ interface LawyerStore {
 export const useLawyerStore = create<LawyerStore>((set, get) => ({
   cases: [],
   expenses: [],
-  currentView: 'today',
+  currentView: 'home' as ViewType,
   selectedCaseId: null,
   searchQuery: '',
   initialized: false,
@@ -42,9 +42,7 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
 
   init: async () => {
     try {
-      // Migrate from localStorage if needed
       await migrateFromLocalStorage();
-
       const [cases, expenses] = await Promise.all([loadCases(), loadExpenses()]);
       const lawyerNames = await getLawyerNames();
       set({ cases, expenses, initialized: true, lawyerNames });
@@ -72,14 +70,10 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
         history: [historyEntry],
       };
 
-      // Optimistic update for instant UI
       const newCases = [...state.cases, newCase];
       set({ cases: newCases });
-
-      // Persist to IndexedDB in background
       upsertCase(newCase).catch(() => {});
 
-      // Update lawyer names
       const nameSet = new Set(state.lawyerNames);
       if (newCase.lawyerName) nameSet.add(newCase.lawyerName);
       set({ lawyerNames: [...nameSet] });
@@ -109,12 +103,9 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
         history: [...(c.history || []), historyEntry],
       };
 
-      // Optimistic update
       const newCases = [...state.cases];
       newCases[idx] = updated;
       set({ cases: newCases });
-
-      // Persist in background
       upsertCase(updated).catch(() => {});
 
       return true;
@@ -131,8 +122,8 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
       const c = state.cases[idx];
       const historyEntry = createHistoryEntry('fee', {
         description: isPending
-          ? `Pending fee of ₹${amount} added`
-          : `Fee received: ₹${amount}`,
+          ? `Pending fee of Rs ${amount} added`
+          : `Fee received: Rs ${amount}`,
         amount,
       });
       const updated: CaseEntry = {
@@ -143,12 +134,9 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
         history: [...(c.history || []), historyEntry],
       };
 
-      // Optimistic update
       const newCases = [...state.cases];
       newCases[idx] = updated;
       set({ cases: newCases });
-
-      // Persist in background
       upsertCase(updated).catch(() => {});
 
       return true;
@@ -157,7 +145,7 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
     }
   },
 
-  addExpense: async (caseId, lawyerName, partyName, description, amount, date) => {
+  addExpense: async (caseId, lawyerName, partyName, description, amount, date, category) => {
     try {
       const state = get();
       const newExpense: ExpenseEntry = {
@@ -169,32 +157,32 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
         amount,
         date,
         createdAt: Date.now(),
+        category,
       };
 
-      // Optimistic update for expenses
       const newExpenses = [...state.expenses, newExpense];
       set({ expenses: newExpenses });
-
-      // Persist expense
       addExpenseToDB(newExpense).catch(() => {});
 
-      // Also add to case history
-      const idx = state.cases.findIndex(c => c.caseId === caseId);
-      if (idx !== -1) {
-        const c = state.cases[idx];
-        const historyEntry = createHistoryEntry('expense', {
-          description: `Expense: ${description} - ₹${amount}`,
-          amount,
-        });
-        const updated: CaseEntry = {
-          ...c,
-          updatedAt: Date.now(),
-          history: [...(c.history || []), historyEntry],
-        };
-        const newCases = [...state.cases];
-        newCases[idx] = updated;
-        set({ cases: newCases });
-        upsertCase(updated).catch(() => {});
+      // Add to case history only for case_expense (not chamber)
+      if (category === 'case_expense') {
+        const idx = state.cases.findIndex(c => c.caseId === caseId);
+        if (idx !== -1) {
+          const c = state.cases[idx];
+          const historyEntry = createHistoryEntry('case_expense', {
+            description: `Expense: ${description} - Rs ${amount}`,
+            amount,
+          });
+          const updated: CaseEntry = {
+            ...c,
+            updatedAt: Date.now(),
+            history: [...(c.history || []), historyEntry],
+          };
+          const newCases = [...state.cases];
+          newCases[idx] = updated;
+          set({ cases: newCases });
+          upsertCase(updated).catch(() => {});
+        }
       }
       return true;
     } catch {
@@ -206,11 +194,8 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
     try {
       const state = get();
       const newCases = state.cases.filter(c => c.caseId !== caseId);
-      set({ cases: newCases, currentView: 'all' });
-
-      // Persist in background
+      set({ cases: newCases, currentView: 'home' });
       deleteCaseFromDB(caseId).catch(() => {});
-
       return true;
     } catch {
       return false;
