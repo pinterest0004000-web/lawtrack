@@ -39,21 +39,18 @@ export async function saveToCloud(
   cases: unknown[],
   expenses: unknown[]
 ): Promise<boolean> {
-  if (!isFirebaseReady()) { console.warn('[CloudBackup] Firebase not ready'); return false; }
+  if (!isFirebaseReady()) return false;
   try {
     const json = JSON.stringify({ cases, expenses });
     const encrypted = await encryptData(json);
-    console.log('[CloudBackup] Saving to Firestore...', userId, cases.length, 'cases');
     await setDoc(doc(db!, 'backups', userId), {
       d: encrypted,
       t: Date.now(),
       c: cases.length,
       e: expenses.length,
     }, { merge: true });
-    console.log('[CloudBackup] Save SUCCESS');
     return true;
-  } catch (e) {
-    console.error('[CloudBackup] Save FAILED:', e);
+  } catch {
     return false;
   }
 }
