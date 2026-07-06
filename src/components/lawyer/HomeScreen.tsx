@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import type { ViewType } from '@/lib/types';
 import { getTodayStr, getTodayCases, getCasesWithPendingFee, getTodayExpenses, formatCurrency } from '@/lib/utils-lawyer';
-import { CalendarDays, FolderOpen, Receipt, Plus } from 'lucide-react';
+import { CalendarDays, FolderOpen, Receipt, Plus, Wallet, CircleDollarSign, AlertCircle } from 'lucide-react';
 
 interface FeatureBoxProps {
   icon: React.ReactNode;
@@ -12,11 +12,10 @@ interface FeatureBoxProps {
   count: number;
   subText?: string;
   color: string;
-  iconColor: string;
   onClick: () => void;
 }
 
-function FeatureBox({ icon, label, count, subText, color, iconColor, onClick }: FeatureBoxProps) {
+function FeatureBox({ icon, label, count, subText, color, onClick }: FeatureBoxProps) {
   const lastTap = useRef(0);
   const handleTap = useCallback(() => {
     const now = Date.now();
@@ -30,20 +29,19 @@ function FeatureBox({ icon, label, count, subText, color, iconColor, onClick }: 
     <button
       onClick={handleTap}
       className="feature-box glass-card rounded-2xl p-3 flex items-center gap-3 w-full"
-      aria-label={`${label}: ${count}`}
+      aria-label={`${label}: ${subText || count}`}
     >
-      <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center ${color}`}>
+      <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
         {icon}
       </div>
-      <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400 leading-tight text-center">
-        {label}
-      </span>
-      <span className="text-lg sm:text-xl font-bold text-white leading-none">
-        {count > 9999 ? `${(count / 1000).toFixed(0)}k` : count > 999 ? `${(count / 1000).toFixed(1)}k` : count}
-      </span>
-      {subText && (
-        <span className="text-[9px] sm:text-[10px] text-zinc-500 font-medium">{subText}</span>
-      )}
+      <div className="flex-1 text-left min-w-0">
+        <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400 leading-tight block">
+          {label}
+        </span>
+        <span className="text-base sm:text-lg font-bold text-white leading-tight block">
+          {subText || (count > 9999 ? `${(count / 1000).toFixed(0)}k` : count > 999 ? `${(count / 1000).toFixed(1)}k` : count)}
+        </span>
+      </div>
     </button>
   );
 }
@@ -55,15 +53,26 @@ export default function HomeScreen() {
 
   const todayCount = useMemo(() => getTodayCases(cases).length, [cases]);
   const allCount = useMemo(() => cases.length, [cases]);
-  const pendingFeeTotal = useMemo(
-    () => getCasesWithPendingFee(cases).length,
+  const todayExpenseCount = useMemo(() => getTodayExpenses(expenses).length, [expenses]);
+
+  // Fee calculations
+  const totalFee = useMemo(
+    () => cases.reduce((s, c) => s + (c.pendingFee || 0) + (c.totalFeeReceived || 0), 0),
     [cases]
   );
-  const todayExpenseCount = useMemo(() => getTodayExpenses(expenses).length, [expenses]);
-  const totalPendingAmount = useMemo(
+  const paidFee = useMemo(
+    () => cases.reduce((s, c) => s + (c.totalFeeReceived || 0), 0),
+    [cases]
+  );
+  const pendingFeeAmount = useMemo(
     () => cases.reduce((s, c) => s + (c.pendingFee || 0), 0),
     [cases]
   );
+  const pendingFeeCount = useMemo(
+    () => getCasesWithPendingFee(cases).length,
+    [cases]
+  );
+
   const todayExpenseAmount = useMemo(
     () => getTodayExpenses(expenses).reduce((s, e) => s + (e.amount || 0), 0),
     [expenses]
@@ -86,14 +95,13 @@ export default function HomeScreen() {
         </p>
       </div>
 
-      {/* 4 Feature Boxes - 2x2 Vertical Grid */}
+      {/* Feature Boxes - Vertical */}
       <div className="flex flex-col gap-2 mb-3">
         <FeatureBox
           icon={<CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />}
           label="Today Cases"
           count={todayCount}
           color="bg-amber-500/15"
-          iconColor="text-amber-400"
           onClick={() => navigate('today')}
         />
         <FeatureBox
@@ -101,17 +109,7 @@ export default function HomeScreen() {
           label="All Cases"
           count={allCount}
           color="bg-violet-500/15"
-          iconColor="text-violet-400"
           onClick={() => navigate('all')}
-        />
-        <FeatureBox
-          icon={<span className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 font-bold text-base sm:text-lg leading-none flex items-center justify-center">Rs</span>}
-          label="Pending Fee"
-          count={pendingFeeTotal}
-          subText={totalPendingAmount > 0 ? formatCurrency(totalPendingAmount) : undefined}
-          color="bg-red-500/15"
-          iconColor="text-red-400"
-          onClick={() => navigate('pending-fee')}
         />
         <FeatureBox
           icon={<Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />}
@@ -119,12 +117,37 @@ export default function HomeScreen() {
           count={todayExpenseCount}
           subText={todayExpenseAmount > 0 ? formatCurrency(todayExpenseAmount) : undefined}
           color="bg-emerald-500/15"
-          iconColor="text-emerald-400"
           onClick={() => navigate('expenses')}
+        />
+
+        {/* Fee Summary - 3 boxes */}
+        <FeatureBox
+          icon={<Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />}
+          label="Total Fee"
+          count={0}
+          subText={formatCurrency(totalFee)}
+          color="bg-blue-500/15"
+          onClick={() => navigate('pending-fee')}
+        />
+        <FeatureBox
+          icon={<CircleDollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />}
+          label="Paid Fee"
+          count={0}
+          subText={formatCurrency(paidFee)}
+          color="bg-green-500/15"
+          onClick={() => navigate('pending-fee')}
+        />
+        <FeatureBox
+          icon={<AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />}
+          label="Pending Fee"
+          count={pendingFeeCount}
+          subText={formatCurrency(pendingFeeAmount)}
+          color="bg-red-500/15"
+          onClick={() => navigate('pending-fee')}
         />
       </div>
 
-      {/* Add New Case Button - Below the boxes */}
+      {/* Add New Case Button */}
       <button
         onClick={() => navigate('add-case')}
         className="feature-box w-full glass-card rounded-2xl p-4 flex items-center justify-center gap-3 border border-violet-500/20 hover:border-violet-500/40 transition-colors mb-4"
@@ -134,26 +157,6 @@ export default function HomeScreen() {
         </div>
         <span className="text-base font-semibold text-white">Add New Case</span>
       </button>
-
-      {/* Quick Summary */}
-      {(todayCount > 0 || pendingFeeTotal > 0) && (
-        <div className="glass-card rounded-2xl p-4">
-          {todayCount > 0 && (
-            <p className="text-sm text-zinc-400">
-              <span className="text-amber-400 font-semibold">{todayCount}</span> cases listed for today
-            </p>
-          )}
-          {pendingFeeTotal > 0 && (
-            <p className="text-sm text-zinc-400 mt-1">
-              <span className="text-red-400 font-semibold">{pendingFeeTotal}</span> cases have pending fees
-              {' '}
-              (Total: <span className="text-red-400 font-semibold">
-                {formatCurrency(totalPendingAmount)}
-              </span>)
-            </p>
-          )}
-        </div>
-      )}
     </div>
   );
 }
