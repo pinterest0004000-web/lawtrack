@@ -1,7 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
-import { getCrashlytics, recordError as firebaseRecordError } from '@firebase/crashlytics';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrpK5HE3a29d84peHoxerpbybeXulKla4",
@@ -14,7 +13,6 @@ const firebaseConfig = {
 };
 
 let app = null;
-let crashlyticsInstance: ReturnType<typeof getCrashlytics> | null = null;
 
 try {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
@@ -24,15 +22,6 @@ try {
 
 // Firestore for cloud backup
 export const db = app ? getFirestore(app) : null;
-
-// Crashlytics for crash reporting
-try {
-  if (app) {
-    crashlyticsInstance = getCrashlytics(app);
-  }
-} catch {
-  crashlyticsInstance = null;
-}
 
 // Analytics (only if supported)
 export const initAnalytics = async () => {
@@ -46,24 +35,20 @@ export const initAnalytics = async () => {
   }
 };
 
-// Error reporting — sends to Crashlytics + stores locally as fallback
+// Error reporting — sends to Sentry + stores locally as fallback
 export const reportError = (error: Error, context?: string) => {
   try {
     const msg = `[LawTrack Error${context ? ` - ${context}` : ''}] ${error.message}`;
     console.error(msg, error.stack);
 
-    // Send to Firebase Crashlytics (if configured)
-    if (crashlyticsInstance) {
+    // Send to Sentry (if configured)
+    if (typeof window !== 'undefined') {
       try {
-        firebaseRecordError(crashlyticsInstance, error);
-        // Add custom context
-        if (context) {
-          try {
-            (crashlyticsInstance as unknown as { setAttributes: (attrs: Record<string, string>) => void })
-              .setAttributes({ context, component: 'LawTrack' });
-          } catch { /* attributes not supported in all versions */ }
-        }
-      } catch { /* Crashlytics not available or misconfigured */ }
+        // Dynamic import to avoid SSR issues
+        import('@sentry/browser').then(Sentry => {
+          Sentry.captureException(error, { tags: { context: context || 'unknown' } });
+        }).catch(() => {});
+      } catch { /* Sentry not available */ }
     }
 
     // Fallback: store errors locally

@@ -262,6 +262,11 @@ export default function Home() {
   const [showCloudPrompt, setShowCloudPrompt] = useState(false);
   const [cloudCaseCount, setCloudCaseCount] = useState(0);
 
+  // Init Sentry on mount
+  useEffect(() => {
+    import('@/lib/sentry').then(m => m.initSentry('https://PLACEHOLDER@sentry.io/PLACEHOLDER')).catch(() => {});
+  }, []);
+
   useEffect(() => { checkAuth(); }, [checkAuth]);
 
   // Init data store after auth becomes unlocked, reset on user change
