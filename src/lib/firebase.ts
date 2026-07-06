@@ -41,12 +41,11 @@ export const reportError = (error: Error, context?: string) => {
     const msg = `[LawTrack Error${context ? ` - ${context}` : ''}] ${error.message}`;
     console.error(msg, error.stack);
 
-    // Send to Sentry (if configured)
+    // Send to Sentry (client-side only)
     if (typeof window !== 'undefined') {
       try {
-        // Dynamic import to avoid SSR issues
-        import('@sentry/browser').then(Sentry => {
-          Sentry.captureException(error, { tags: { context: context || 'unknown' } });
+        import('./sentry').then(({ captureError }) => {
+          captureError(error, context);
         }).catch(() => {});
       } catch { /* Sentry not available */ }
     }

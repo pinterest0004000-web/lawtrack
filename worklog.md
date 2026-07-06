@@ -18,3 +18,22 @@ Stage Summary:
 - Encryption key is only held in memory (never persisted) - cleared on lock/logout
 - Legacy unencrypted data is auto-migrated (re-encrypted) after first successful login
 - All lint checks pass, browser verification successful
+---
+Task ID: 1
+Agent: Main Agent
+Task: Replace broken @firebase/crashlytics with Sentry for error reporting
+
+Work Log:
+- User provided Sentry DSN: https://0dcfdc1193d2305fe838dae0892e0414@o4511690752262144.ingest.us.sentry.io/4511690809344000
+- Created `/src/lib/sentry.ts` — Sentry init with DSN, `initSentry()` and `captureError()` exports
+- Updated `/src/lib/firebase.ts` — `reportError()` now uses dynamic import of `captureError` from sentry.ts (replaces broken Crashlytics)
+- Created `/src/components/SentryInit.tsx` — client component that calls `initSentry()` on mount
+- Updated `/src/app/layout.tsx` — added `<SentryInit />` component
+- Verified: lint clean, dev log all 200s, zero console errors, `window.__SENTRY__` confirmed in browser
+- `@firebase/crashlytics` already removed from package.json and no remaining imports
+
+Stage Summary:
+- Sentry fully integrated replacing broken Crashlytics
+- DSN configured, error reporting active
+- Local fallback (last 50 errors in localStorage) still works
+- App runs clean with zero errors
