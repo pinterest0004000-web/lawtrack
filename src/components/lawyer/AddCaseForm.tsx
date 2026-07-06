@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
-import { generateCaseId, getTodayStr } from '@/lib/utils-lawyer';
+import { generateCaseId, getTodayStr, formatCurrency } from '@/lib/utils-lawyer';
 import { ArrowLeft, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -216,15 +216,21 @@ export default function AddCaseForm() {
             <input type="tel" value={form.phone} onChange={e => updateField('phone', e.target.value)} placeholder="Enter phone number" className={inputClass} inputMode="numeric" />
           </div>
 
-          {/* Total Fee + Paid Fee */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Total Fee + Received Fee + Pending Fee */}
+          <div className="grid grid-cols-3 gap-2">
             <div>
               <label className="text-xs text-zinc-500 mb-1 block">Total Fee</label>
-              <input type="number" value={form.totalFee} onChange={e => updateField('totalFee', e.target.value)} placeholder="e.g. 50000" inputMode="numeric" className={inputClass} />
+              <input type="number" value={form.totalFee} onChange={e => updateField('totalFee', e.target.value)} placeholder="0" inputMode="numeric" className={inputClass} />
             </div>
             <div>
-              <label className="text-xs text-zinc-500 mb-1 block">Paid Fee</label>
-              <input type="number" value={form.paidFee} onChange={e => updateField('paidFee', e.target.value)} placeholder="e.g. 20000" inputMode="numeric" className={inputClass} />
+              <label className="text-xs text-zinc-500 mb-1 block">Received Fee</label>
+              <input type="number" value={form.paidFee} onChange={e => updateField('paidFee', e.target.value)} placeholder="0" inputMode="numeric" className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs text-zinc-500 mb-1 block">Pending Fee</label>
+              <div className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-red-400 font-semibold">
+                {formatCurrency(Math.max(0, (parseFloat(form.totalFee) || 0) - (parseFloat(form.paidFee) || 0)))}
+              </div>
             </div>
           </div>
 
