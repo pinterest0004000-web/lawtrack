@@ -1,6 +1,7 @@
 /**
  * Security Module for LawTrack
- * - PIN = user identity (each PIN maps to a user)
+ * - Admin creates users & sets their PINs
+ * - Each user gets unique access code URL
  * - Per-user AES-256-GCM encrypted database
  * - Brute-force protection per-user (5 attempts, 60s lockout)
  */
@@ -19,12 +20,14 @@ export interface UserProfile {
   pinHash: string;
   salt: string;
   accessCode: string;
+  isAdmin: boolean;
   createdAt: number;
 }
 
 let _encryptionKey: CryptoKey | null = null;
 let _currentUserId: string | null = null;
 let _currentUserName: string | null = null;
+let _currentIsAdmin: boolean = false;
 
 // ============ IndexedDB ============
 
@@ -119,6 +122,7 @@ export async function decryptData(ciphertext: string): Promise<string> {
 export function hasEncryptionKey(): boolean { return _encryptionKey !== null; }
 export function getCurrentUserId(): string | null { return _currentUserId; }
 export function getCurrentUserName(): string | null { return _currentUserName; }
+export function isCurrentUserAdmin(): boolean { return _currentIsAdmin; }
 
 // ============ User Management ============
 
@@ -126,20 +130,16 @@ export async function getUsers(): Promise<UserProfile[]> {
   try {
     const v = await getAuthValue(USERS_KEY);
     if (!v) return [];
-    const p = JSON.parse(v);
+    const p: UserProfile[] = JSON.parse(v);
     if (!Array.isArray(p)) return [];
-    // Migrate old users without accessCode
     let migrated = false;
-    for (const u of p) {
-      if (!u.accessCode) {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        const arr = crypto.getRandomValues(new Uint8Array(6));
-        let code = '';
-        for (let i = 0; i < 6; i++) code += chars[arr[i] % chars.length];
-        u.accessCode = code;
-        migrated = true;
-      }
+    for (let i = 0; i < p.length; i++) {
+      const u = p[i];
+      if (!u.accessCode) { u.accessCode = generateAccessCode(); migrated = true; }
+      if (u.isAdmin === undefined) { u.isAdmin = (i === 0); migrated = true; }
     }
+    // Ensure first user is always admin
+    if (p.length > 0 && !p[0].isAdmin) { p[0].isAdmin = true; migrated = true; }
     if (migrated) await saveUsers(p);
     return p;
   } catch { return []; }
@@ -154,7 +154,6 @@ export async function hasAnyUser(): Promise<boolean> {
   return users.length > 0;
 }
 
-// Create user + derive key in one step
 function generateAccessCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const arr = crypto.getRandomValues(new Uint8Array(6));
@@ -163,85 +162,78 @@ function generateAccessCode(): string {
   return code;
 }
 
-export async function createUser(name: string, pin: string): Promise<UserProfile | null> {
+// Admin creates their own account (first user)
+export async function createAdmin(name: string, pin: string): Promise<UserProfile | null> {
   try {
     const users = await getUsers();
+    if (users.length > 0) return null; // Admin already exists
     const salt = await genSalt();
     const hash = await hashPin(pin, salt);
     const code = generateAccessCode();
     const user: UserProfile = {
       id: crypto.randomUUID?.() ?? `${Date.now()}_${Math.random().toString(36).slice(2)}`,
       name: name.trim(),
-      pinHash: hash, salt, accessCode: code, createdAt: Date.now(),
+      pinHash: hash, salt, accessCode: code, isAdmin: true, createdAt: Date.now(),
     };
     users.push(user);
     await saveUsers(users);
     _encryptionKey = await deriveKey(pin, salt);
     _currentUserId = user.id;
     _currentUserName = user.name;
+    _currentIsAdmin = true;
     return user;
   } catch { return null; }
+}
+
+// Admin creates a user — does NOT switch to that user, admin stays logged in
+export async function createUserAsAdmin(name: string, pin: string): Promise<UserProfile | null> {
+  try {
+    const users = await getUsers();
+    if (users.length === 0) return null;
+    const salt = await genSalt();
+    const hash = await hashPin(pin, salt);
+    const code = generateAccessCode();
+    const user: UserProfile = {
+      id: crypto.randomUUID?.() ?? `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      name: name.trim(),
+      pinHash: hash, salt, accessCode: code, isAdmin: false, createdAt: Date.now(),
+    };
+    users.push(user);
+    await saveUsers(users);
+    return user; // Admin's session stays intact
+  } catch { return null; }
+}
+
+// Admin changes a user's PIN
+export async function updateUserPin(userId: string, newPin: string): Promise<boolean> {
+  try {
+    const users = await getUsers();
+    const user = users.find(u => u.id === userId);
+    if (!user || user.isAdmin) return false;
+    const salt = await genSalt();
+    const hash = await hashPin(newPin, salt);
+    user.salt = salt;
+    user.pinHash = hash;
+    await saveUsers(users);
+    return true;
+  } catch { return false; }
 }
 
 export async function deleteUser(userId: string): Promise<boolean> {
   try {
     const users = await getUsers();
+    const target = users.find(u => u.id === userId);
+    if (!target || target.isAdmin) return false; // Can't delete admin
     const f = users.filter(u => u.id !== userId);
-    if (f.length === users.length) return false;
     await saveUsers(f);
     if (typeof window !== 'undefined') indexedDB.deleteDatabase(`lawtrack_${userId}`);
     return true;
   } catch { return false; }
 }
 
-// PIN = user identity: check PIN against ALL users
-export async function verifyAndLogin(pin: string): Promise<{
-  success: boolean; locked: boolean; remainingAttempts: number;
-  lockoutRemaining: number; userName: string; userId: string;
-}> {
-  const users = await getUsers();
-  if (users.length === 0) return { success: false, locked: false, remainingAttempts: 0, lockoutRemaining: 0, userName: '', userId: '' };
-
-  // Check each user's lockout
-  for (const u of users) {
-    const lv = await getAuthValue(`${LOCKOUT_PREFIX}${u.id}`);
-    if (lv) {
-      const lt = parseInt(lv, 10);
-      if (Date.now() < lt) {
-        // Check if this user's PIN matches
-        const h = await hashPin(pin, u.salt);
-        if (h === u.pinHash) {
-          return { success: false, locked: true, remainingAttempts: 0, lockoutRemaining: Math.ceil((lt - Date.now()) / 1000), userName: u.name, userId: u.id };
-        }
-      } else {
-        await setAuthValue(`${LOCKOUT_PREFIX}${u.id}`, '');
-        await setAuthValue(`${ATTEMPTS_PREFIX}${u.id}`, '0');
-      }
-    }
-  }
-
-  // Check PIN against all users
-  for (const u of users) {
-    const h = await hashPin(pin, u.salt);
-    if (h === u.pinHash) {
-      // Correct! Unlock this user
-      await setAuthValue(`${ATTEMPTS_PREFIX}${u.id}`, '0');
-      _encryptionKey = await deriveKey(pin, u.salt);
-      _currentUserId = u.id;
-      _currentUserName = u.name;
-      return { success: true, locked: false, remainingAttempts: MAX_ATTEMPTS, lockoutRemaining: 0, userName: u.name, userId: u.id };
-    }
-  }
-
-  // Wrong PIN - find which user to increment attempts for (just use first user for simplicity)
-  // Actually, we can't know which user they tried. Increment for all? No, that's too aggressive.
-  // Since we can't identify the user, just return generic error without locking
-  return { success: false, locked: false, remainingAttempts: MAX_ATTEMPTS, lockoutRemaining: 0, userName: '', userId: '' };
-}
-
-// For a specific user's brute-force (used when we know who they tried)
+// Verify PIN for a specific user
 export async function verifyUserPin(userId: string, pin: string): Promise<{
-  success: boolean; locked: boolean; remainingAttempts: number; lockoutRemaining: number; userName: string;
+  success: boolean; locked: boolean; remainingAttempts: number; lockoutRemaining: number; userName: string; isAdmin: boolean;
 }> {
   const lv = await getAuthValue(`${LOCKOUT_PREFIX}${userId}`);
   if (lv) {
@@ -249,7 +241,7 @@ export async function verifyUserPin(userId: string, pin: string): Promise<{
     if (Date.now() < lt) {
       const users = await getUsers();
       const u = users.find(x => x.id === userId);
-      return { success: false, locked: true, remainingAttempts: 0, lockoutRemaining: Math.ceil((lt - Date.now()) / 1000), userName: u?.name || '' };
+      return { success: false, locked: true, remainingAttempts: 0, lockoutRemaining: Math.ceil((lt - Date.now()) / 1000), userName: u?.name || '', isAdmin: u?.isAdmin || false };
     } else {
       await setAuthValue(`${LOCKOUT_PREFIX}${userId}`, '');
       await setAuthValue(`${ATTEMPTS_PREFIX}${userId}`, '0');
@@ -258,7 +250,7 @@ export async function verifyUserPin(userId: string, pin: string): Promise<{
 
   const users = await getUsers();
   const user = users.find(u => u.id === userId);
-  if (!user) return { success: false, locked: false, remainingAttempts: 0, lockoutRemaining: 0, userName: '' };
+  if (!user) return { success: false, locked: false, remainingAttempts: 0, lockoutRemaining: 0, userName: '', isAdmin: false };
 
   const h = await hashPin(pin, user.salt);
   if (h === user.pinHash) {
@@ -266,7 +258,8 @@ export async function verifyUserPin(userId: string, pin: string): Promise<{
     _encryptionKey = await deriveKey(pin, user.salt);
     _currentUserId = userId;
     _currentUserName = user.name;
-    return { success: true, locked: false, remainingAttempts: MAX_ATTEMPTS, lockoutRemaining: 0, userName: user.name };
+    _currentIsAdmin = user.isAdmin;
+    return { success: true, locked: false, remainingAttempts: MAX_ATTEMPTS, lockoutRemaining: 0, userName: user.name, isAdmin: user.isAdmin };
   }
 
   const aStr = await getAuthValue(`${ATTEMPTS_PREFIX}${userId}`);
@@ -277,11 +270,11 @@ export async function verifyUserPin(userId: string, pin: string): Promise<{
     const lu = Date.now() + LOCKOUT_DURATION;
     await setAuthValue(`${ATTEMPTS_PREFIX}${userId}`, String(a));
     await setAuthValue(`${LOCKOUT_PREFIX}${userId}`, String(lu));
-    return { success: false, locked: true, remainingAttempts: 0, lockoutRemaining: Math.ceil(LOCKOUT_DURATION / 1000), userName: user.name };
+    return { success: false, locked: true, remainingAttempts: 0, lockoutRemaining: Math.ceil(LOCKOUT_DURATION / 1000), userName: user.name, isAdmin: user.isAdmin };
   }
 
   await setAuthValue(`${ATTEMPTS_PREFIX}${userId}`, String(a));
-  return { success: false, locked: false, remainingAttempts: rem, lockoutRemaining: 0, userName: user.name };
+  return { success: false, locked: false, remainingAttempts: rem, lockoutRemaining: 0, userName: user.name, isAdmin: user.isAdmin };
 }
 
 // ============ Access Code ============
@@ -303,5 +296,8 @@ export async function regenerateAccessCode(userId: string): Promise<string | nul
 
 // ============ Session ============
 
-export function lockApp(): void { _encryptionKey = null; }
+export function lockApp(): void {
+  _encryptionKey = null;
+  _currentIsAdmin = false;
+}
 export function isUnlocked(): boolean { return _encryptionKey !== null; }
