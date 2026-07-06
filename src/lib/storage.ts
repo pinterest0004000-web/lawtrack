@@ -1,5 +1,6 @@
 import LZString from 'lz-string';
 import type { CaseEntry, ExpenseEntry, CaseHistoryEntry } from './types';
+import { encryptData, decryptData } from './auth';
 
 const DB_NAME = 'lawtrack_db';
 const DB_VERSION = 3;
@@ -41,12 +42,6 @@ function openDB(): Promise<IDBDatabase> {
           es.createIndex('date', 'date', { unique: false });
           es.createIndex('createdAt', 'createdAt', { unique: false });
           es.createIndex('category', 'category', { unique: false });
-        } else {
-          // Version 3: add category index
-          const es = tx.transaction.objectStore(EXPENSES_STORE);
-          if (!es.indexNames.contains('category')) {
-            es.createIndex('category', 'category', { unique: false });
-          }
         }
         if (!db.objectStoreNames.contains(META_STORE)) {
           db.createObjectStore(META_STORE, { keyPath: 'key' });
@@ -68,6 +63,143 @@ function safeDecompress(data: string): string {
   try { return LZString.decompressFromUTF16(data) ?? data; } catch { return data; }
 }
 
+// ============ Encryption Helpers ============
+
+async function encryptCase(c: CaseEntry): Promise<{ caseId: string; _d: string }> {
+  const historyStr = safeCompress(JSON.stringify(c.history || []));
+  const dataToEncrypt = JSON.stringify({
+    lawyerName: c.lawyerName,
+    partyName: c.partyName,
+    opponentName: c.opponentName,
+    caseType: c.caseType,
+    section: c.section,
+    policeStation: c.policeStation,
+    enteringDate: c.enteringDate,
+    nextDate: c.nextDate,
+    phone: c.phone,
+    judgeRemarks: c.judgeRemarks,
+    pendingFee: c.pendingFee,
+    totalFeeReceived: c.totalFeeReceived,
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt,
+    history: historyStr,
+  });
+  const encrypted = await encryptData(dataToEncrypt);
+  return { caseId: c.caseId, _d: encrypted };
+}
+
+async function decryptCase(record: { caseId: string; _d?: string; [key: string]: unknown }): Promise<CaseEntry | null> {
+  try {
+    if (record._d) {
+      // Encrypted format
+      const decrypted = await decryptData(record._d);
+      const data = JSON.parse(decrypted);
+      let history = data.history;
+      if (typeof history === 'string') {
+        history = JSON.parse(safeDecompress(history));
+      }
+      if (!Array.isArray(history)) history = [];
+      return {
+        caseId: record.caseId,
+        lawyerName: data.lawyerName || '',
+        partyName: data.partyName || '',
+        opponentName: data.opponentName || '',
+        caseType: data.caseType || '',
+        section: data.section || '',
+        policeStation: data.policeStation || '',
+        enteringDate: data.enteringDate || '',
+        nextDate: data.nextDate || '',
+        phone: data.phone || '',
+        judgeRemarks: data.judgeRemarks || '',
+        pendingFee: data.pendingFee || 0,
+        totalFeeReceived: data.totalFeeReceived || 0,
+        createdAt: data.createdAt || 0,
+        updatedAt: data.updatedAt || 0,
+        history,
+      };
+    } else {
+      // Legacy unencrypted format - migrate on read
+      const c = record as Record<string, unknown>;
+      let history = c.history;
+      if (typeof history === 'string') {
+        history = JSON.parse(safeDecompress(history));
+      }
+      if (!Array.isArray(history)) history = [];
+      return {
+        caseId: c.caseId as string,
+        lawyerName: (c.lawyerName as string) || '',
+        partyName: (c.partyName as string) || '',
+        opponentName: (c.opponentName as string) || '',
+        caseType: (c.caseType as string) || '',
+        section: (c.section as string) || '',
+        policeStation: (c.policeStation as string) || '',
+        enteringDate: (c.enteringDate as string) || '',
+        nextDate: (c.nextDate as string) || '',
+        phone: (c.phone as string) || '',
+        judgeRemarks: (c.judgeRemarks as string) || '',
+        pendingFee: (c.pendingFee as number) || 0,
+        totalFeeReceived: (c.totalFeeReceived as number) || 0,
+        createdAt: (c.createdAt as number) || 0,
+        updatedAt: (c.updatedAt as number) || 0,
+        history,
+      };
+    }
+  } catch {
+    return null;
+  }
+}
+
+async function encryptExpense(e: ExpenseEntry): Promise<{ id: string; _d: string }> {
+  const dataToEncrypt = JSON.stringify({
+    caseId: e.caseId,
+    lawyerName: e.lawyerName,
+    partyName: e.partyName,
+    description: e.description,
+    amount: e.amount,
+    date: e.date,
+    createdAt: e.createdAt,
+    category: e.category,
+  });
+  const encrypted = await encryptData(dataToEncrypt);
+  return { id: e.id, _d: encrypted };
+}
+
+async function decryptExpense(record: { id: string; _d?: string; [key: string]: unknown }): Promise<ExpenseEntry | null> {
+  try {
+    if (record._d) {
+      const decrypted = await decryptData(record._d);
+      const data = JSON.parse(decrypted);
+      return {
+        id: record.id,
+        caseId: data.caseId || '',
+        lawyerName: data.lawyerName || '',
+        partyName: data.partyName || '',
+        description: data.description || '',
+        amount: data.amount || 0,
+        date: data.date || '',
+        createdAt: data.createdAt || 0,
+        category: data.category || 'case_expense',
+      };
+    } else {
+      // Legacy unencrypted format
+      const e = record as Record<string, unknown>;
+      return {
+        id: e.id as string,
+        caseId: (e.caseId as string) || '',
+        lawyerName: (e.lawyerName as string) || '',
+        partyName: (e.partyName as string) || '',
+        description: (e.description as string) || '',
+        amount: (e.amount as number) || 0,
+        date: (e.date as string) || '',
+        createdAt: (e.createdAt as number) || 0,
+        category: (e.category as string) || (e.caseId === 'CHAMBER' ? 'chamber_expense' : 'case_expense'),
+      };
+    }
+  } catch {
+    return null;
+  }
+}
+
 // ============ CASES ============
 
 export async function loadCases(): Promise<CaseEntry[]> {
@@ -78,23 +210,20 @@ export async function loadCases(): Promise<CaseEntry[]> {
     const store = tx.objectStore(CASES_STORE);
     const req = store.getAll();
     return new Promise((resolve) => {
-      req.onsuccess = () => {
-        const raw = req.result;
-        if (!Array.isArray(raw)) { resolve([]); return; }
-        // Decompress history for each case
-        const cases: CaseEntry[] = [];
-        for (let i = 0; i < raw.length; i++) {
-          try {
-            const c = raw[i];
-            let history = c.history;
-            if (typeof history === 'string') {
-              history = JSON.parse(safeDecompress(history));
-            }
-            if (!Array.isArray(history)) history = [];
-            cases.push({ ...c, history });
-          } catch { /* skip corrupted */ }
+      req.onsuccess = async () => {
+        try {
+          const raw = req.result;
+          if (!Array.isArray(raw)) { resolve([]); return; }
+
+          const cases: CaseEntry[] = [];
+          for (let i = 0; i < raw.length; i++) {
+            const c = await decryptCase(raw[i]);
+            if (c) cases.push(c);
+          }
+          resolve(cases);
+        } catch {
+          resolve([]);
         }
-        resolve(cases);
       };
       req.onerror = () => resolve([]);
     });
@@ -108,31 +237,30 @@ export async function saveCases(cases: CaseEntry[]): Promise<boolean> {
     const tx = db.transaction(CASES_STORE, 'readwrite');
     const store = tx.objectStore(CASES_STORE);
 
-    // Clear and rewrite in batches of 200
+    // Clear existing data
     await new Promise<void>((resolve, reject) => {
       const clearReq = store.clear();
       clearReq.onsuccess = () => resolve();
       clearReq.onerror = () => reject(clearReq.error);
     });
 
+    // Encrypt and save in batches
     const BATCH = 200;
     for (let i = 0; i < cases.length; i += BATCH) {
       const batch = cases.slice(i, i + BATCH);
+      const encrypted = await Promise.all(batch.map(encryptCase));
       await new Promise<void>((resolve, reject) => {
         const tx2 = db.transaction(CASES_STORE, 'readwrite');
         const store2 = tx2.objectStore(CASES_STORE);
-        for (let j = 0; j < batch.length; j++) {
-          const c = batch[j];
-          const historyStr = safeCompress(JSON.stringify(c.history || []));
-          const toStore = { ...c, history: historyStr };
-          store2.put(toStore);
+        for (let j = 0; j < encrypted.length; j++) {
+          store2.put(encrypted[j]);
         }
         tx2.oncomplete = () => resolve();
         tx2.onerror = () => reject(tx2.error);
       });
     }
 
-    // Update lawyer names cache
+    // Update lawyer names cache (encrypted)
     const lawyerSet = new Set<string>();
     for (let i = 0; i < cases.length; i++) {
       if (cases[i].lawyerName) lawyerSet.add(cases[i].lawyerName);
@@ -147,12 +275,11 @@ export async function upsertCase(c: CaseEntry): Promise<boolean> {
   try {
     if (typeof window === 'undefined') return false;
     const db = await openDB();
-    const historyStr = safeCompress(JSON.stringify(c.history || []));
-    const toStore = { ...c, history: historyStr };
+    const encrypted = await encryptCase(c);
     return new Promise((resolve) => {
       const tx = db.transaction(CASES_STORE, 'readwrite');
       const store = tx.objectStore(CASES_STORE);
-      store.put(toStore);
+      store.put(encrypted);
       tx.oncomplete = () => resolve(true);
       tx.onerror = () => resolve(false);
     });
@@ -183,15 +310,18 @@ export async function loadExpenses(): Promise<ExpenseEntry[]> {
     const store = tx.objectStore(EXPENSES_STORE);
     const req = store.getAll();
     return new Promise((resolve) => {
-      req.onsuccess = () => {
-        const raw = Array.isArray(req.result) ? req.result : [];
-        // Add default category for old expenses
-        for (let i = 0; i < raw.length; i++) {
-          if (!raw[i].category) {
-            raw[i].category = raw[i].caseId === 'CHAMBER' ? 'chamber_expense' : 'case_expense';
+      req.onsuccess = async () => {
+        try {
+          const raw = Array.isArray(req.result) ? req.result : [];
+          const expenses: ExpenseEntry[] = [];
+          for (let i = 0; i < raw.length; i++) {
+            const e = await decryptExpense(raw[i]);
+            if (e) expenses.push(e);
           }
+          resolve(expenses);
+        } catch {
+          resolve([]);
         }
-        resolve(raw);
       };
       req.onerror = () => resolve([]);
     });
@@ -214,11 +344,12 @@ export async function saveExpenses(expenses: ExpenseEntry[]): Promise<boolean> {
     const BATCH = 200;
     for (let i = 0; i < expenses.length; i += BATCH) {
       const batch = expenses.slice(i, i + BATCH);
+      const encrypted = await Promise.all(batch.map(encryptExpense));
       await new Promise<void>((resolve, reject) => {
         const tx2 = db.transaction(EXPENSES_STORE, 'readwrite');
         const store2 = tx2.objectStore(EXPENSES_STORE);
-        for (let j = 0; j < batch.length; j++) {
-          store2.put(batch[j]);
+        for (let j = 0; j < encrypted.length; j++) {
+          store2.put(encrypted[j]);
         }
         tx2.oncomplete = () => resolve();
         tx2.onerror = () => reject(tx2.error);
@@ -232,10 +363,11 @@ export async function addExpenseToDB(e: ExpenseEntry): Promise<boolean> {
   try {
     if (typeof window === 'undefined') return false;
     const db = await openDB();
+    const encrypted = await encryptExpense(e);
     return new Promise((resolve) => {
       const tx = db.transaction(EXPENSES_STORE, 'readwrite');
       const store = tx.objectStore(EXPENSES_STORE);
-      store.put(e);
+      store.put(encrypted);
       tx.oncomplete = () => resolve(true);
       tx.onerror = () => resolve(false);
     });
@@ -332,17 +464,16 @@ export async function migrateFromLocalStorage(): Promise<{ cases: number; expens
         const json = safeDecompress(oldCases);
         const parsed = JSON.parse(json);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const db = await openDB();
           const BATCH = 200;
           for (let i = 0; i < parsed.length; i += BATCH) {
             const batch = parsed.slice(i, i + BATCH);
+            const encrypted = await Promise.all(batch.map((c: CaseEntry) => encryptCase(c)));
+            const db = await openDB();
             await new Promise<void>((resolve, reject) => {
               const tx = db.transaction(CASES_STORE, 'readwrite');
               const store = tx.objectStore(CASES_STORE);
-              for (let j = 0; j < batch.length; j++) {
-                const c = batch[j];
-                const historyStr = safeCompress(JSON.stringify(c.history || []));
-                store.put({ ...c, history: historyStr });
+              for (let j = 0; j < encrypted.length; j++) {
+                store.put(encrypted[j]);
               }
               tx.oncomplete = () => resolve();
               tx.onerror = () => reject(tx.error);
@@ -359,15 +490,16 @@ export async function migrateFromLocalStorage(): Promise<{ cases: number; expens
         const json = safeDecompress(oldExpenses);
         const parsed = JSON.parse(json);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const db = await openDB();
           const BATCH = 200;
           for (let i = 0; i < parsed.length; i += BATCH) {
             const batch = parsed.slice(i, i + BATCH);
+            const encrypted = await Promise.all(batch.map((e: ExpenseEntry) => encryptExpense(e)));
+            const db = await openDB();
             await new Promise<void>((resolve, reject) => {
               const tx = db.transaction(EXPENSES_STORE, 'readwrite');
               const store = tx.objectStore(EXPENSES_STORE);
-              for (let j = 0; j < batch.length; j++) {
-                store.put(batch[j]);
+              for (let j = 0; j < encrypted.length; j++) {
+                store.put(encrypted[j]);
               }
               tx.oncomplete = () => resolve();
               tx.onerror = () => reject(tx.error);

@@ -144,3 +144,13 @@ input[type="number"] {
 .animate-fade-in {
   animation: fadeIn 0.2s ease-out;
 }
+
+/* PIN shake animation */
+@keyframes pinShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+  20%, 40%, 60%, 80% { transform: translateX(6px); }
+}
+.animate-pin-shake {
+  animation: pinShake 0.5s ease-in-out;
+}

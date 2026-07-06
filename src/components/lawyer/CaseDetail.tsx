@@ -34,16 +34,6 @@ export default function CaseDetail() {
     return () => { mountedRef.current = false; };
   }, []);
 
-  // Reset state when case changes
-  const prevCaseIdRef = useRef<string | null>(null);
-  if (selectedCaseId !== prevCaseIdRef.current) {
-    prevCaseIdRef.current = selectedCaseId;
-    // Trigger a microtask reset
-    if (resetKey < 9999) {
-      // This runs synchronously during render, which is fine for reading
-    }
-  }
-
   // Use selectedCaseId as a key for inner component to reset
   const innerKey = selectedCaseId || 'none';
 
