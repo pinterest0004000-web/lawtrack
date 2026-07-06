@@ -16,7 +16,7 @@ import AddCaseForm from '@/components/lawyer/AddCaseForm';
 import CaseDetail from '@/components/lawyer/CaseDetail';
 import LoginScreen from '@/components/lawyer/LoginScreen';
 import { reportError } from '@/lib/firebase';
-import { LogOut, Users, Menu, X } from 'lucide-react';
+import { LogOut, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 function ViewRouter() {
@@ -46,7 +46,11 @@ function HeaderMenu() {
   const importFromSync = useLawyerStore(s => s.importFromSync);
   const currentUserName = useAuthStore(s => s.currentUserName);
 
+  // Check if auto-backup exists for this user
+  const hasBackup = typeof window !== 'undefined' && !!localStorage.getItem(`lw_autobak_${currentUserName || '_'}`);
+
   const handleRestore = () => {
+    if (!confirm('Backup se data restore karna hai? Current data replace hoga.')) return;
     try {
       const raw = localStorage.getItem(`lw_autobak_${currentUserName || '_'}`);
       if (!raw) { toast.error('Koi backup nahi mila'); return; }
@@ -61,48 +65,53 @@ function HeaderMenu() {
 
   return (
     <>
-      <button onClick={() => setOpen(true)}
-        className="w-9 h-9 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center active:bg-zinc-700/80 transition-colors"
+      {/* Hamburger icon — three vertical lines */}
+      <button onClick={() => setOpen(o => !o)}
+        className="w-10 h-10 rounded-xl flex items-center justify-center gap-[3px] active:bg-zinc-700/40 transition-colors"
         aria-label="Menu">
-        <Menu className="w-4 h-4 text-zinc-400" />
+        <span className="block w-[3px] h-[18px] rounded-full bg-zinc-400" />
+        <span className="block w-[3px] h-[18px] rounded-full bg-zinc-400" />
+        <span className="block w-[3px] h-[18px] rounded-full bg-zinc-400" />
       </button>
       {open && (
         <div className="fixed inset-0 z-50" onClick={() => setOpen(false)}>
-          <div className="absolute inset-0 bg-black/60" />
-          <div className="absolute right-3 top-3 w-56 bg-[#141420] border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl shadow-black/50" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
-              <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Menu</span>
-              <button onClick={() => setOpen(false)} className="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center">
-                <X className="w-3.5 h-3.5 text-zinc-500" />
-              </button>
-            </div>
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="absolute right-2.5 top-14 w-60 bg-[#16162a] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-2xl shadow-black/60 animate-in fade-in slide-in-from-top-2 duration-150" onClick={e => e.stopPropagation()}>
             {isAdmin && (
               <button onClick={() => { setOpen(false); showManageUsers(); }}
-                className="w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-zinc-800/50 transition-colors">
-                <Users className="w-4 h-4 text-amber-400" />
+                className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-amber-500/5 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                  <Users className="w-4 h-4 text-amber-400" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium text-white">Admin Panel</p>
+                  <p className="text-sm font-semibold text-white">Admin</p>
                   <p className="text-[10px] text-zinc-500">Users manage karo</p>
                 </div>
               </button>
             )}
-            <button onClick={() => { setOpen(false); handleRestore(); }}
-              className="w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-zinc-800/50 transition-colors">
-              <RestoreIcon />
-              <div>
-                <p className="text-sm font-medium text-white">Restore Backup</p>
-                <p className="text-[10px] text-zinc-500">Auto-backup se data wapas karo</p>
-              </div>
-            </button>
-            <div className="border-t border-zinc-800" />
-            <button onClick={() => { setOpen(false); logout(); }}
-              className="w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-red-500/10 transition-colors">
-                <LogOut className="w-4 h-4 text-red-400" />
+            {hasBackup && (
+              <button onClick={() => { setOpen(false); handleRestore(); }}
+                className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-emerald-500/5 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                  <RestoreIcon />
+                </div>
                 <div>
-                  <p className="text-sm font-medium text-red-400">Exit</p>
-                  <p className="text-[10px] text-zinc-500">App lock karo</p>
+                  <p className="text-sm font-semibold text-white">Restore Backup</p>
+                  <p className="text-[10px] text-zinc-500">Auto-backup se wapas karo</p>
                 </div>
               </button>
+            )}
+            <div className="border-t border-zinc-800/60" />
+            <button onClick={() => { setOpen(false); logout(); }}
+              className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-red-500/5 transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                <LogOut className="w-4 h-4 text-red-400" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-red-400">Exit</p>
+                <p className="text-[10px] text-zinc-500">App lock karo</p>
+              </div>
+            </button>
           </div>
         </div>
       )}
@@ -223,13 +232,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
-      <header className="flex items-center justify-center px-4 py-3 border-b border-white/5 flex-shrink-0 relative">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl leading-none">⚖️</span>
-          <h1 className="text-[22px] font-black text-white tracking-tight leading-none">LawTrack</h1>
+      <header className="flex items-center px-4 py-3 border-b border-white/5 flex-shrink-0 relative">
+        {/* Left spacer = menu button width for centering */}
+        <div className="w-10 flex-shrink-0" />
+        {/* Center: LawTrack + icon */}
+        <div className="flex-1 flex items-center justify-center gap-2">
+          <span className="text-[26px] leading-none">⚖️</span>
+          <h1 className="text-2xl font-black text-white tracking-tight leading-none" style={{ textShadow: '0 0 30px rgba(255,255,255,0.06)' }}>LawTrack</h1>
         </div>
-        {!initialized && <span className="absolute left-1/2 -translate-x-1/2 bottom-0.5 w-3 h-3 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />}
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+        {/* Right: hamburger menu */}
+        <div className="w-10 flex-shrink-0 flex justify-end">
           <HeaderMenu />
         </div>
       </header>
