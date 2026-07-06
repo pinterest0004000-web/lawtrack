@@ -4,13 +4,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getCrashlytics, recordError as firebaseRecordError } from '@firebase/crashlytics';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB1234567890placeholder",
-  authDomain: "lawtrack-app.firebaseapp.com",
-  projectId: "lawtrack-app",
-  storageBucket: "lawtrack-app.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:0000000000000000",
-  measurementId: "G-XXXXXXXXXX"
+  apiKey: "AIzaSyCrpK5HE3a29d84peHoxerpbybeXulKla4",
+  authDomain: "lawtrack-29b52.firebaseapp.com",
+  projectId: "lawtrack-29b52",
+  storageBucket: "lawtrack-29b52.firebasestorage.app",
+  messagingSenderId: "707165908591",
+  appId: "1:707165908591:web:2b4c8dca81257a71a2679a",
+  measurementId: "G-QPY4R89QN3"
 };
 
 let app = null;
