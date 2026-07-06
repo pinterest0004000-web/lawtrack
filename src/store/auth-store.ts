@@ -176,6 +176,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   logout: () => {
     lockApp();
+    // Clear code param so user doesn't get redirected to same user's PIN
+    if (typeof window !== 'undefined' && window.location.search.includes('code=')) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
     const users = get().users;
     if (users.length > 1) {
       set({ authStatus: 'select-user', currentUserId: null, error: '', lastActivity: Date.now(), selectedUser: null, lockoutRemaining: 0 });
@@ -192,6 +196,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (Date.now() - s.lastActivity >= 5 * 60 * 1000) {
       lockApp();
       const users = s.users;
+      // Clear code param on auto-lock too
+      if (typeof window !== 'undefined' && window.location.search.includes('code=')) {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
       if (users.length > 1) {
         set({ authStatus: 'select-user', error: '', selectedUser: null, lockoutRemaining: 0 });
       } else {

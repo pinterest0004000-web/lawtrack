@@ -457,6 +457,18 @@ function PinLoginScreen() {
         <Numpad onDigit={handleDigit} onDelete={handleDelete} disabled={isLockedOut} />
       </div>
 
+      {selectedUser && (
+        <div className="px-6 pb-2">
+          <button onClick={() => {
+            if (typeof window !== 'undefined' && window.location.search.includes('code=')) {
+              window.history.replaceState({}, '', window.location.pathname);
+            }
+            goToSelectUser();
+          }} className="w-full py-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+            ← Sab Users Dekho
+          </button>
+        </div>
+      )}
       {!selectedUser && (
         <div className="px-6 pb-2">
           <button onClick={goToCreateUser} className="w-full py-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
