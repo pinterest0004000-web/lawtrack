@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import { getTodayCases } from '@/lib/utils-lawyer';
 import HomeScreen from '@/components/lawyer/HomeScreen';
