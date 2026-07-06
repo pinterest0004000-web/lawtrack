@@ -1,27 +1,34 @@
 /**
- * Security Module for LawTrack
- * - PIN-based authentication with PBKDF2 key derivation
- * - AES-256-GCM encryption for all stored data
- * - Brute-force protection (5 attempts, 60s lockout)
+ * Multi-User Security Module for LawTrack
+ * - Multiple user profiles, each with own PIN + encrypted data
+ * - Per-user AES-256-GCM encryption via Web Crypto API
+ * - Brute-force protection (5 attempts, 60s lockout) per user
  * - In-memory encryption key (never persisted)
  */
 
-const AUTH_STORE = 'lawtrack_auth';
-const PIN_KEY = 'pin_hash';
-const SALT_KEY = 'pin_salt';
-const ATTEMPTS_KEY = 'failed_attempts';
-const LOCKOUT_KEY = 'lockout_until';
+const AUTH_DB = 'lawtrack_auth';
+const USERS_KEY = 'users';
+const LOCKOUT_PREFIX = 'lockout_';
 
 const MAX_ATTEMPTS = 5;
-const LOCKOUT_DURATION = 60_000; // 60 seconds
+const LOCKOUT_DURATION = 60_000;
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  pinHash: string;
+  salt: string;
+  createdAt: number;
+}
 
 let _encryptionKey: CryptoKey | null = null;
+let _currentUserId: string | null = null;
 
-// ============ IndexedDB Helpers ============
+// ============ IndexedDB Helper ============
 
 function openAuthDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(AUTH_STORE, 1);
+    const req = indexedDB.open(AUTH_DB, 1);
     req.onerror = () => reject(req.error);
     req.onsuccess = () => resolve(req.result);
     req.onupgradeneeded = () => {
@@ -82,186 +89,162 @@ async function generateSalt(): Promise<string> {
 
 async function hashPin(pin: string, salt: string): Promise<string> {
   const encoder = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(pin),
-    'PBKDF2',
-    false,
-    ['deriveBits']
-  );
+  const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(pin), 'PBKDF2', false, ['deriveBits']);
   const bits = await crypto.subtle.deriveBits(
-    {
-      name: 'PBKDF2',
-      salt: base64ToArrayBuffer(salt),
-      iterations: 100_000,
-      hash: 'SHA-256',
-    },
-    keyMaterial,
-    256
+    { name: 'PBKDF2', salt: base64ToArrayBuffer(salt), iterations: 100_000, hash: 'SHA-256' },
+    keyMaterial, 256
   );
   return arrayBufferToBase64(bits);
 }
 
 async function deriveEncryptionKey(pin: string, salt: string): Promise<CryptoKey> {
   const encoder = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(pin),
-    'PBKDF2',
-    false,
-    ['deriveKey']
-  );
+  const keyMaterial = await crypto.subtle.importKey('raw', encoder.encode(pin), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt: base64ToArrayBuffer(salt),
-      iterations: 100_000,
-      hash: 'SHA-256',
-    },
-    keyMaterial,
-    { name: 'AES-GCM', length: 256 },
-    false,
-    ['encrypt', 'decrypt']
+    { name: 'PBKDF2', salt: base64ToArrayBuffer(salt), iterations: 100_000, hash: 'SHA-256' },
+    keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
   );
 }
 
 // ============ Encryption / Decryption ============
 
 export async function encryptData(plaintext: string): Promise<string> {
-  if (!_encryptionKey) return plaintext; // fallback: no encryption if no key
+  if (!_encryptionKey) return plaintext;
   try {
     const encoder = new TextEncoder();
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    const encrypted = await crypto.subtle.encrypt(
-      { name: 'AES-GCM', iv },
-      _encryptionKey,
-      encoder.encode(plaintext)
-    );
-    // Format: base64(iv + ciphertext)
+    const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, _encryptionKey, encoder.encode(plaintext));
     const combined = new Uint8Array(iv.length + encrypted.byteLength);
     combined.set(iv, 0);
     combined.set(new Uint8Array(encrypted), iv.length);
     return arrayBufferToBase64(combined.buffer);
-  } catch {
-    return plaintext; // fallback
-  }
+  } catch { return plaintext; }
 }
 
 export async function decryptData(ciphertext: string): Promise<string> {
   if (!_encryptionKey) return ciphertext;
-  if (!ciphertext || ciphertext.length < 24) return ciphertext; // too short to be encrypted
+  if (!ciphertext || ciphertext.length < 24) return ciphertext;
   try {
     const combined = new Uint8Array(base64ToArrayBuffer(ciphertext));
     const iv = combined.slice(0, 12);
     const data = combined.slice(12);
-    const decrypted = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv },
-      _encryptionKey,
-      data
-    );
+    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, _encryptionKey, data);
     return new TextDecoder().decode(decrypted);
-  } catch {
-    return ciphertext; // if decryption fails, return as-is (might be unencrypted legacy data)
-  }
+  } catch { return ciphertext; }
 }
 
 export function hasEncryptionKey(): boolean {
   return _encryptionKey !== null;
 }
 
-// ============ PIN Management ============
-
-export async function hasPin(): Promise<boolean> {
-  const hash = await getAuthValue(PIN_KEY);
-  return hash.length > 0;
+export function getCurrentUserId(): string | null {
+  return _currentUserId;
 }
 
-export async function setupPin(pin: string): Promise<boolean> {
+// ============ User Management ============
+
+export async function getUsers(): Promise<UserProfile[]> {
   try {
+    const val = await getAuthValue(USERS_KEY);
+    if (!val) return [];
+    const parsed = JSON.parse(val);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch { return []; }
+}
+
+async function saveUsers(users: UserProfile[]): Promise<boolean> {
+  return setAuthValue(USERS_KEY, JSON.stringify(users));
+}
+
+export async function createUser(name: string, pin: string): Promise<UserProfile | null> {
+  try {
+    const users = await getUsers();
     const salt = await generateSalt();
     const hash = await hashPin(pin, salt);
-    await setAuthValue(PIN_KEY, hash);
-    await setAuthValue(SALT_KEY, salt);
-    // Derive and hold encryption key in memory
-    _encryptionKey = await deriveEncryptionKey(pin, salt);
-    return true;
-  } catch {
-    return false;
-  }
+    const user: UserProfile = {
+      id: crypto.randomUUID?.() ?? String(Date.now()) + String(Math.random()).slice(2, 8),
+      name: name.trim(),
+      pinHash: hash,
+      salt,
+      createdAt: Date.now(),
+    };
+    users.push(user);
+    await saveUsers(users);
+    return user;
+  } catch { return null; }
 }
 
-export async function verifyPin(pin: string): Promise<{ success: boolean; locked: boolean; remainingAttempts: number; lockoutRemaining: number }> {
-  // Check lockout
-  const lockoutUntil = await getAuthValue(LOCKOUT_KEY);
-  if (lockoutUntil) {
-    const lockTime = parseInt(lockoutUntil, 10);
+export async function deleteUser(userId: string): Promise<boolean> {
+  try {
+    const users = await getUsers();
+    const filtered = users.filter(u => u.id !== userId);
+    if (filtered.length === users.length) return false;
+    await saveUsers(filtered);
+    // Also delete the user's database
+    if (typeof window !== 'undefined') {
+      indexedDB.deleteDatabase(`lawtrack_${userId}`);
+    }
+    return true;
+  } catch { return false; }
+}
+
+export async function verifyUserPin(userId: string, pin: string): Promise<{
+  success: boolean; locked: boolean; remainingAttempts: number; lockoutRemaining: number; userName: string;
+}> {
+  // Check per-user lockout
+  const lockoutVal = await getAuthValue(`${LOCKOUT_PREFIX}${userId}`);
+  if (lockoutVal) {
+    const lockTime = parseInt(lockoutVal, 10);
     if (Date.now() < lockTime) {
-      return {
-        success: false,
-        locked: true,
-        remainingAttempts: 0,
-        lockoutRemaining: Math.ceil((lockTime - Date.now()) / 1000),
-      };
+      return { success: false, locked: true, remainingAttempts: 0, lockoutRemaining: Math.ceil((lockTime - Date.now()) / 1000), userName: '' };
     } else {
-      // Lockout expired, reset
-      await setAuthValue(ATTEMPTS_KEY, '0');
-      await setAuthValue(LOCKOUT_KEY, '');
+      await setAuthValue(`${LOCKOUT_PREFIX}${userId}`, '');
+      await setAuthValue(`attempts_${userId}`, '0');
     }
   }
 
-  const storedHash = await getAuthValue(PIN_KEY);
-  const salt = await getAuthValue(SALT_KEY);
+  const users = await getUsers();
+  const user = users.find(u => u.id === userId);
+  if (!user) return { success: false, locked: false, remainingAttempts: 0, lockoutRemaining: 0, userName: '' };
 
-  if (!storedHash || !salt) {
-    return { success: false, locked: false, remainingAttempts: 0, lockoutRemaining: 0 };
+  const hash = await hashPin(pin, user.salt);
+
+  if (hash === user.pinHash) {
+    await setAuthValue(`attempts_${userId}`, '0');
+    _encryptionKey = await deriveEncryptionKey(pin, user.salt);
+    _currentUserId = userId;
+    return { success: true, locked: false, remainingAttempts: MAX_ATTEMPTS, lockoutRemaining: 0, userName: user.name };
   }
 
-  const hash = await hashPin(pin, salt);
-
-  if (hash === storedHash) {
-    // Correct PIN - reset attempts, derive key
-    await setAuthValue(ATTEMPTS_KEY, '0');
-    _encryptionKey = await deriveEncryptionKey(pin, salt);
-    return { success: true, locked: false, remainingAttempts: MAX_ATTEMPTS, lockoutRemaining: 0 };
-  }
-
-  // Wrong PIN - increment attempts
-  const attemptsStr = await getAuthValue(ATTEMPTS_KEY);
+  // Wrong PIN
+  const attemptsStr = await getAuthValue(`attempts_${userId}`);
   const attempts = (parseInt(attemptsStr, 10) || 0) + 1;
   const remaining = Math.max(0, MAX_ATTEMPTS - attempts);
 
   if (attempts >= MAX_ATTEMPTS) {
-    // Lock out
     const lockUntil = Date.now() + LOCKOUT_DURATION;
-    await setAuthValue(ATTEMPTS_KEY, String(attempts));
-    await setAuthValue(LOCKOUT_KEY, String(lockUntil));
-    return { success: false, locked: true, remainingAttempts: 0, lockoutRemaining: Math.ceil(LOCKOUT_DURATION / 1000) };
+    await setAuthValue(`attempts_${userId}`, String(attempts));
+    await setAuthValue(`${LOCKOUT_PREFIX}${userId}`, String(lockUntil));
+    return { success: false, locked: true, remainingAttempts: 0, lockoutRemaining: Math.ceil(LOCKOUT_DURATION / 1000), userName: user.name };
   }
 
-  await setAuthValue(ATTEMPTS_KEY, String(attempts));
-  return { success: false, locked: false, remainingAttempts: remaining, lockoutRemaining: 0 };
+  await setAuthValue(`attempts_${userId}`, String(attempts));
+  return { success: false, locked: false, remainingAttempts: remaining, lockoutRemaining: 0, userName: user.name };
 }
 
-export async function changePin(oldPin: string, newPin: string): Promise<boolean> {
-  const result = await verifyPin(oldPin);
-  if (!result.success) return false;
-
-  // Re-encrypt all data would be complex; for now just update PIN
-  // The encryption key stays the same in memory
-  // On next login with new PIN, the key will be re-derived
-  const salt = await generateSalt();
-  const hash = await hashPin(newPin, salt);
-  await setAuthValue(PIN_KEY, hash);
-  await setAuthValue(SALT_KEY, salt);
-  // Update in-memory key
-  _encryptionKey = await deriveEncryptionKey(newPin, salt);
-  return true;
+export async function setupFirstUserAndLogin(name: string, pin: string): Promise<UserProfile | null> {
+  const user = await createUser(name, pin);
+  if (!user) return null;
+  _encryptionKey = await deriveEncryptionKey(pin, user.salt);
+  _currentUserId = user.id;
+  return user;
 }
 
 // ============ Session Management ============
 
 export function lockApp(): void {
   _encryptionKey = null;
+  // Keep _currentUserId so we know which user to show on re-login
 }
 
 export function isUnlocked(): boolean {

@@ -1,8 +1,7 @@
 import LZString from 'lz-string';
 import type { CaseEntry, ExpenseEntry, CaseHistoryEntry } from './types';
-import { encryptData, decryptData } from './auth';
+import { encryptData, decryptData, getCurrentUserId } from './auth';
 
-const DB_NAME = 'lawtrack_db';
 const DB_VERSION = 3;
 const CASES_STORE = 'cases';
 const EXPENSES_STORE = 'expenses';
@@ -10,19 +9,32 @@ const META_STORE = 'meta';
 const META_KEY_SYNC = 'last_sync';
 const META_KEY_LAWYERS = 'lawyer_names';
 
-let dbInstance: IDBDatabase | null = null;
-let dbInitPromise: Promise<IDBDatabase> | null = null;
+// Per-user DB cache
+const dbCache = new Map<string, { db: IDBDatabase | null; promise: Promise<IDBDatabase> | null }>();
+
+function getDBName(): string {
+  const userId = getCurrentUserId();
+  return userId ? `lawtrack_${userId}` : 'lawtrack_db';
+}
+
+function getDBEntry() {
+  const name = getDBName();
+  if (!dbCache.has(name)) dbCache.set(name, { db: null, promise: null });
+  return dbCache.get(name)!;
+}
 
 function openDB(): Promise<IDBDatabase> {
-  if (dbInstance) return Promise.resolve(dbInstance);
-  if (dbInitPromise) return dbInitPromise;
+  const entry = getDBEntry();
+  if (entry.db) return Promise.resolve(entry.db);
+  if (entry.promise) return entry.promise;
 
-  dbInitPromise = new Promise((resolve, reject) => {
+  const dbName = getDBName();
+  entry.promise = new Promise((resolve, reject) => {
     try {
-      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      const req = indexedDB.open(dbName, DB_VERSION);
       req.onerror = () => reject(req.error);
       req.onsuccess = () => {
-        dbInstance = req.result;
+        entry.db = req.result;
         resolve(req.result);
       };
       req.onupgradeneeded = (event) => {
@@ -52,7 +64,7 @@ function openDB(): Promise<IDBDatabase> {
     }
   });
 
-  return dbInitPromise;
+  return entry.promise;
 }
 
 function safeCompress(data: string): string {
