@@ -75,9 +75,9 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         }
       }
 
-      // No code → admin login
+      // No code → admin login (don't reveal name for security)
       const admin = users.find(u => u.isAdmin) || users[0];
-      set({ authStatus: 'admin-login', selectedUser: admin, users, error: '' });
+      set({ authStatus: 'admin-login', selectedUser: { ...admin, name: '' }, users, error: '' });
     } catch { set({ authStatus: 'setup-admin' }); }
   },
 
@@ -182,7 +182,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
     const users = get().users;
     const admin = users.find(u => u.isAdmin) || users[0];
-    set({ authStatus: 'admin-login', currentUserId: null, error: '', lastActivity: Date.now(), selectedUser: admin, lockoutRemaining: 0, isAdmin: false });
+    set({ authStatus: 'admin-login', currentUserId: null, error: '', lastActivity: Date.now(), selectedUser: { ...admin, name: '' }, lockoutRemaining: 0, isAdmin: false });
   },
 
   recordActivity: () => set({ lastActivity: Date.now() }),
@@ -197,7 +197,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       }
       const users = s.users;
       const admin = users.find(u => u.isAdmin) || users[0];
-      set({ authStatus: 'admin-login', error: '', selectedUser: admin, lockoutRemaining: 0, isAdmin: false });
+      set({ authStatus: 'admin-login', error: '', selectedUser: { ...admin, name: '' }, lockoutRemaining: 0, isAdmin: false });
       return true;
     }
     return false;

@@ -204,7 +204,7 @@ function PinLoginScreen() {
         )}
 
         <h1 className="text-xl font-bold text-white mb-0.5">
-          {userName ? `${userName}, PIN Daalo` : 'Admin, PIN Daalo'}
+          {userName ? `${userName}, PIN Daalo` : 'PIN Daalo'}
         </h1>
         <p className="text-sm text-zinc-400 mb-3">4-digit PIN enter karo</p>
 
@@ -541,9 +541,14 @@ function ManageUsersOverlay() {
 // Reuses AddUserScreen above
 
 // ============ MAIN ============
+const OVERLAY = new Set(['manage-users', 'add-user', 'user-created']);
+
 export default function LoginScreen() {
   const { authStatus, checkAuth } = useAuthStore();
-  useEffect(() => { checkAuth(); }, [checkAuth]);
+  useEffect(() => {
+    // Don't re-check auth when showing as overlay (admin is still unlocked)
+    if (!OVERLAY.has(authStatus)) checkAuth();
+  }, [checkAuth, authStatus]);
 
   if (authStatus === 'checking') return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0f]">
