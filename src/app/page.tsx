@@ -14,7 +14,7 @@ import ExpenseByCase from '@/components/lawyer/ExpenseByCase';
 import ExpenseChamber from '@/components/lawyer/ExpenseChamber';
 import AddCaseForm from '@/components/lawyer/AddCaseForm';
 import CaseDetail from '@/components/lawyer/CaseDetail';
-import SyncButton from '@/components/lawyer/SyncButton';
+import BackupButton from '@/components/lawyer/SyncButton';
 import LoginScreen from '@/components/lawyer/LoginScreen';
 import { reportError } from '@/lib/firebase';
 import { LogOut, Users } from 'lucide-react';
@@ -155,7 +155,7 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-2">
           {isAdmin && <ManageUsersButton />}
-          <SyncButton />
+          <BackupButton />
           <LockButton />
         </div>
       </header>
