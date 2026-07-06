@@ -87,7 +87,7 @@ export default function HomeScreen() {
       </div>
 
       {/* 4 Feature Boxes - 2x2 Vertical Grid */}
-      <div className="grid grid-cols-2 gap-2 mb-3">
+      <div className="flex flex-col gap-2 mb-3">
         <FeatureBox
           icon={<CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />}
           label="Today Cases"
