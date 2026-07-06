@@ -42,7 +42,7 @@ export interface ExpenseEntry {
   category: ExpenseCategory;
 }
 
-export type ViewType = 'home' | 'today' | 'all' | 'pending-fee' | 'expenses' | 'expenses-by-case' | 'expenses-chamber' | 'add-case' | 'case-detail';
+export type ViewType = 'home' | 'today' | 'all' | 'pending-fee' | 'expenses' | 'expenses-by-case' | 'expenses-chamber' | 'add-case' | 'case-detail' | 'delete-case';
 
 export interface AppState {
   cases: CaseEntry[];

@@ -15,6 +15,7 @@ import ExpenseByCase from '@/components/lawyer/ExpenseByCase';
 import ExpenseChamber from '@/components/lawyer/ExpenseChamber';
 import AddCaseForm from '@/components/lawyer/AddCaseForm';
 import CaseDetail from '@/components/lawyer/CaseDetail';
+import DeleteCaseScreen from '@/components/lawyer/DeleteCaseScreen';
 import LoginScreen from '@/components/lawyer/LoginScreen';
 import { reportError } from '@/lib/firebase';
 import { LogOut, Users, Cloud, CloudOff, HardDriveDownload } from 'lucide-react';
@@ -35,6 +36,7 @@ function ViewRouter() {
     case 'expenses-chamber': return <ExpenseChamber />;
     case 'add-case': return <AddCaseForm />;
     case 'case-detail': return <CaseDetail />;
+    case 'delete-case': return <DeleteCaseScreen />;
     default: return <HomeScreen />;
   }
 }
