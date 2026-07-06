@@ -76,7 +76,7 @@ function HeaderMenu() {
       {open && (
         <div className="fixed inset-0 z-50" onClick={() => setOpen(false)}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          <div className="absolute right-2.5 top-14 w-60 bg-[#16162a] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-2xl shadow-black/60 animate-in fade-in slide-in-from-top-2 duration-150" onClick={e => e.stopPropagation()}>
+          <div className="absolute left-2.5 top-14 w-60 bg-[#16162a] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-2xl shadow-black/60 animate-in fade-in slide-in-from-top-2 duration-150" onClick={e => e.stopPropagation()}>
             {isAdmin && (
               <button onClick={() => { setOpen(false); showManageUsers(); }}
                 className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-amber-500/5 transition-colors">
@@ -233,17 +233,17 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
       <header className="flex items-center px-4 py-3 border-b border-white/5 flex-shrink-0 relative">
-        {/* Left spacer = menu button width for centering */}
-        <div className="w-10 flex-shrink-0" />
+        {/* Left: hamburger menu */}
+        <div className="w-10 flex-shrink-0 flex justify-start">
+          <HeaderMenu />
+        </div>
         {/* Center: LawTrack + icon */}
         <div className="flex-1 flex items-center justify-center gap-2">
           <span className="text-[26px] leading-none">⚖️</span>
           <h1 className="text-2xl font-black text-white tracking-tight leading-none" style={{ textShadow: '0 0 30px rgba(255,255,255,0.06)' }}>LawTrack</h1>
         </div>
-        {/* Right: hamburger menu */}
-        <div className="w-10 flex-shrink-0 flex justify-end">
-          <HeaderMenu />
-        </div>
+        {/* Right spacer for centering */}
+        <div className="w-10 flex-shrink-0" />
       </header>
       <main className="flex-1 overflow-y-auto"><ViewRouter /></main>
       <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
