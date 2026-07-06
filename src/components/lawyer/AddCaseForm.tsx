@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import { generateCaseId, getTodayStr } from '@/lib/utils-lawyer';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const INITIAL_FORM = {
@@ -22,10 +22,13 @@ const INITIAL_FORM = {
 export default function AddCaseForm() {
   const addCase = useLawyerStore(s => s.addCase);
   const cases = useLawyerStore(s => s.cases);
+  const lawyerNames = useLawyerStore(s => s.lawyerNames);
   const setCurrentView = useLawyerStore(s => s.setCurrentView);
   const [form, setForm] = useState(INITIAL_FORM);
   const [saving, setSaving] = useState(false);
+  const [showLawyerSuggestions, setShowLawyerSuggestions] = useState(false);
   const mountedRef = useRef(true);
+  const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     return () => { mountedRef.current = false; };
@@ -34,17 +37,47 @@ export default function AddCaseForm() {
   const existingIds = useMemo(() => cases.map(c => c.caseId), [cases]);
   const autoCaseId = useMemo(() => generateCaseId(existingIds), [existingIds]);
 
+  const filteredLawyers = useMemo(() => {
+    if (!form.lawyerName.trim()) return lawyerNames.slice(0, 5);
+    const q = form.lawyerName.toLowerCase();
+    return lawyerNames.filter(n => n.toLowerCase().includes(q)).slice(0, 5);
+  }, [form.lawyerName, lawyerNames]);
+
   const updateField = useCallback((field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
+    if (field === 'lawyerName') {
+      setShowLawyerSuggestions(true);
+    }
   }, []);
 
-  const handleSubmit = useCallback(() => {
+  const selectLawyer = useCallback((name: string) => {
+    setForm(prev => ({ ...prev, lawyerName: name }));
+    setShowLawyerSuggestions(false);
+  }, []);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    if (!showLawyerSuggestions) return;
+    const handler = (e: MouseEvent) => {
+      if (formRef.current && !formRef.current.contains(e.target as Node)) {
+        setShowLawyerSuggestions(false);
+      }
+    };
+    document.addEventListener('touchstart', handler, { passive: true });
+    document.addEventListener('mousedown', handler);
+    return () => {
+      document.removeEventListener('touchstart', handler);
+      document.removeEventListener('mousedown', handler);
+    };
+  }, [showLawyerSuggestions]);
+
+  const handleSubmit = useCallback(async () => {
     if (!form.lawyerName.trim()) { toast.error('Lawyer name is required'); return; }
     if (!form.partyName.trim()) { toast.error('Party name is required'); return; }
     if (!form.nextDate) { toast.error('Next date is required'); return; }
 
     setSaving(true);
-    const ok = addCase({
+    const ok = await addCase({
       caseId: autoCaseId,
       lawyerName: form.lawyerName.trim(),
       partyName: form.partyName.trim(),
@@ -58,17 +91,15 @@ export default function AddCaseForm() {
       judgeRemarks: form.judgeRemarks.trim(),
     });
 
-    setTimeout(() => {
-      if (!mountedRef.current) return;
-      setSaving(false);
-      if (ok) {
-        toast.success('Case added successfully!', { description: `Case #${autoCaseId}` });
-        setForm(INITIAL_FORM);
-        setCurrentView('all');
-      } else {
-        toast.error('Failed to add case. Storage may be full.');
-      }
-    }, 100);
+    if (!mountedRef.current) return;
+    setSaving(false);
+    if (ok) {
+      toast.success('Case added successfully!', { description: `Case #${autoCaseId}` });
+      setForm(INITIAL_FORM);
+      setCurrentView('all');
+    } else {
+      toast.error('Failed to add case. Storage may be full.');
+    }
   }, [form, autoCaseId, addCase, setCurrentView]);
 
   const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-violet-500/50 transition-colors";
@@ -86,7 +117,7 @@ export default function AddCaseForm() {
         <h2 className="text-lg font-bold text-white">Add New Case</h2>
       </div>
 
-      <div className="px-3 sm:px-4 pb-4 max-h-[calc(100vh-120px)] overflow-y-auto">
+      <div className="px-3 sm:px-4 pb-4 max-h-[calc(100vh-120px)] overflow-y-auto" ref={formRef}>
         <div className="glass-card rounded-2xl p-4 space-y-3">
           {/* Case ID */}
           <div>
@@ -94,10 +125,43 @@ export default function AddCaseForm() {
             <input type="text" value={autoCaseId} readOnly className={`${inputClass} opacity-60`} />
           </div>
 
-          {/* Lawyer Name */}
-          <div>
+          {/* Lawyer Name with Suggestions */}
+          <div className="relative">
             <label className="text-xs text-zinc-500 mb-1 block">Lawyer Name *</label>
-            <input type="text" value={form.lawyerName} onChange={e => updateField('lawyerName', e.target.value)} placeholder="Enter lawyer name" className={inputClass} />
+            <div className="relative">
+              <input
+                type="text"
+                value={form.lawyerName}
+                onChange={e => updateField('lawyerName', e.target.value)}
+                onFocus={() => setShowLawyerSuggestions(true)}
+                placeholder="Enter lawyer name"
+                className={inputClass}
+                autoComplete="off"
+              />
+              {form.lawyerName && (
+                <button
+                  type="button"
+                  onClick={() => { setForm(prev => ({ ...prev, lawyerName: '' })); setShowLawyerSuggestions(true); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            {showLawyerSuggestions && filteredLawyers.length > 0 && (
+              <div className="absolute z-20 top-full left-0 right-0 mt-1 glass-card rounded-xl overflow-hidden border border-white/10 max-h-32 overflow-y-auto">
+                {filteredLawyers.map(name => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => selectLawyer(name)}
+                    className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5 transition-colors"
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Party Name */}

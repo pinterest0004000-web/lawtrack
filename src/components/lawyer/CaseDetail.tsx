@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import { formatCurrency, formatDate, getTodayStr } from '@/lib/utils-lawyer';
-import { ArrowLeft, Phone, Calendar, MapPin, Scale, Shield, FileText, IndianRupee, Trash2, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { ArrowLeft, Phone, Calendar, MapPin, Scale, Shield, FileText, IndianRupee, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 type TabType = 'info' | 'history' | 'fee' | 'expense';
@@ -20,7 +20,6 @@ export default function CaseDetail() {
   const [tab, setTab] = useState<TabType>('info');
   const [remark, setRemark] = useState('');
   const [newNextDate, setNewNextDate] = useState('');
-  const [showNewNextDate, setShowNewNextDate] = useState(false);
   const [feeAmount, setFeeAmount] = useState('');
   const [feeType, setFeeType] = useState<'pending' | 'received'>('received');
   const [expDesc, setExpDesc] = useState('');
@@ -34,7 +33,20 @@ export default function CaseDetail() {
     return () => { mountedRef.current = false; };
   }, []);
 
+  // Reset state when case changes
+  useEffect(() => {
+    setTab('info');
+    setRemark('');
+    setNewNextDate('');
+    setFeeAmount('');
+    setExpDesc('');
+    setExpAmount('');
+    setConfirmDelete(false);
+    setHistoryPage(0);
+  }, [selectedCaseId]);
+
   const caseData = useMemo(() => {
+    if (!selectedCaseId) return null;
     return cases.find(c => c.caseId === selectedCaseId) || null;
   }, [cases, selectedCaseId]);
 
@@ -49,78 +61,81 @@ export default function CaseDetail() {
 
   const hasMoreHistory = visibleHistory.length < sortedHistory.length;
 
-  const handleSaveRemarks = useCallback(() => {
+  // Show "Enter New Next Date" field ONLY when typing judge remarks
+  const showNewNextDateField = remark.trim().length > 0;
+
+  const handleSaveRemarks = useCallback(async () => {
     if (!caseData) return;
-    if (!newNextDate) { toast.error('Next date is required'); return; }
+    if (!remark.trim()) { toast.error('Enter judge remarks first'); return; }
+    if (!newNextDate) { toast.error('Please enter new next date'); return; }
+
     setSaving(true);
-    const ok = updateCaseNextDate(caseData.caseId, remark, newNextDate);
-    setTimeout(() => {
-      if (!mountedRef.current) return;
-      setSaving(false);
-      if (ok) {
-        toast.success('Remarks saved & next date updated');
-        setRemark('');
-        setNewNextDate('');
-        setShowNewNextDate(false);
-      } else {
-        toast.error('Failed to save');
-      }
-    }, 100);
+    const ok = await updateCaseNextDate(caseData.caseId, remark.trim(), newNextDate);
+
+    if (!mountedRef.current) return;
+    setSaving(false);
+    if (ok) {
+      toast.success('Remarks saved & next date updated');
+      setRemark('');
+      setNewNextDate('');
+    } else {
+      toast.error('Failed to save');
+    }
   }, [caseData, remark, newNextDate, updateCaseNextDate]);
 
-  const handleAddFee = useCallback(() => {
+  const handleAddFee = useCallback(async () => {
     if (!caseData) return;
     const amt = parseFloat(feeAmount);
     if (!amt || amt <= 0) { toast.error('Enter valid amount'); return; }
+
     setSaving(true);
-    const ok = addFeeRecord(caseData.caseId, amt, feeType === 'pending');
-    setTimeout(() => {
-      if (!mountedRef.current) return;
-      setSaving(false);
-      if (ok) {
-        toast.success(feeType === 'pending' ? 'Pending fee added' : 'Fee received recorded');
-        setFeeAmount('');
-      } else {
-        toast.error('Failed to add fee');
-      }
-    }, 100);
+    const ok = await addFeeRecord(caseData.caseId, amt, feeType === 'pending');
+
+    if (!mountedRef.current) return;
+    setSaving(false);
+    if (ok) {
+      toast.success(feeType === 'pending' ? 'Pending fee added' : 'Fee received recorded');
+      setFeeAmount('');
+    } else {
+      toast.error('Failed to add fee');
+    }
   }, [caseData, feeAmount, feeType, addFeeRecord]);
 
-  const handleAddExpense = useCallback(() => {
+  const handleAddExpense = useCallback(async () => {
     if (!caseData) return;
     const amt = parseFloat(expAmount);
     if (!amt || amt <= 0) { toast.error('Enter valid amount'); return; }
     if (!expDesc.trim()) { toast.error('Enter description'); return; }
+
     setSaving(true);
-    const ok = addExpense(caseData.caseId, caseData.lawyerName, caseData.partyName, expDesc.trim(), amt, getTodayStr());
-    setTimeout(() => {
-      if (!mountedRef.current) return;
-      setSaving(false);
-      if (ok) {
-        toast.success('Expense added');
-        setExpDesc('');
-        setExpAmount('');
-      } else {
-        toast.error('Failed to add expense');
-      }
-    }, 100);
+    const ok = await addExpense(caseData.caseId, caseData.lawyerName, caseData.partyName, expDesc.trim(), amt, getTodayStr());
+
+    if (!mountedRef.current) return;
+    setSaving(false);
+    if (ok) {
+      toast.success('Expense added');
+      setExpDesc('');
+      setExpAmount('');
+    } else {
+      toast.error('Failed to add expense');
+    }
   }, [caseData, expDesc, expAmount, addExpense]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback(async () => {
     if (!caseData) return;
     if (!confirmDelete) { setConfirmDelete(true); return; }
+
     setSaving(true);
-    const ok = deleteCase(caseData.caseId);
-    setTimeout(() => {
-      if (!mountedRef.current) return;
-      setSaving(false);
-      if (ok) {
-        toast.success('Case deleted');
-        setConfirmDelete(false);
-      } else {
-        toast.error('Failed to delete');
-      }
-    }, 100);
+    const ok = await deleteCase(caseData.caseId);
+
+    if (!mountedRef.current) return;
+    setSaving(false);
+    if (ok) {
+      toast.success('Case deleted');
+      setConfirmDelete(false);
+    } else {
+      toast.error('Failed to delete');
+    }
   }, [caseData, confirmDelete, deleteCase]);
 
   if (!caseData) {
@@ -138,12 +153,11 @@ export default function CaseDetail() {
   }
 
   const isToday = caseData.nextDate === getTodayStr();
-
   const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-violet-500/50 transition-colors";
 
   const tabs: { key: TabType; label: string }[] = [
     { key: 'info', label: 'Info' },
-    { key: 'history', label: 'History' },
+    { key: 'history', label: `History (${sortedHistory.length})` },
     { key: 'fee', label: 'Fee' },
     { key: 'expense', label: 'Expense' },
   ];
@@ -217,17 +231,19 @@ export default function CaseDetail() {
               </div>
             </div>
 
-            {/* Update Next Date / Remarks */}
+            {/* Update Remarks & Next Date */}
             <div className="glass-card rounded-2xl p-4 space-y-3">
               <p className="text-sm font-semibold text-white">Update Remarks & Next Date</p>
               <textarea
                 value={remark}
-                onChange={e => { setRemark(e.target.value); setShowNewNextDate(!!e.target.value); }}
+                onChange={e => setRemark(e.target.value)}
                 placeholder="Enter judge remarks..."
                 rows={2}
                 className={inputClass}
               />
-              {showNewNextDate && (
+
+              {/* Show "Enter New Next Date" ONLY when remarks are being typed */}
+              {showNewNextDateField && (
                 <div className="animate-slide-up">
                   <label className="text-xs text-zinc-500 mb-1 block">Enter New Next Date</label>
                   <input
@@ -238,12 +254,17 @@ export default function CaseDetail() {
                   />
                 </div>
               )}
+
               <button
                 onClick={handleSaveRemarks}
-                disabled={saving}
-                className="feature-box w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
+                disabled={saving || !remark.trim() || !newNextDate}
+                className="feature-box w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
               >
-                {saving ? 'Saving...' : 'Save Remarks & Next Date'}
+                {saving ? (
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />
+                ) : (
+                  'Save Remarks & Next Date'
+                )}
               </button>
             </div>
 
@@ -324,8 +345,8 @@ export default function CaseDetail() {
 
               <button
                 onClick={handleAddFee}
-                disabled={saving}
-                className="feature-box w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
+                disabled={saving || !feeAmount}
+                className="feature-box w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
               >
                 {saving ? 'Saving...' : `Add ${feeType === 'received' ? 'Received Fee' : 'Pending Fee'}`}
               </button>
@@ -344,6 +365,21 @@ export default function CaseDetail() {
                 </div>
               </div>
             </div>
+
+            {/* Fee History */}
+            {sortedHistory.filter(h => h.type === 'fee').length > 0 && (
+              <div className="glass-card rounded-2xl p-4">
+                <p className="text-xs text-zinc-500 mb-2">Fee History</p>
+                {sortedHistory.filter(h => h.type === 'fee').slice(0, 20).map(h => (
+                  <div key={h.id} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
+                    <p className="text-sm text-zinc-300 truncate flex-1 mr-2">{h.description}</p>
+                    <span className="text-sm font-semibold text-amber-400 flex-shrink-0">
+                      {h.amount ? formatCurrency(h.amount) : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -369,8 +405,8 @@ export default function CaseDetail() {
               />
               <button
                 onClick={handleAddExpense}
-                disabled={saving}
-                className="feature-box w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
+                disabled={saving || !expDesc.trim() || !expAmount}
+                className="feature-box w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
               >
                 {saving ? 'Saving...' : 'Add Expense'}
               </button>
@@ -380,7 +416,7 @@ export default function CaseDetail() {
             {sortedHistory.filter(h => h.type === 'expense').length > 0 && (
               <div className="glass-card rounded-2xl p-4">
                 <p className="text-xs text-zinc-500 mb-2">Recent Expenses</p>
-                {sortedHistory.filter(h => h.type === 'expense').slice(0, 10).map(h => (
+                {sortedHistory.filter(h => h.type === 'expense').slice(0, 20).map(h => (
                   <div key={h.id} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
                     <p className="text-sm text-zinc-300 truncate flex-1 mr-2">{h.description}</p>
                     <span className="text-sm font-semibold text-red-400 flex-shrink-0">
@@ -420,5 +456,5 @@ function HistoryBadge({ type }: { type: string }) {
     next_date: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'Next Date' },
   };
   const c = config[type] || config.created;
-  return <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.bg} ${c.text} font-medium`}>{c.label}</span>;
+  return <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.bg} ${c.text} font-medium inline-block`}>{c.label}</span>;
 }

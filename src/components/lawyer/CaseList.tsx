@@ -3,16 +3,17 @@
 import React, { useMemo, useCallback, useRef, useState } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import { groupByLawyer, searchCases, formatDate } from '@/lib/utils-lawyer';
-import { ArrowLeft, Search, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Search } from 'lucide-react';
+import type { CaseEntry } from '@/lib/types';
 
 interface CaseListProps {
   title: string;
-  getCases: () => ReturnType<typeof useLawyerStore.getState>['cases'];
+  getCases: () => CaseEntry[];
   showSearch?: boolean;
 }
 
-function CaseItem({ caseId, partyName, opponentName, lawyerName, caseType, section, nextDate }: {
-  caseId: string; partyName: string; opponentName: string; lawyerName: string; caseType: string; section: string; nextDate: string;
+function CaseItem({ caseId, partyName, opponentName, caseType, section, nextDate }: {
+  caseId: string; partyName: string; opponentName: string; caseType: string; section: string; nextDate: string;
 }) {
   const setSelectedCaseId = useLawyerStore(s => s.setSelectedCaseId);
   const setCurrentView = useLawyerStore(s => s.setCurrentView);
@@ -43,7 +44,7 @@ function CaseItem({ caseId, partyName, opponentName, lawyerName, caseType, secti
   );
 }
 
-function LawyerGroup({ lawyerName, cases }: { lawyerName: string; cases: ReturnType<typeof useLawyerStore.getState>['cases'] }) {
+function LawyerGroup({ lawyerName, items }: { lawyerName: string; items: CaseEntry[] }) {
   return (
     <div className="mb-4 animate-slide-up">
       <div className="flex items-center gap-2 mb-2 px-1">
@@ -52,56 +53,78 @@ function LawyerGroup({ lawyerName, cases }: { lawyerName: string; cases: ReturnT
         </div>
         <div>
           <h3 className="text-sm font-semibold text-white">{lawyerName}</h3>
-          <p className="text-[10px] text-zinc-500">{cases.length} case{cases.length !== 1 ? 's' : ''}</p>
+          <p className="text-[10px] text-zinc-500">{items.length} case{items.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        {cases.map(c => (
-          <CaseItem key={c.caseId} {...c} />
+        {items.map(c => (
+          <CaseItem
+            key={c.caseId}
+            caseId={c.caseId}
+            partyName={c.partyName}
+            opponentName={c.opponentName}
+            caseType={c.caseType}
+            section={c.section}
+            nextDate={c.nextDate}
+          />
         ))}
       </div>
     </div>
   );
 }
 
+const PAGE_SIZE = 30;
+
 export default function CaseList({ title, getCases, showSearch = false }: CaseListProps) {
   const cases = useLawyerStore(s => s.cases);
   const setCurrentView = useLawyerStore(s => s.setCurrentView);
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(0);
-  const PAGE_SIZE = 40;
+  const [loading, setLoading] = useState(false);
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const filtered = useMemo(() => {
     const base = getCases();
-    return query.trim() ? searchCases(base, query) : base;
+    if (!query.trim()) return base;
+    return searchCases(base, query);
   }, [cases, getCases, query]);
 
   const grouped = useMemo(() => groupByLawyer(filtered), [filtered]);
   const lawyerNames = useMemo(() => Object.keys(grouped), [grouped]);
 
-  const visibleLawyers = useMemo(() => {
+  // Calculate visible lawyers with pagination
+  const { visibleLawyers, hasMore } = useMemo(() => {
     let count = 0;
     const result: string[] = [];
+    const limit = PAGE_SIZE * (page + 1);
+
     for (const name of lawyerNames) {
-      if (count >= PAGE_SIZE * (page + 1)) break;
+      if (count >= limit) break;
       result.push(name);
       count += grouped[name].length;
     }
-    return result;
-  }, [lawyerNames, grouped, page]);
 
-  const hasMore = useMemo(() => {
-    let count = 0;
-    for (const name of lawyerNames) {
-      count += grouped[name].length;
-      if (count > PAGE_SIZE * (page + 1)) return true;
-    }
-    return false;
-  }, [lawyerNames, grouped, page]);
+    return {
+      visibleLawyers: result,
+      hasMore: count < filtered.length,
+    };
+  }, [lawyerNames, grouped, page, filtered.length]);
+
+  const handleSearch = useCallback((value: string) => {
+    setQuery(value);
+    setPage(0);
+    // Debounced search not needed since searchCases is fast (O(n) with early exit)
+  }, []);
 
   const loadMore = useCallback(() => {
-    setPage(p => p + 1);
-  }, []);
+    if (loading || !hasMore) return;
+    setLoading(true);
+    // Use requestAnimationFrame to not block UI
+    requestAnimationFrame(() => {
+      setPage(p => p + 1);
+      setLoading(false);
+    });
+  }, [loading, hasMore]);
 
   return (
     <div className="animate-fade-in">
@@ -128,7 +151,7 @@ export default function CaseList({ title, getCases, showSearch = false }: CaseLi
             <input
               type="text"
               value={query}
-              onChange={e => { setQuery(e.target.value); setPage(0); }}
+              onChange={e => handleSearch(e.target.value)}
               placeholder="Search by name, ID, type..."
               className="bg-transparent text-sm text-white placeholder:text-zinc-600 outline-none flex-1 min-w-0"
             />
@@ -145,14 +168,15 @@ export default function CaseList({ title, getCases, showSearch = false }: CaseLi
         ) : (
           <>
             {visibleLawyers.map(name => (
-              <LawyerGroup key={name} lawyerName={name} cases={grouped[name]} />
+              <LawyerGroup key={name} lawyerName={name} items={grouped[name]} />
             ))}
             {hasMore && (
               <button
                 onClick={loadMore}
-                className="w-full text-center py-3 text-sm text-violet-400 font-medium"
+                disabled={loading}
+                className="w-full text-center py-3 text-sm text-violet-400 font-medium disabled:opacity-50"
               >
-                Load more...
+                {loading ? 'Loading...' : `Load more (${filtered.length - visibleLawyers.reduce((s, n) => s + grouped[n].length, 0)} remaining)`}
               </button>
             )}
           </>

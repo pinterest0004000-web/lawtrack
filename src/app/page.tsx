@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useCallback, useRef } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
-import { getTodayCases, getCasesWithPendingFee, getTodayExpenses } from '@/lib/utils-lawyer';
+import { getTodayCases } from '@/lib/utils-lawyer';
 import HomeScreen from '@/components/lawyer/HomeScreen';
 import CaseList from '@/components/lawyer/CaseList';
 import PendingFeeList from '@/components/lawyer/PendingFeeList';
@@ -44,7 +44,7 @@ export default function Home() {
   useEffect(() => {
     if (!initRef.current) {
       initRef.current = true;
-      init();
+      init().catch(() => {});
     }
   }, [init]);
 
@@ -66,20 +66,24 @@ export default function Home() {
 
   if (!initialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
-        <div className="w-6 h-6 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0f]">
+        <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+        <p className="text-zinc-600 text-xs mt-3">Loading data...</p>
       </div>
     );
   }
 
+  const isHomeScreen = currentView === 'today' || currentView === 'all' || currentView === 'pending-fee' || currentView === 'expenses' || currentView === 'add-case' || currentView === 'case-detail';
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
       {/* Top Bar */}
-      <header className="flex items-center justify-between px-3 sm:px-4 py-2 border-b border-white/5 flex-shrink-0">
+      <header className="flex items-center justify-between px-3 sm:px-4 py-2.5 border-b border-white/5 flex-shrink-0">
         <div className="flex items-center gap-2">
-          {currentView === 'today' && (
-            <h1 className="text-base font-bold text-white tracking-tight">⚖️ LawTrack</h1>
-          )}
+          <div className="w-7 h-7 rounded-lg bg-violet-600/20 flex items-center justify-center">
+            <span className="text-sm">⚖️</span>
+          </div>
+          <h1 className="text-sm font-bold text-white tracking-tight">LawTrack</h1>
         </div>
         <SyncButton />
       </header>
@@ -89,9 +93,9 @@ export default function Home() {
         <ViewRouter />
       </main>
 
-      {/* Footer */}
-      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 text-center">
-        <p className="text-[10px] text-zinc-700">LawTrack • Lawyer Case Manager</p>
+      {/* Sticky Footer */}
+      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Lawyer Case Manager</p>
       </footer>
     </div>
   );

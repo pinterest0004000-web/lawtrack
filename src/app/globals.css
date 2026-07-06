@@ -108,9 +108,24 @@
   opacity: 0.9;
 }
 
-/* Input styling */
+/* Input styling - 16px to prevent zoom on iOS */
 input, textarea, select {
   font-size: 16px !important;
+}
+
+/* Date input dark mode styling */
+input[type="date"] {
+  color-scheme: dark;
+}
+
+/* Number input - hide spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 /* Smooth animations */
