@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import type { ViewType } from '@/lib/types';
 import { getTodayStr, getTodayCases, getCasesWithPendingFee, getTodayExpenses, formatCurrency } from '@/lib/utils-lawyer';
-import { CalendarDays, FolderOpen, Receipt, Plus, Wallet, CircleDollarSign, AlertCircle } from 'lucide-react';
+import { CalendarDays, FolderOpen, Receipt, Plus } from 'lucide-react';
 
 interface FeatureBoxProps {
   icon: React.ReactNode;
@@ -55,21 +55,12 @@ export default function HomeScreen() {
   const allCount = useMemo(() => cases.length, [cases]);
   const todayExpenseCount = useMemo(() => getTodayExpenses(expenses).length, [expenses]);
 
-  // Fee calculations
-  const totalFee = useMemo(
-    () => cases.reduce((s, c) => s + (c.pendingFee || 0) + (c.totalFeeReceived || 0), 0),
-    [cases]
-  );
-  const paidFee = useMemo(
-    () => cases.reduce((s, c) => s + (c.totalFeeReceived || 0), 0),
-    [cases]
-  );
-  const pendingFeeAmount = useMemo(
-    () => cases.reduce((s, c) => s + (c.pendingFee || 0), 0),
-    [cases]
-  );
-  const pendingFeeCount = useMemo(
+  const pendingFeeTotal = useMemo(
     () => getCasesWithPendingFee(cases).length,
+    [cases]
+  );
+  const totalPendingAmount = useMemo(
+    () => cases.reduce((s, c) => s + (c.pendingFee || 0), 0),
     [cases]
   );
 
@@ -119,29 +110,11 @@ export default function HomeScreen() {
           color="bg-emerald-500/15"
           onClick={() => navigate('expenses')}
         />
-
-        {/* Fee Summary - 3 boxes */}
         <FeatureBox
-          icon={<Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />}
-          label="Total Fee"
-          count={0}
-          subText={formatCurrency(totalFee)}
-          color="bg-blue-500/15"
-          onClick={() => navigate('pending-fee')}
-        />
-        <FeatureBox
-          icon={<CircleDollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />}
-          label="Paid Fee"
-          count={0}
-          subText={formatCurrency(paidFee)}
-          color="bg-green-500/15"
-          onClick={() => navigate('pending-fee')}
-        />
-        <FeatureBox
-          icon={<AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />}
+          icon={<span className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 font-bold text-base sm:text-lg leading-none flex items-center justify-center">Rs</span>}
           label="Pending Fee"
-          count={pendingFeeCount}
-          subText={formatCurrency(pendingFeeAmount)}
+          count={pendingFeeTotal}
+          subText={totalPendingAmount > 0 ? formatCurrency(totalPendingAmount) : undefined}
           color="bg-red-500/15"
           onClick={() => navigate('pending-fee')}
         />

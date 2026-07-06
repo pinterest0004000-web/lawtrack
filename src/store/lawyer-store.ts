@@ -20,7 +20,7 @@ interface LawyerStore {
   setSelectedCaseId: (id: string | null) => void;
   setSearchQuery: (q: string) => void;
 
-  addCase: (c: Omit<CaseEntry, 'createdAt' | 'updatedAt' | 'history' | 'pendingFee' | 'totalFeeReceived'>) => Promise<boolean>;
+  addCase: (c: Omit<CaseEntry, 'createdAt' | 'updatedAt' | 'history' | 'pendingFee' | 'totalFeeReceived'> & { totalFee?: number; paidFee?: number }) => Promise<boolean>;
   updateCaseNextDate: (caseId: string, judgeRemark: string, newNextDate: string) => Promise<boolean>;
   addFeeRecord: (caseId: string, amount: number, isPending: boolean) => Promise<boolean>;
   addExpense: (caseId: string, lawyerName: string, partyName: string, description: string, amount: number, date: string, category: ExpenseCategory) => Promise<boolean>;
@@ -61,10 +61,12 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
       const historyEntry = createHistoryEntry('created', {
         description: `Case ${caseData.caseId} created for ${caseData.partyName} vs ${caseData.opponentName}`
       });
+      const totalFee = (caseData as Record<string, unknown>).totalFee as number || 0;
+      const paidFee = (caseData as Record<string, unknown>).paidFee as number || 0;
       const newCase: CaseEntry = {
         ...caseData,
-        pendingFee: 0,
-        totalFeeReceived: 0,
+        pendingFee: Math.max(0, totalFee - paidFee),
+        totalFeeReceived: paidFee,
         createdAt: Date.now(),
         updatedAt: Date.now(),
         history: [historyEntry],

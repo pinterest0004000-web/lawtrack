@@ -221,14 +221,18 @@ export default function CaseDetail() {
 
             {/* Fee Summary */}
             <div className="glass-card rounded-2xl p-4">
-              <div className="flex items-center justify-between">
+              <div className="grid grid-cols-3 gap-3 text-center">
                 <div>
-                  <p className="text-xs text-zinc-500">Pending Fee</p>
-                  <p className="text-lg font-bold text-red-400">{formatCurrency(caseData.pendingFee)}</p>
+                  <p className="text-xs text-zinc-500">Total Fee</p>
+                  <p className="text-base font-bold text-blue-400">{formatCurrency((caseData.pendingFee || 0) + (caseData.totalFeeReceived || 0))}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs text-zinc-500">Received</p>
-                  <p className="text-lg font-bold text-emerald-400">{formatCurrency(caseData.totalFeeReceived)}</p>
+                <div>
+                  <p className="text-xs text-zinc-500">Paid</p>
+                  <p className="text-base font-bold text-emerald-400">{formatCurrency(caseData.totalFeeReceived)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-zinc-500">Pending</p>
+                  <p className="text-base font-bold text-red-400">{formatCurrency(caseData.pendingFee)}</p>
                 </div>
               </div>
             </div>

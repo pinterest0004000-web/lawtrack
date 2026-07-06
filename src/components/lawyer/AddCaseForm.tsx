@@ -17,6 +17,8 @@ const INITIAL_FORM = {
   nextDate: '',
   phone: '',
   judgeRemarks: '',
+  totalFee: '',
+  paidFee: '',
 };
 
 export default function AddCaseForm() {
@@ -89,6 +91,8 @@ export default function AddCaseForm() {
       nextDate: form.nextDate,
       phone: form.phone.trim(),
       judgeRemarks: form.judgeRemarks.trim(),
+      totalFee: parseFloat(form.totalFee) || 0,
+      paidFee: parseFloat(form.paidFee) || 0,
     });
 
     if (!mountedRef.current) return;
@@ -210,6 +214,18 @@ export default function AddCaseForm() {
           <div>
             <label className="text-xs text-zinc-500 mb-1 block">Phone Number</label>
             <input type="tel" value={form.phone} onChange={e => updateField('phone', e.target.value)} placeholder="Enter phone number" className={inputClass} inputMode="numeric" />
+          </div>
+
+          {/* Total Fee + Paid Fee */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-zinc-500 mb-1 block">Total Fee</label>
+              <input type="number" value={form.totalFee} onChange={e => updateField('totalFee', e.target.value)} placeholder="e.g. 50000" inputMode="numeric" className={inputClass} />
+            </div>
+            <div>
+              <label className="text-xs text-zinc-500 mb-1 block">Paid Fee</label>
+              <input type="number" value={form.paidFee} onChange={e => updateField('paidFee', e.target.value)} placeholder="e.g. 20000" inputMode="numeric" className={inputClass} />
+            </div>
           </div>
 
           {/* Judge Remarks */}
