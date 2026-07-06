@@ -67,11 +67,11 @@ function HeaderMenu() {
     <>
       {/* Hamburger icon — three vertical lines */}
       <button onClick={() => setOpen(o => !o)}
-        className="w-10 h-10 rounded-xl flex items-center justify-center gap-[3px] active:bg-zinc-700/40 transition-colors"
+        className="w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-[4px] active:bg-zinc-700/40 transition-colors"
         aria-label="Menu">
-        <span className="block w-[3px] h-[18px] rounded-full bg-zinc-400" />
-        <span className="block w-[3px] h-[18px] rounded-full bg-zinc-400" />
-        <span className="block w-[3px] h-[18px] rounded-full bg-zinc-400" />
+        <span className="block w-[18px] h-[3px] rounded-full bg-zinc-400" />
+        <span className="block w-[18px] h-[3px] rounded-full bg-zinc-400" />
+        <span className="block w-[18px] h-[3px] rounded-full bg-zinc-400" />
       </button>
       {open && (
         <div className="fixed inset-0 z-50" onClick={() => setOpen(false)}>
@@ -247,7 +247,7 @@ export default function Home() {
       </header>
       <main className="flex-1 overflow-y-auto"><ViewRouter /></main>
       <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
-        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Lawyer Case Manager • Secured</p>
+        <p className="text-[10px] text-zinc-700 text-center">Lawyer Case Manager • Secured</p>
       </footer>
 
       {/* Overlay screens (manage users, add user, user created) */}
