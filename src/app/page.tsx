@@ -68,6 +68,24 @@ function isOverlayStatus(s: string): boolean {
   return (OVERLAY_STATUSES as readonly string[]).includes(s);
 }
 
+// Auto-backup: silently saves latest data snapshot per-user
+const autoBackup = (() => {
+  let lastJson = '';
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  return (cases: unknown[], expenses: unknown[], userName: string) => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      const data = JSON.stringify({ cases, expenses, _u: userName, _t: Date.now() });
+      if (data === lastJson) return; // no change
+      lastJson = data;
+      try {
+        const key = `lw_autobak_${userName || '_'}`;
+        localStorage.setItem(key, data);
+      } catch { /* storage full — ignore */ }
+    }, 500); // debounce 500ms
+  };
+})();
+
 export default function Home() {
   const init = useLawyerStore(s => s.init);
   const initialized = useLawyerStore(s => s.initialized);
@@ -100,13 +118,18 @@ export default function Home() {
     }
   }, [authStatus, init]);
 
-  // Re-encrypt after init
+  // Re-encrypt + auto-backup after init
   useEffect(() => {
-    if (!initialized || !hasEncryptionKey() || reencryptRef.current) return;
+    if (!initialized || !hasEncryptionKey()) return;
+    if (reencryptRef.current) {
+      // Auto-backup on every data change (skip first run which is re-encrypt)
+      autoBackup(cases, expenses, currentUserName);
+      return;
+    }
     if (cases.length === 0 && expenses.length === 0) { reencryptRef.current = true; return; }
     reencryptRef.current = true;
     Promise.all([saveCases(cases), saveExpenses(expenses)]).catch(() => {});
-  }, [initialized, cases, expenses]);
+  }, [initialized, cases, expenses, currentUserName]);
 
   // Auto-lock timer
   useEffect(() => {
