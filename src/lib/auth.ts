@@ -18,6 +18,7 @@ export interface UserProfile {
   name: string;
   pinHash: string;
   salt: string;
+  accessCode: string;
   createdAt: number;
 }
 
@@ -126,7 +127,21 @@ export async function getUsers(): Promise<UserProfile[]> {
     const v = await getAuthValue(USERS_KEY);
     if (!v) return [];
     const p = JSON.parse(v);
-    return Array.isArray(p) ? p : [];
+    if (!Array.isArray(p)) return [];
+    // Migrate old users without accessCode
+    let migrated = false;
+    for (const u of p) {
+      if (!u.accessCode) {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        const arr = crypto.getRandomValues(new Uint8Array(6));
+        let code = '';
+        for (let i = 0; i < 6; i++) code += chars[arr[i] % chars.length];
+        u.accessCode = code;
+        migrated = true;
+      }
+    }
+    if (migrated) await saveUsers(p);
+    return p;
   } catch { return []; }
 }
 
@@ -140,15 +155,24 @@ export async function hasAnyUser(): Promise<boolean> {
 }
 
 // Create user + derive key in one step
+function generateAccessCode(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const arr = crypto.getRandomValues(new Uint8Array(6));
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[arr[i] % chars.length];
+  return code;
+}
+
 export async function createUser(name: string, pin: string): Promise<UserProfile | null> {
   try {
     const users = await getUsers();
     const salt = await genSalt();
     const hash = await hashPin(pin, salt);
+    const code = generateAccessCode();
     const user: UserProfile = {
       id: crypto.randomUUID?.() ?? `${Date.now()}_${Math.random().toString(36).slice(2)}`,
       name: name.trim(),
-      pinHash: hash, salt, createdAt: Date.now(),
+      pinHash: hash, salt, accessCode: code, createdAt: Date.now(),
     };
     users.push(user);
     await saveUsers(users);
@@ -258,6 +282,23 @@ export async function verifyUserPin(userId: string, pin: string): Promise<{
 
   await setAuthValue(`${ATTEMPTS_PREFIX}${userId}`, String(a));
   return { success: false, locked: false, remainingAttempts: rem, lockoutRemaining: 0, userName: user.name };
+}
+
+// ============ Access Code ============
+
+export async function getUserByAccessCode(code: string): Promise<UserProfile | null> {
+  const users = await getUsers();
+  const upper = code.toUpperCase().trim();
+  return users.find(u => u.accessCode === upper) || null;
+}
+
+export async function regenerateAccessCode(userId: string): Promise<string | null> {
+  const users = await getUsers();
+  const user = users.find(u => u.id === userId);
+  if (!user) return null;
+  user.accessCode = generateAccessCode();
+  await saveUsers(users);
+  return user.accessCode;
 }
 
 // ============ Session ============
