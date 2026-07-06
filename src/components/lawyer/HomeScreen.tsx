@@ -29,7 +29,7 @@ function FeatureBox({ icon, label, count, subText, color, iconColor, onClick }: 
   return (
     <button
       onClick={handleTap}
-      className="feature-box glass-card rounded-2xl p-3 flex flex-col items-center justify-center gap-1 flex-1 min-h-[88px] sm:min-h-[100px] aspect-[1/1] max-w-none"
+      className="feature-box glass-card rounded-2xl p-3 flex items-center gap-3 w-full"
       aria-label={`${label}: ${count}`}
     >
       <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center ${color}`}>
@@ -86,8 +86,8 @@ export default function HomeScreen() {
         </p>
       </div>
 
-      {/* 4 Equal Feature Boxes - Horizontal */}
-      <div className="grid grid-cols-4 gap-2 mb-3">
+      {/* 4 Feature Boxes - 2x2 Vertical Grid */}
+      <div className="grid grid-cols-2 gap-2 mb-3">
         <FeatureBox
           icon={<CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />}
           label="Today Cases"
