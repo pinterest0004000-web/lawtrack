@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
+const SYNC_API_KEY = process.env.SYNC_API_KEY || '';
+
+function isAuthorized(request: Request): boolean {
+  if (!SYNC_API_KEY) return true; // No key configured = open (dev mode)
+  const auth = request.headers.get('authorization');
+  return auth === `Bearer ${SYNC_API_KEY}`;
+}
+
 export async function POST(request: Request) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const body = await request.json();
     const { cases, expenses } = body as {
@@ -28,6 +39,7 @@ export async function POST(request: Request) {
         description: string;
         amount: number;
         date: string;
+        category: string;
       }[];
     };
 
@@ -100,6 +112,7 @@ export async function POST(request: Request) {
             description: e.description,
             amount: e.amount,
             date: e.date,
+            category: e.category || 'case_expense',
           })),
           skipDuplicates: true,
         });
@@ -119,7 +132,10 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!isAuthorized(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     // Stream cases to avoid loading all at once
     const cases = await db.lawyerCase.findMany({

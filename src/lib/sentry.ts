@@ -6,10 +6,12 @@ let initialized = false;
 
 export const initSentry = () => {
   if (initialized || typeof window === 'undefined') return;
+  const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN || '';
+  if (!dsn) return; // No DSN = Sentry disabled
   initialized = true;
 
   Sentry.init({
-    dsn: 'https://0dcfdc1193d2305fe838dae0892e0414@o4511690752262144.ingest.us.sentry.io/4511690809344000',
+    dsn,
     environment: process.env.NODE_ENV || 'development',
     // Capture 100% of errors in dev, 50% in prod to save quota
     tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.5 : 1.0,

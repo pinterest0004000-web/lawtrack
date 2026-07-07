@@ -37,5 +37,6 @@ model Expense {
   description   String
   amount        Float
   date          String
+  category      String   @default("case_expense")
   createdAt     DateTime @default(now())
 }
