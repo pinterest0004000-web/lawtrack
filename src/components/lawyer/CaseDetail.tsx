@@ -5,6 +5,7 @@ import { useLawyerStore } from '@/store/lawyer-store';
 import { formatCurrency, formatDate, getTodayStr } from '@/lib/utils-lawyer';
 import { ArrowLeft, Phone, Calendar, MapPin, Scale, Shield, FileText, IndianRupee, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { pauseCloudForUndo } from '@/app/page';
 
 type TabType = 'info' | 'history' | 'fee' | 'expense';
 
@@ -16,6 +17,7 @@ export default function CaseDetail() {
   const addFeeRecord = useLawyerStore(s => s.addFeeRecord);
   const addExpense = useLawyerStore(s => s.addExpense);
   const deleteCase = useLawyerStore(s => s.deleteCase);
+  const restoreCase = useLawyerStore(s => s.restoreCase);
 
   const [tab, setTab] = useState<TabType>('info');
   const [remark, setRemark] = useState('');
@@ -118,17 +120,38 @@ export default function CaseDetail() {
     if (!confirmDelete) { setConfirmDelete(true); return; }
 
     setSaving(true);
+    pauseCloudForUndo();
+    const deletedCase = { ...caseData };
     const ok = await deleteCase(caseData.caseId);
 
     if (!mountedRef.current) return;
     setSaving(false);
     if (ok) {
-      toast.success('Case deleted');
+      setConfirmDelete(false);
+      toast('Case deleted', {
+        description: `20s me undo kar sakte ho — ${deletedCase.partyName} vs ${deletedCase.opponentName}`,
+        duration: 20000,
+        action: {
+          label: 'Undo',
+          onClick: async () => {
+            await restoreCase(deletedCase);
+            toast.success('Case wapis aa gaya!');
+          },
+        },
+        actionButtonStyle: {
+          backgroundColor: '#7c3aed',
+          color: 'white',
+          fontWeight: 600,
+          borderRadius: '8px',
+          paddingLeft: '12px',
+          paddingRight: '12px',
+        },
+      });
       setConfirmDelete(false);
     } else {
       toast.error('Failed to delete');
     }
-  }, [caseData, confirmDelete, deleteCase]);
+  }, [caseData, confirmDelete, deleteCase, restoreCase]);
 
   if (!caseData) {
     return (

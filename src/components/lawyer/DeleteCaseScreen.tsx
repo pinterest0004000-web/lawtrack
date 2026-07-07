@@ -2,20 +2,22 @@
 
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
+import type { CaseEntry } from '@/lib/types';
 import { formatCurrency, formatDate } from '@/lib/utils-lawyer';
-import { ArrowLeft, Trash2, Search, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Trash2, Search, AlertTriangle, Undo2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { pauseCloudForUndo } from '@/app/page';
 
 export default function DeleteCaseScreen() {
   const cases = useLawyerStore(s => s.cases);
   const deleteCase = useLawyerStore(s => s.deleteCase);
+  const restoreCase = useLawyerStore(s => s.restoreCase);
   const setCurrentView = useLawyerStore(s => s.setCurrentView);
   const [search, setSearch] = useState('');
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // Auto-reset confirm after 3s
   useEffect(() => {
     if (confirmId) {
       timerRef.current = setTimeout(() => setConfirmId(null), 3000);
@@ -41,20 +43,45 @@ export default function DeleteCaseScreen() {
       setConfirmId(caseId);
       return;
     }
+    const caseData = cases.find(c => c.caseId === caseId);
+    if (!caseData) return;
+
     setDeleting(caseId);
+    pauseCloudForUndo();
     const ok = await deleteCase(caseId);
     if (ok) {
-      toast.success('Case deleted');
       setConfirmId(null);
+      // Undo toast — 20 second window
+      toast('Case deleted', {
+        description: `20s me undo kar sakte ho — ${caseData.partyName} vs ${caseData.opponentName}`,
+        duration: 20000,
+        action: {
+          label: 'Undo',
+          onClick: async () => {
+            await restoreCase(caseData);
+            toast.success('Case wapis aa gaya!');
+          },
+        },
+        actionButtonStyle: {
+          backgroundColor: '#7c3aed',
+          color: 'white',
+          fontWeight: 600,
+          borderRadius: '8px',
+          paddingLeft: '12px',
+          paddingRight: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+        },
+      });
     } else {
       toast.error('Delete failed');
     }
     setDeleting(null);
-  }, [confirmId, deleteCase]);
+  }, [confirmId, cases, deleteCase, restoreCase]);
 
-  // Group by lawyer
   const grouped = useMemo(() => {
-    const map = new Map<string, typeof filtered>();
+    const map = new Map<string, CaseEntry[]>();
     filtered.forEach(c => {
       const key = c.lawyerName;
       if (!map.has(key)) map.set(key, []);
@@ -94,7 +121,7 @@ export default function DeleteCaseScreen() {
       {/* Warning */}
       <div className="flex items-center gap-2 mb-3 px-1">
         <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-        <p className="text-[11px] text-amber-400/80">Tap delete twice to confirm. This cannot be undone.</p>
+        <p className="text-[11px] text-amber-400/80">Tap twice to delete • Undo available for 5 sec</p>
       </div>
 
       {/* List */}

@@ -25,6 +25,7 @@ interface LawyerStore {
   addFeeRecord: (caseId: string, amount: number, isPending: boolean) => Promise<boolean>;
   addExpense: (caseId: string, lawyerName: string, partyName: string, description: string, amount: number, date: string, category: ExpenseCategory) => Promise<boolean>;
   deleteCase: (caseId: string) => Promise<boolean>;
+  restoreCase: (c: CaseEntry) => Promise<boolean>;
 
   getCasesForSync: () => { cases: CaseEntry[]; expenses: ExpenseEntry[] };
   importFromSync: (cases: CaseEntry[], expenses: ExpenseEntry[]) => Promise<boolean>;
@@ -198,6 +199,19 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
       const newCases = state.cases.filter(c => c.caseId !== caseId);
       set({ cases: newCases, currentView: 'home' });
       deleteCaseFromDB(caseId).catch(() => {});
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  restoreCase: async (c) => {
+    try {
+      const state = get();
+      if (state.cases.some(x => x.caseId === c.caseId)) return false;
+      const newCases = [...state.cases, c].sort((a, b) => a.caseId.localeCompare(b.caseId, undefined, { numeric: true }));
+      set({ cases: newCases });
+      upsertCase(c).catch(() => {});
       return true;
     } catch {
       return false;

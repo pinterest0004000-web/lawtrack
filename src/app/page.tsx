@@ -212,13 +212,14 @@ function isOverlayStatus(s: string): boolean {
   return (OVERLAY_STATUSES as readonly string[]).includes(s);
 }
 
-// Auto-backup: silently saves to localStorage (500ms) + Firebase (3s)
+// Auto-backup: silently saves to localStorage (500ms) + Firebase (20s if undo pending, else 3s)
 const autoBackup = (() => {
   let lastLocalJson = '';
   let localTimer: ReturnType<typeof setTimeout> | null = null;
 
   let lastCloudJson = '';
   let cloudTimer: ReturnType<typeof setTimeout> | null = null;
+  let undoPaused = false;
 
   return (cases: unknown[], expenses: unknown[], userName: string, userId: string | null) => {
     const data = JSON.stringify({ cases, expenses });
@@ -234,16 +235,28 @@ const autoBackup = (() => {
       } catch { /* storage full */ }
     }, 500);
 
-    // Cloud backup — 3s debounce
+    // Cloud backup — 20s when undo active (give user time), else 3s
     if (!userId) return;
     if (cloudTimer) clearTimeout(cloudTimer);
+    const cloudDelay = undoPaused ? 20000 : 3000;
     cloudTimer = setTimeout(() => {
       if (data === lastCloudJson) return;
       lastCloudJson = data;
       saveToCloud(userId, cases, expenses).catch(() => {});
-    }, 3000);
+    }, cloudDelay);
+  };
+
+  // Call this to pause cloud backup for 20s (undo window)
+  autoBackup.pauseForUndo = () => {
+    undoPaused = true;
+    // Clear any pending cloud timer
+    if (cloudTimer) { clearTimeout(cloudTimer); cloudTimer = null; }
+    setTimeout(() => { undoPaused = false; }, 20000);
   };
 })();
+
+// Export pauseForUndo so delete screens can use it
+export const pauseCloudForUndo = () => autoBackup.pauseForUndo();
 
 export default function Home() {
   const init = useLawyerStore(s => s.init);
