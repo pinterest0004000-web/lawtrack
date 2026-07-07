@@ -53,6 +53,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           isAdmin: isCurrentUserAdmin(),
           lastActivity: Date.now(),
         });
+        const uid = getCurrentUserId();
+        if (uid) firebaseAnonSignIn(uid).catch(() => {});
         return;
       }
       const anyUser = await hasAnyUser();
