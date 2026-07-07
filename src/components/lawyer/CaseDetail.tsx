@@ -4,7 +4,7 @@ import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import { useLawyerStore } from '@/store/lawyer-store';
 import { formatCurrency, formatDate, getTodayStr } from '@/lib/utils-lawyer';
 import { ArrowLeft, Phone, Calendar, MapPin, Scale, Shield, FileText, IndianRupee, Trash2, Plus } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/AppToaster';
 import { pauseCloudForUndo } from '@/lib/cloud-backup';
 
 type TabType = 'info' | 'history' | 'fee' | 'expense';

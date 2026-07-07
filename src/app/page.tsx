@@ -19,7 +19,7 @@ import DeleteCaseScreen from '@/components/lawyer/DeleteCaseScreen';
 import LoginScreen from '@/components/lawyer/LoginScreen';
 import { reportError } from '@/lib/firebase';
 import { LogOut, Users, Cloud, CloudOff, HardDriveDownload } from 'lucide-react';
-import { toast } from 'sonner';
+import AppToaster, { toast } from '@/components/AppToaster';
 
 function ViewRouter() {
   const currentView = useLawyerStore(s => s.currentView);
@@ -361,7 +361,12 @@ export default function Home() {
   }, []);
 
   // Full auth screens (not overlay)
-  if (authStatus !== 'unlocked' && !isOverlayStatus(authStatus)) return <LoginScreen />;
+  if (authStatus !== 'unlocked' && !isOverlayStatus(authStatus)) return (
+    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+      <LoginScreen />
+      <AppToaster />
+    </div>
+  );
 
   const showOverlay = isOverlayStatus(authStatus);
 
@@ -413,6 +418,7 @@ export default function Home() {
 
       {/* Overlay screens (manage users, add user, user created) */}
       {showOverlay && <LoginScreen />}
+      <AppToaster />
     </div>
   );
 }

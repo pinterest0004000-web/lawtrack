@@ -5,7 +5,7 @@ import { useLawyerStore } from '@/store/lawyer-store';
 import type { CaseEntry } from '@/lib/types';
 import { formatCurrency, formatDate } from '@/lib/utils-lawyer';
 import { ArrowLeft, Trash2, Search, AlertTriangle } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/AppToaster';
 import { pauseCloudForUndo } from '@/lib/cloud-backup';
 
 export default function DeleteCaseScreen() {

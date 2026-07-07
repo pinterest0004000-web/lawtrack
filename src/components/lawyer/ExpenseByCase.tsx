@@ -4,7 +4,7 @@ import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import { useLawyerStore } from '@/store/lawyer-store';
 import { groupByLawyer, getTodayExpenses, formatCurrency, formatDate } from '@/lib/utils-lawyer';
 import { ArrowLeft, Search, Plus, X, ChevronDown } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/AppToaster';
 
 const PAGE_SIZE = 40;
 

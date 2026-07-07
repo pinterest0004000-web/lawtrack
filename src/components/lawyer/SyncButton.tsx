@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import { useAuthStore } from '@/store/auth-store';
 import { RotateCcw, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/AppToaster';
 
 function getAutoBackup(userName: string): { cases: unknown[]; expenses: unknown[]; time: string } | null {
   try {

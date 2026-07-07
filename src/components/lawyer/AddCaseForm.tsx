@@ -4,7 +4,7 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useLawyerStore } from '@/store/lawyer-store';
 import { generateCaseId, getTodayStr, formatCurrency } from '@/lib/utils-lawyer';
 import { ArrowLeft, Check, X } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/AppToaster';
 
 const INITIAL_FORM = {
   lawyerName: '',
