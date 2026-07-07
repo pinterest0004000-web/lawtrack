@@ -8,9 +8,9 @@ import { getRawBackup, isCloudReady } from '@/lib/cloud-backup';
 
 function PinDots({ filled, shake }: { filled: number; shake: boolean }) {
   return (
-    <div className={`flex justify-center gap-4 mb-6 ${shake ? 'animate-pin-shake' : ''}`}>
-      {[0,1,2,3].map(i => (
-        <div key={i} className={`w-4 h-4 rounded-full transition-all duration-200 ${
+    <div className={`flex justify-center gap-3 mb-6 ${shake ? 'animate-pin-shake' : ''}`}>
+      {[0,1,2,3,4,5].map(i => (
+        <div key={i} className={`w-3.5 h-3.5 rounded-full transition-all duration-200 ${
           i < filled ? 'bg-violet-500 shadow-[0_0_12px_rgba(139,92,246,0.5)] scale-110' : 'bg-zinc-700 border border-zinc-600'
         }`} />
       ))}
@@ -65,12 +65,12 @@ function AdminSetupScreen() {
   const handleDigit = useCallback((d: string) => {
     if (step === 'pin') {
       const p = pin + d;
-      if (p.length <= 4) { setPin(p); if (p.length === 4) { setStep('confirm'); setConfirmPin(''); } }
+      if (p.length <= 6) { setPin(p); if (p.length === 6) { setStep('confirm'); setConfirmPin(''); } }
     } else {
       const c = confirmPin + d;
-      if (c.length <= 4) {
+      if (c.length <= 6) {
         setConfirmPin(c);
-        if (c.length === 4) {
+        if (c.length === 6) {
           if (c === pin) {
             setSaving(true);
             setupAdmin(name.trim(), pin).then(res => { if (!res.ok) { triggerShake(); setSaving(false); } });
@@ -122,14 +122,14 @@ function AdminSetupScreen() {
         ) : (
           <>
             <h1 className="text-xl font-bold text-white mb-0.5">{step === 'pin' ? 'Apna PIN Set Karo' : 'PIN Confirm Karo'}</h1>
-            <p className="text-sm text-zinc-400 mb-3">{step === 'pin' ? '4-digit PIN daalo' : 'Wahi PIN dobara daalo'}</p>
+            <p className="text-sm text-zinc-400 mb-3">{step === 'pin' ? '6-digit PIN daalo' : '6-digit PIN dobara daalo'}</p>
             <button onClick={() => setShowPin(p => !p)} className="flex items-center gap-1.5 text-xs text-zinc-500 mb-4">
               {showPin ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               {showPin ? 'Chhupo' : 'Dikhao'}
             </button>
             {showPin ? (
               <div className={`flex justify-center gap-4 mb-6 font-mono text-2xl tracking-[0.5em] text-white ${shake ? 'animate-pin-shake' : ''}`}>
-                {(step === 'confirm' ? confirmPin : pin).padEnd(4, '·')}
+                {(step === 'confirm' ? confirmPin : pin).padEnd(6, '·')}
               </div>
             ) : <PinDots filled={len} shake={shake} />}
             {error && (
@@ -181,9 +181,9 @@ function PinLoginScreen() {
   const handleDigit = useCallback((d: string) => {
     if (isLockedOut) return;
     const p = pin + d;
-    if (p.length <= 4) {
+    if (p.length <= 6) {
       setPin(p);
-      if (p.length === 4) {
+      if (p.length === 6) {
         loginWithPin(p).then(ok => { if (!ok) { triggerShake(); setTimeout(() => setPin(''), 500); } });
       }
     }
@@ -207,7 +207,7 @@ function PinLoginScreen() {
         <h1 className="text-xl font-bold text-white mb-0.5">
           {userName ? `${userName}, PIN Daalo` : 'PIN Daalo'}
         </h1>
-        <p className="text-sm text-zinc-400 mb-3">4-digit PIN enter karo</p>
+        <p className="text-sm text-zinc-400 mb-3">6-digit PIN enter karo</p>
 
         <button onClick={() => setShowPin(p => !p)} className="flex items-center gap-1.5 text-xs text-zinc-500 mb-4">
           {showPin ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -216,7 +216,7 @@ function PinLoginScreen() {
 
         {showPin ? (
           <div className={`flex justify-center gap-4 mb-6 font-mono text-2xl tracking-[0.5em] text-white ${shake ? 'animate-pin-shake' : ''}`}>
-            {pin.padEnd(4, '·')}
+            {pin.padEnd(6, '·')}
           </div>
         ) : <PinDots filled={pin.length} shake={shake} />}
 
@@ -265,9 +265,9 @@ function AddUserScreen() {
 
   const handleDigit = useCallback((d: string) => {
     const p = pin + d;
-    if (p.length <= 4) {
+    if (p.length <= 6) {
       setPin(p);
-      if (p.length === 4) {
+      if (p.length === 6) {
         setSaving(true);
         addUserAsAdmin(name.trim(), p).then(res => {
           if (!res.ok) { setShake(true); setTimeout(() => setShake(false), 500); setSaving(false); setPin(''); }
@@ -309,7 +309,7 @@ function AddUserScreen() {
         ) : (
           <>
             <h1 className="text-xl font-bold text-white mb-0.5">{name.trim()} Ka PIN</h1>
-            <p className="text-sm text-zinc-400 mb-3">Is user ke liye 4-digit PIN set karo</p>
+            <p className="text-sm text-zinc-400 mb-3">Is user ke liye 6-digit PIN set karo</p>
             <PinDots filled={pin.length} shake={shake} />
             {error && (
               <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
@@ -422,7 +422,7 @@ function ManageUsersOverlay() {
   };
 
   const handleSavePin = async (userId: string) => {
-    if (newPin.length !== 4) return;
+    if (newPin.length !== 6) return;
     setPinSaving(true);
     await useAuthStore.getState().changeUserPin(userId, newPin);
     setPinSaving(false);
@@ -525,13 +525,13 @@ function ManageUsersOverlay() {
                 {/* Edit PIN inline */}
                 {editingPin === user.id && (
                   <div className="mt-3 pt-3 border-t border-zinc-700/50">
-                    <p className="text-[10px] text-zinc-500 mb-2">Naya PIN (4-digit):</p>
+                    <p className="text-[10px] text-zinc-500 mb-2">Naya PIN (6-digit):</p>
                     <div className="flex items-center gap-2">
-                      <input type="text" inputMode="numeric" maxLength={4} value={newPin}
+                      <input type="text" inputMode="numeric" maxLength={6} value={newPin}
                         onChange={e => setNewPin(e.target.value.replace(/\D/g, ''))}
-                        placeholder="••••"
+                        placeholder="••••••"
                         className="flex-1 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm font-mono tracking-widest text-center outline-none focus:border-violet-500/40" />
-                      <button onClick={() => handleSavePin(user.id)} disabled={newPin.length !== 4 || pinSaving}
+                      <button onClick={() => handleSavePin(user.id)} disabled={newPin.length !== 6 || pinSaving}
                         className="w-9 h-9 rounded-lg bg-violet-600 flex items-center justify-center disabled:opacity-40">
                         {pinSaving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4 text-white" />}
                       </button>

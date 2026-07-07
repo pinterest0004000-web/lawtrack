@@ -1,0 +1,252 @@
+/home/z/my-project/src/lib/sentry.ts:12:    dsn: 'https://0dcfdc1193d2305fe838dae0892e0414@o4511690752262144.ingest.us.sentry.io/4511690809344000',
+/home/z/my-project/src/lib/auth.ts:74:function toBase64(buf: ArrayBuffer): string {
+/home/z/my-project/src/lib/auth.ts:79:function fromBase64(b64: string): ArrayBuffer {
+/home/z/my-project/src/lib/auth.ts:80:  const s = atob(b64); const b = new Uint8Array(s.length);
+/home/z/my-project/src/lib/auth.ts:86:  return toBase64(crypto.getRandomValues(new Uint8Array(16)).buffer);
+/home/z/my-project/src/lib/auth.ts:91:  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: fromBase64(salt), iterations: 100_000, hash: 'SHA-256' }, km, 256);
+/home/z/my-project/src/lib/auth.ts:92:  return toBase64(bits);
+/home/z/my-project/src/lib/auth.ts:97:  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: fromBase64(salt), iterations: 100_000, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+/home/z/my-project/src/lib/auth.ts:109:    return toBase64(c.buffer);
+/home/z/my-project/src/lib/auth.ts:114:  if (!_encryptionKey || !ciphertext || ciphertext.length < 24) return ciphertext;
+/home/z/my-project/src/lib/auth.ts:116:    const c = new Uint8Array(fromBase64(ciphertext));
+/home/z/my-project/src/lib/auth.ts:158:  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+/home/z/my-project/src/lib/firebase.ts:6:  apiKey: "AIzaSyCrpK5HE3a29d84peHoxerpbybeXulKla4",
+/home/z/my-project/src/lib/firebase.ts:11:  appId: "1:707165908591:web:2b4c8dca81257a71a2679a",
+/home/z/my-project/src/lib/firebase.ts:12:  measurementId: "G-QPY4R89QN3"
+/home/z/my-project/src/lib/utils-lawyer.ts:40:    return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+/home/z/my-project/src/lib/utils-lawyer.ts:67:  return String(max + 1).padStart(4, '0');
+/home/z/my-project/src/app/page.tsx:103:    if (diff < 86400_000) return `${Math.floor(diff/3600000)} hr pehle`;
+/home/z/my-project/src/app/page.tsx:112:        className="w-10 h-10 rounded-xl flex flex-col items-center justify-center gap-[4px] active:bg-zinc-700/40 transition-colors"
+/home/z/my-project/src/app/page.tsx:114:        <span className="block w-[18px] h-[3px] rounded-full bg-zinc-400" />
+/home/z/my-project/src/app/page.tsx:115:        <span className="block w-[18px] h-[3px] rounded-full bg-zinc-400" />
+/home/z/my-project/src/app/page.tsx:116:        <span className="block w-[18px] h-[3px] rounded-full bg-zinc-400" />
+/home/z/my-project/src/app/page.tsx:121:          <div className="absolute left-2.5 top-14 w-64 bg-[#16162a] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-2xl shadow-black/60 animate-in fade-in slide-in-from-top-2 duration-150" onClick={e => e.stopPropagation()}>
+/home/z/my-project/src/app/page.tsx:123:            <div className="px-4 py-3 border-b border-zinc-800/60">
+/home/z/my-project/src/app/page.tsx:126:                  <Cloud className="w-4 h-4 text-sky-400" />
+/home/z/my-project/src/app/page.tsx:128:                  <CloudOff className="w-4 h-4 text-zinc-600" />
+/home/z/my-project/src/app/page.tsx:130:                <span className="text-xs font-semibold text-zinc-400">Cloud Backup</span>
+/home/z/my-project/src/app/page.tsx:134:                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+/home/z/my-project/src/app/page.tsx:148:                className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-amber-500/5 transition-colors">
+/home/z/my-project/src/app/page.tsx:150:                  <Users className="w-4 h-4 text-amber-400" />
+/home/z/my-project/src/app/page.tsx:162:                className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-sky-500/5 transition-colors disabled:opacity-50">
+/home/z/my-project/src/app/page.tsx:165:                    <span className="w-4 h-4 border-2 border-sky-400/30 border-t-sky-400 rounded-full animate-spin" />
+/home/z/my-project/src/app/page.tsx:167:                    <Cloud className="w-4 h-4 text-sky-400" />
+/home/z/my-project/src/app/page.tsx:179:                className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-emerald-500/5 transition-colors">
+/home/z/my-project/src/app/page.tsx:181:                  <HardDriveDownload className="w-4 h-4 text-emerald-400" />
+/home/z/my-project/src/app/page.tsx:192:              className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-red-500/5 transition-colors">
+/home/z/my-project/src/app/page.tsx:194:                <LogOut className="w-4 h-4 text-red-400" />
+/home/z/my-project/src/app/page.tsx:197:                <p className="text-sm font-semibold text-red-400">Exit</p>
+/home/z/my-project/src/app/page.tsx:384:      <header className="flex items-center px-4 py-3 border-b border-white/5 flex-shrink-0 relative">
+/home/z/my-project/src/app/page.tsx:398:      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+/home/z/my-project/src/app/page.tsx:404:        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+/home/z/my-project/src/app/page.tsx:407:              <Cloud className="w-6 h-6 text-sky-400" />
+/home/z/my-project/src/app/page.tsx:410:            <p className="text-xs text-zinc-400 mb-4">
+/home/z/my-project/src/app/api/sync/route.ts:35:      return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
+/home/z/my-project/src/components/ui/radio-group.tsx:30:        "border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+/home/z/my-project/src/components/ui/toggle.tsx:10:  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium hover:bg-muted hover:text-muted-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none transition-[color,box-shadow] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap",
+/home/z/my-project/src/components/ui/toast.tsx:19:      "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+/home/z/my-project/src/components/ui/toast.tsx:28:  "group pointer-events-auto relative flex w-full items-center justify-between space-x-2 overflow-hidden rounded-md border p-4 pr-6 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+/home/z/my-project/src/components/ui/toast.tsx:65:      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium transition-colors hover:bg-secondary focus:outline-none focus:ring-1 focus:ring-ring disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
+/home/z/my-project/src/components/ui/toast.tsx:80:      "absolute right-1 top-1 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
+/home/z/my-project/src/components/ui/toast.tsx:86:    <X className="h-4 w-4" />
+/home/z/my-project/src/components/ui/table.tsx:101:      className={cn("text-muted-foreground mt-4 text-sm", className)}
+/home/z/my-project/src/components/ui/navigation-menu.tsx:62:  "group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-accent data-[state=open]:text-accent-foreground data-[state=open]:focus:bg-accent data-[state=open]:bg-accent/50 focus-visible:ring-ring/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1"
+/home/z/my-project/src/components/ui/navigation-menu.tsx:132:        "data-[active=true]:focus:bg-accent data-[active=true]:hover:bg-accent data-[active=true]:bg-accent/50 data-[active=true]:text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/navigation-menu.tsx:153:      <div className="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md" />
+/home/z/my-project/src/components/ui/hover-card.tsx:25:  sideOffset = 4,
+/home/z/my-project/src/components/ui/hover-card.tsx:35:          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-64 origin-(--radix-hover-card-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
+/home/z/my-project/src/components/ui/tooltip.tsx:55:        <TooltipPrimitive.Arrow className="bg-primary fill-primary z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px]" />
+/home/z/my-project/src/components/ui/badge.tsx:8:  "inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden",
+/home/z/my-project/src/components/ui/badge.tsx:17:          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+/home/z/my-project/src/components/ui/menubar.tsx:70:  alignOffset = -4,
+/home/z/my-project/src/components/ui/menubar.tsx:106:        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/menubar.tsx:124:        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-xs py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/menubar.tsx:132:          <CheckIcon className="size-4" />
+/home/z/my-project/src/components/ui/menubar.tsx:149:        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-xs py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/menubar.tsx:238:      <ChevronRightIcon className="ml-auto h-4 w-4" />
+/home/z/my-project/src/components/ui/context-menu.tsx:69:        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/context-menu.tsx:129:        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/context-menu.tsx:147:        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/context-menu.tsx:155:          <CheckIcon className="size-4" />
+/home/z/my-project/src/components/ui/context-menu.tsx:172:        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/dropdown-menu.tsx:36:  sideOffset = 4,
+/home/z/my-project/src/components/ui/dropdown-menu.tsx:77:        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/dropdown-menu.tsx:95:        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/dropdown-menu.tsx:103:          <CheckIcon className="size-4" />
+/home/z/my-project/src/components/ui/dropdown-menu.tsx:131:        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+/home/z/my-project/src/components/ui/dropdown-menu.tsx:220:      <ChevronRightIcon className="ml-auto size-4" />
+/home/z/my-project/src/components/ui/slider.tsx:34:        "relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
+/home/z/my-project/src/components/ui/slider.tsx:56:          className="border-primary bg-background ring-ring/50 block size-4 shrink-0 rounded-full border shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+/home/z/my-project/src/components/ui/dialog.tsx:63:          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+/home/z/my-project/src/components/ui/dialog.tsx:72:            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+/home/z/my-project/src/components/ui/button.tsx:8:  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+/home/z/my-project/src/components/ui/button.tsx:15:          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+/home/z/my-project/src/components/ui/button.tsx:22:        link: "text-primary underline-offset-4 hover:underline",
+/home/z/my-project/src/components/ui/button.tsx:25:        default: "h-9 px-4 py-2 has-[>svg]:px-3",
+/home/z/my-project/src/components/ui/button.tsx:27:        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+/home/z/my-project/src/components/ui/resizable.tsx:48:        <div className="bg-border z-10 flex h-4 w-3 items-center justify-center rounded-xs border">
+/home/z/my-project/src/components/lawyer/CaseList.tsx:34:        <span className="text-xs font-mono text-violet-400">#{caseId}</span>
+/home/z/my-project/src/components/lawyer/CaseList.tsx:40:        {caseType && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">{caseType}</span>}
+/home/z/my-project/src/components/lawyer/CaseList.tsx:41:        {section && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">Sec {section}</span>}
+/home/z/my-project/src/components/lawyer/CaseList.tsx:49:    <div className="mb-4 animate-slide-up">
+/home/z/my-project/src/components/lawyer/CaseList.tsx:132:      <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
+/home/z/my-project/src/components/lawyer/CaseList.tsx:138:          <ArrowLeft className="w-4 h-4 text-zinc-400" />
+/home/z/my-project/src/components/lawyer/CaseList.tsx:148:        <div className="px-3 sm:px-4 mb-3">
+/home/z/my-project/src/components/lawyer/CaseList.tsx:150:            <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+/home/z/my-project/src/components/lawyer/CaseList.tsx:163:      <div className="px-3 sm:px-4 pb-4">
+/home/z/my-project/src/components/lawyer/CaseList.tsx:177:                className="w-full text-center py-3 text-sm text-violet-400 font-medium disabled:opacity-50"
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:74:          gap: '4px',
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:94:    <div className="animate-fade-in px-3 sm:px-4 pt-3 pb-4">
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:96:      <div className="flex items-center gap-3 mb-4">
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:98:          <ArrowLeft className="w-4 h-4 text-zinc-400" />
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:105:          <Trash2 className="w-4 h-4 text-red-400" />
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:111:        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:123:        <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:124:        <p className="text-[11px] text-amber-400/80">Tap twice to delete • Undo available for 10 sec</p>
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:136:                  <span className="text-[10px] font-bold text-violet-400">{lawyer.charAt(0).toUpperCase()}</span>
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:147:                        {c.caseType && <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400">{c.caseType}</span>}
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:152:                        {c.pendingFee > 0 && <span className="text-[10px] text-red-400">{formatCurrency(c.pendingFee)} pending</span>}
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:165:                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+/home/z/my-project/src/components/lawyer/DeleteCaseScreen.tsx:167:                        <Trash2 className="w-4 h-4 text-red-400" />
+/home/z/my-project/src/components/lawyer/HomeScreen.tsx:38:        <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400 leading-tight block">
+/home/z/my-project/src/components/lawyer/HomeScreen.tsx:78:    <div className="animate-fade-in px-3 sm:px-4 pt-3 pb-2">
+/home/z/my-project/src/components/lawyer/HomeScreen.tsx:80:      <div className="mb-4">
+/home/z/my-project/src/components/lawyer/HomeScreen.tsx:91:          icon={<CalendarDays className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />}
+/home/z/my-project/src/components/lawyer/HomeScreen.tsx:98:          icon={<FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 text-violet-400" />}
+/home/z/my-project/src/components/lawyer/HomeScreen.tsx:105:          icon={<Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />}
+/home/z/my-project/src/components/lawyer/HomeScreen.tsx:113:          icon={<span className="w-5 h-5 sm:w-6 sm:h-6 text-red-400 font-bold text-base sm:text-lg leading-none flex items-center justify-center">Rs</span>}
+/home/z/my-project/src/components/lawyer/HomeScreen.tsx:123:          icon={<Trash2 className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />}
+/home/z/my-project/src/components/lawyer/HomeScreen.tsx:133:        className="feature-box w-full glass-card rounded-2xl p-4 flex items-center justify-center gap-3 border border-violet-500/20 hover:border-violet-500/40 transition-colors mb-4"
+/home/z/my-project/src/components/lawyer/ExpenseList.tsx:31:      <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
+/home/z/my-project/src/components/lawyer/ExpenseList.tsx:37:          <ArrowLeft className="w-4 h-4 text-zinc-400" />
+/home/z/my-project/src/components/lawyer/ExpenseList.tsx:46:      <div className="grid grid-cols-2 gap-3 px-3 sm:px-4 mb-4">
+/home/z/my-project/src/components/lawyer/ExpenseList.tsx:49:          className="feature-box glass-card rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
+/home/z/my-project/src/components/lawyer/ExpenseList.tsx:52:            <FileText className="w-5 h-5 text-emerald-400" />
+/home/z/my-project/src/components/lawyer/ExpenseList.tsx:54:          <span className="text-[11px] font-medium text-zinc-400 text-center">By Cases</span>
+/home/z/my-project/src/components/lawyer/ExpenseList.tsx:61:          className="feature-box glass-card rounded-2xl p-4 flex flex-col items-center justify-center gap-2"
+/home/z/my-project/src/components/lawyer/ExpenseList.tsx:64:            <Building2 className="w-5 h-5 text-orange-400" />
+/home/z/my-project/src/components/lawyer/ExpenseList.tsx:66:          <span className="text-[11px] font-medium text-zinc-400 text-center">Chamber</span>
+/home/z/my-project/src/components/ui/sidebar.tsx:29:const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+/home/z/my-project/src/components/ui/sidebar.tsx:225:            ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
+/home/z/my-project/src/components/ui/sidebar.tsx:238:            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
+/home/z/my-project/src/components/ui/sidebar.tsx:294:        "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex",
+/home/z/my-project/src/components/ui/sidebar.tsx:408:        "text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+/home/z/my-project/src/components/ui/sidebar.tsx:429:        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-3.5 right-3 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+/home/z/my-project/src/components/ui/sidebar.tsx:477:  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+/home/z/my-project/src/components/ui/sidebar.tsx:564:        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground peer-hover/menu-button:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-hidden transition-transform focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+/home/z/my-project/src/components/ui/sidebar.tsx:611:    return `${Math.floor(Math.random() * 40) + 50}%`
+/home/z/my-project/src/components/ui/sidebar.tsx:623:          className="size-4 rounded-md"
+/home/z/my-project/src/components/ui/sidebar.tsx:628:        className="h-4 max-w-(--skeleton-width) flex-1"
+/home/z/my-project/src/components/ui/sidebar.tsx:689:        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:11:    <div className={`flex justify-center gap-4 mb-6 ${shake ? 'animate-pin-shake' : ''}`}>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:13:        <div key={i} className={`w-4 h-4 rounded-full transition-all duration-200 ${
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:14:          i < filled ? 'bg-violet-500 shadow-[0_0_12px_rgba(139,92,246,0.5)] scale-110' : 'bg-zinc-700 border border-zinc-600'
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:21:function Numpad({ onDigit, onDelete, disabled }: { onDigit: (d: string) => void; onDelete: () => void; disabled: boolean }) {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:22:  const keys = ['1','2','3','4','5','6','7','8','9','','0','del'];
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:29:            className="h-14 rounded-2xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center active:bg-zinc-700/60 transition-colors disabled:opacity-40" aria-label="Delete">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:30:            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-400">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:31:              <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:36:          <button key={key} onClick={() => onDigit(key)} disabled={disabled}
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:37:            className="h-14 rounded-2xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center text-xl font-semibold text-white active:bg-violet-600/20 active:border-violet-500/30 transition-colors disabled:opacity-40">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:65:  const handleDigit = useCallback((d: string) => {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:68:      if (p.length <= 4) { setPin(p); if (p.length === 4) { setStep('confirm'); setConfirmPin(''); } }
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:71:      if (c.length <= 4) {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:73:        if (c.length === 4) {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:91:  const len = step === 'confirm' ? confirmPin.length : pin.length;
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:98:            className="absolute top-4 left-4 w-9 h-9 rounded-xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center z-10">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:99:            <ArrowLeft className="w-4 h-4 text-zinc-400" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:104:          <Crown className="w-10 h-10 text-amber-400" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:110:            <p className="text-sm text-zinc-400 mb-6">Apna naam aur PIN set karo — yeh tumhari app hai</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:114:                className="w-full px-4 py-3.5 rounded-xl bg-zinc-800/80 border border-zinc-700/50 text-white text-base placeholder-zinc-500 outline-none focus:border-violet-500/40 transition-colors"
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:117:                className="w-full mt-3 py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm disabled:opacity-40 active:bg-violet-700 transition-colors">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:125:            <p className="text-sm text-zinc-400 mb-3">{step === 'pin' ? '4-digit PIN daalo' : 'Wahi PIN dobara daalo'}</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:126:            <button onClick={() => setShowPin(p => !p)} className="flex items-center gap-1.5 text-xs text-zinc-500 mb-4">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:131:              <div className={`flex justify-center gap-4 mb-6 font-mono text-2xl tracking-[0.5em] text-white ${shake ? 'animate-pin-shake' : ''}`}>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:132:                {(step === 'confirm' ? confirmPin : pin).padEnd(4, '·')}
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:136:              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:137:                <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:138:                <p className="text-xs text-red-400 text-center">{error}</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:145:        <div className="pb-8 pt-4 px-6">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:146:          <Numpad onDigit={handleDigit} onDelete={handleDelete} disabled={saving} />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:149:      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:156:// ============ PIN LOGIN (admin or user via code) ============
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:181:  const handleDigit = useCallback((d: string) => {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:184:    if (p.length <= 4) {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:186:      if (p.length === 4) {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:198:          <div className="w-20 h-20 rounded-3xl bg-violet-600/15 border border-violet-500/20 flex items-center justify-center mb-4">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:203:            <Lock className="w-10 h-10 text-violet-400" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:210:        <p className="text-sm text-zinc-400 mb-3">4-digit PIN enter karo</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:212:        <button onClick={() => setShowPin(p => !p)} className="flex items-center gap-1.5 text-xs text-zinc-500 mb-4">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:218:          <div className={`flex justify-center gap-4 mb-6 font-mono text-2xl tracking-[0.5em] text-white ${shake ? 'animate-pin-shake' : ''}`}>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:219:            {pin.padEnd(4, '·')}
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:221:        ) : <PinDots filled={pin.length} shake={shake} />}
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:224:          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:225:            <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:226:            <p className="text-xs text-red-400 text-center">{error}</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:231:          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 max-w-[300px] w-full">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:232:            <Lock className="w-4 h-4 text-amber-400 flex-shrink-0" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:233:            <p className="text-xs text-amber-400 text-center">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:240:      <div className="pb-4 pt-4 px-6">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:241:        <Numpad onDigit={handleDigit} onDelete={handleDelete} disabled={isLockedOut} />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:244:      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:251:// ============ ADD USER (admin sets name + PIN) ============
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:266:  const handleDigit = useCallback((d: string) => {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:268:    if (p.length <= 4) {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:270:      if (p.length === 4) {
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:286:          className="absolute top-4 left-4 w-9 h-9 rounded-xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center z-10">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:287:          <X className="w-4 h-4 text-zinc-400" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:291:          <UserPlus className="w-10 h-10 text-violet-400" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:297:            <p className="text-sm text-zinc-400 mb-6">Jis user ko add karna hai uska naam</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:301:                className="w-full px-4 py-3.5 rounded-xl bg-zinc-800/80 border border-zinc-700/50 text-white text-base placeholder-zinc-500 outline-none focus:border-violet-500/40 transition-colors"
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:304:                className="w-full mt-3 py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm disabled:opacity-40 active:bg-violet-700 transition-colors">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:312:            <p className="text-sm text-zinc-400 mb-3">Is user ke liye 4-digit PIN set karo</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:313:            <PinDots filled={pin.length} shake={shake} />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:315:              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:316:                <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:317:                <p className="text-xs text-red-400 text-center">{error}</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:324:        <div className="pb-8 pt-4 px-6">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:325:          <Numpad onDigit={handleDigit} onDelete={handleDelete} disabled={saving} />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:328:      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:335:// ============ USER CREATED — show code+PIN to admin ============
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:354:          <Shield className="w-10 h-10 text-emerald-400" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:357:        <p className="text-sm text-zinc-400 mb-6">{name} ka account ready hai</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:359:        <div className="bg-zinc-800/60 border border-zinc-700/50 rounded-2xl p-4 max-w-[320px] w-full mb-4 space-y-4">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:363:              <span className="text-lg font-mono font-bold text-emerald-400 tracking-[0.3em]">{code}</span>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:364:              <button onClick={handleCopy} className="p-2 rounded-xl bg-zinc-700/50 text-zinc-400 hover:text-white transition-colors">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:365:                {copied ? <span className="text-[11px] text-emerald-400">Copied!</span> : <Copy className="w-4 h-4" />}
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:381:            className="w-full py-3 rounded-xl bg-zinc-800/60 border border-zinc-700/50 text-sm text-zinc-300 active:bg-zinc-700/40 transition-colors">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:386:      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:425:    if (newPin.length !== 4) return;
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:460:      <div className="w-full max-w-[400px] max-h-[85vh] bg-[#0f0f18] border border-zinc-800 rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:462:        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 flex-shrink-0">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:464:            <Users className="w-5 h-5 text-violet-400" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:468:            <X className="w-4 h-4 text-zinc-400" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:473:        <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:490:                      className="flex items-center gap-1 text-[10px] text-zinc-500 hover:text-zinc-400 transition-colors mt-0.5">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:497:                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-amber-400 transition-colors" title="PIN Badlo">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:501:                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-violet-400 transition-colors" title="Naya Code">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:505:                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors disabled:opacity-40" title="Delete">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:515:                      <span className="text-[11px] font-mono font-bold text-emerald-400 tracking-wider">{user.accessCode}</span>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:516:                      {copiedId === user.id && <span className="text-[9px] text-emerald-400 ml-2">Copied!</span>}
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:519:                      className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-400 font-medium">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:526:                {editingPin === user.id && (
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:528:                    <p className="text-[10px] text-zinc-500 mb-2">Naya PIN (4-digit):</p>
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:530:                      <input type="text" inputMode="numeric" maxLength={4} value={newPin}
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:533:                        className="flex-1 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm font-mono tracking-widest text-center outline-none focus:border-violet-500/40" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:534:                      <button onClick={() => handleSavePin(user.id)} disabled={newPin.length !== 4 || pinSaving}
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:535:                        className="w-9 h-9 rounded-lg bg-violet-600 flex items-center justify-center disabled:opacity-40">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:536:                        {pinSaving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4 text-white" />}
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:540:                        <X className="w-4 h-4 text-zinc-400" />
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:551:        <div className="p-4 border-t border-zinc-800 flex-shrink-0">
+/home/z/my-project/src/components/lawyer/LoginScreen.tsx:554:            <UserPlus className="w-4 h-4" />
+/home/z/my-project/src/components/lawyer/PendingFeeList.tsx:14:  const PAGE_SIZE = 40;
+/home/z/my-project/src/components/lawyer/PendingFeeList.tsx:52:      <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
+/home/z/my-project/src/components/lawyer/PendingFeeList.tsx:58:          <ArrowLeft className="w-4 h-4 text-zinc-400" />
+/home/z/my-project/src/components/lawyer/PendingFeeList.tsx:66:      <div className="px-3 sm:px-4 mb-3">
+/home/z/my-project/src/components/lawyer/PendingFeeList.tsx:68:          <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
+/home/z/my-project/src/components/lawyer/PendingFeeList.tsx:79:      <div className="px-3 sm:px-4 pb-4">
+/home/z/my-project/src/components/lawyer/PendingFeeList.tsx:90:                <div key={name} className="mb-4 animate-slide-up">
+/home/z/my-project/src/components/lawyer/PendingFeeList.tsx:101:                    <span className="text-sm font-bold text-red-400">{formatCurrency(lawyerTotal)}</span>
+/home/z/my-project/src/components/lawyer/PendingFeeList.tsx:111:                          <span className="text-xs font-mono text-violet-400">#{c.caseId}</span>
+
+[Showing results with pagination = limit: 250]
