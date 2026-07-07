@@ -493,10 +493,6 @@ function ManageUsersOverlay() {
                     </button>
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <button onClick={() => handleDownloadBackup(user.id, user.name)} disabled={downloading === user.id || !isCloudReady()}
-                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-sky-400 transition-colors disabled:opacity-30" title="Cloud Backup Download">
-                      {downloading === user.id ? <div className="w-3.5 h-3.5 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" /> : <CloudDownload className="w-3.5 h-3.5" />}
-                    </button>
                     <button onClick={() => { setEditingPin(user.id); setNewPin(''); }}
                       className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-amber-400 transition-colors" title="PIN Badlo">
                       <Pencil className="w-3.5 h-3.5" />
