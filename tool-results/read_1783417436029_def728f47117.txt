@@ -1,0 +1,674 @@
+     1→▲ Next.js 16.1.3 (Turbopack)
+     2→- Local:         http://localhost:3000
+     3→- Network:       http://21.0.9.92:3000
+     4→- Environments: .env
+     5→
+     6→✓ Starting...
+     7→Attention: Next.js now collects completely anonymous telemetry regarding usage.
+     8→This information is used to shape Next.js' roadmap and pr[?25h
+     9→e features.
+    10→You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+    11→https://nextjs.org/telemetry
+    12→
+    13→✓ Ready in 1572ms
+    14→○ Compiling / ...
+    15→ GET / 200 in 1293ms (compile: 618ms, render: 675ms)
+    16→ GET / 200 in 30ms (compile: 4ms, render: 25ms)
+    17→ GET / 200 in 49ms (compile: 1965µs, render: 47ms)
+    18→ GET / 200 in 50ms (compile: 4ms, render: 46ms)
+    19→ GET / 200 in 42ms (compile: 3ms, render: 39ms)
+    20→ GET / 200 in 46ms (compile: 3ms, render: 43ms)
+    21→ GET / 200 in 48ms (compile: 3ms, render: 45ms)
+    22→ GET / 200 in 40ms (compile: 4ms, render: 36ms)
+    23→ GET / 200 in 201ms (compile: 6ms, render: 195ms)
+    24→ GET / 200 in 90ms (compile: 3ms, render: 87ms)
+    25→ GET / 200 in 37ms (compile: 3ms, render: 34ms)
+    26→ GET / 200 in 34ms (compile: 2ms, render: 32ms)
+    27→ GET / 200 in 36ms (compile: 2ms, render: 34ms)
+    28→ GET / 200 in 86ms (compile: 2ms, render: 83ms)
+    29→ GET / 200 in 49ms (compile: 5ms, render: 45ms)
+    30→ GET / 200 in 28ms (compile: 2ms, render: 26ms)
+    31→ GET / 200 in 637ms (compile: 116ms, render: 521ms)
+    32→ GET / 200 in 656ms (compile: 158ms, render: 498ms)
+    33→ GET / 200 in 40ms (compile: 4ms, render: 36ms)
+    34→ GET / 200 in 39ms (compile: 3ms, render: 36ms)
+    35→ GET / 200 in 34ms (compile: 2ms, render: 31ms)
+    36→ GET / 200 in 32ms (compile: 2ms, render: 30ms)
+    37→ GET / 200 in 467ms (compile: 66ms, render: 401ms)
+    38→ GET / 200 in 133ms (compile: 3ms, render: 130ms)
+    39→ GET / 200 in 84ms (compile: 2ms, render: 81ms)
+    40→ GET / 200 in 27ms (compile: 2ms, render: 25ms)
+    41→ GET / 200 in 44ms (compile: 4ms, render: 39ms)
+    42→ GET / 200 in 37ms (compile: 2ms, render: 35ms)
+    43→ GET / 200 in 28ms (compile: 1921µs, render: 26ms)
+    44→ GET / 200 in 34ms (compile: 2ms, render: 32ms)
+    45→ GET / 200 in 57ms (compile: 2ms, render: 55ms)
+    46→ GET / 200 in 27ms (compile: 1732µs, render: 25ms)
+    47→ GET / 200 in 31ms (compile: 2ms, render: 29ms)
+    48→ GET / 200 in 56ms (compile: 3ms, render: 53ms)
+    49→ GET / 200 in 27ms (compile: 1919µs, render: 26ms)
+    50→ GET / 200 in 30ms (compile: 1969µs, render: 28ms)
+    51→ GET / 200 in 30ms (compile: 2ms, render: 28ms)
+    52→ GET / 200 in 56ms (compile: 3ms, render: 53ms)
+    53→ GET / 200 in 26ms (compile: 1835µs, render: 25ms)
+    54→ GET / 200 in 28ms (compile: 1862µs, render: 26ms)
+    55→ GET / 200 in 34ms (compile: 3ms, render: 31ms)
+    56→ GET / 200 in 79ms (compile: 3ms, render: 76ms)
+    57→ GET / 200 in 36ms (compile: 6ms, render: 30ms)
+    58→ GET / 200 in 41ms (compile: 2ms, render: 39ms)
+    59→⨯ ./src/store/lawyer-store.ts:28:17
+    60→Parsing ecmascript source code failed
+    61→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+    62→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+    63→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+    64→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+    65→ [90m 29 |[39m
+    66→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+    67→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+    68→
+    69→Expected ident
+    70→
+    71→Import traces:
+    72→  Client Component Browser:
+    73→    ./src/store/lawyer-store.ts [Client Component Browser]
+    74→    ./src/app/page.tsx [Client Component Browser]
+    75→    ./src/app/page.tsx [Server Component]
+    76→
+    77→  Client Component SSR:
+    78→    ./src/store/lawyer-store.ts [Client Component SSR]
+    79→    ./src/app/page.tsx [Client Component SSR]
+    80→    ./src/app/page.tsx [Server Component]
+    81→
+    82→
+    83→ GET / 500 in 1591ms (compile: 1451ms, render: 140ms)
+    84→⚠ Cross origin request detected from preview-chat-89fd2838-ec0a-4df5-8c02-1d6038fc1150.space-z.ai to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+    85→Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+    86→⨯ ./src/store/lawyer-store.ts:28:17
+    87→Parsing ecmascript source code failed
+    88→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+    89→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+    90→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+    91→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+    92→ [90m 29 |[39m
+    93→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+    94→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+    95→
+    96→Expected ident
+    97→
+    98→Import traces:
+    99→  Client Component Browser:
+   100→    ./src/store/lawyer-store.ts [Client Component Browser]
+   101→    ./src/app/page.tsx [Client Component Browser]
+   102→    ./src/app/page.tsx [Server Component]
+   103→
+   104→  Client Component SSR:
+   105→    ./src/store/lawyer-store.ts [Client Component SSR]
+   106→    ./src/app/page.tsx [Client Component SSR]
+   107→    ./src/app/page.tsx [Server Component]
+   108→
+   109→
+   110→ GET / 500 in 45ms (compile: 31ms, render: 14ms)
+   111→⨯ ./src/store/lawyer-store.ts:28:17
+   112→Parsing ecmascript source code failed
+   113→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   114→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   115→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   116→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   117→ [90m 29 |[39m
+   118→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   119→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   120→
+   121→Expected ident
+   122→
+   123→Import traces:
+   124→  Client Component Browser:
+   125→    ./src/store/lawyer-store.ts [Client Component Browser]
+   126→    ./src/app/page.tsx [Client Component Browser]
+   127→    ./src/app/page.tsx [Server Component]
+   128→
+   129→  Client Component SSR:
+   130→    ./src/store/lawyer-store.ts [Client Component SSR]
+   131→    ./src/app/page.tsx [Client Component SSR]
+   132→    ./src/app/page.tsx [Server Component]
+   133→
+   134→
+   135→ GET / 500 in 17ms (compile: 9ms, render: 8ms)
+   136→⨯ ./src/store/lawyer-store.ts:28:17
+   137→Parsing ecmascript source code failed
+   138→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   139→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   140→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   141→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   142→ [90m 29 |[39m
+   143→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   144→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   145→
+   146→Expected ident
+   147→
+   148→Import traces:
+   149→  Client Component Browser:
+   150→    ./src/store/lawyer-store.ts [Client Component Browser]
+   151→    ./src/app/page.tsx [Client Component Browser]
+   152→    ./src/app/page.tsx [Server Component]
+   153→
+   154→  Client Component SSR:
+   155→    ./src/store/lawyer-store.ts [Client Component SSR]
+   156→    ./src/app/page.tsx [Client Component SSR]
+   157→    ./src/app/page.tsx [Server Component]
+   158→
+   159→
+   160→ GET / 500 in 16ms (compile: 9ms, render: 8ms)
+   161→⨯ ./src/store/lawyer-store.ts:28:17
+   162→Parsing ecmascript source code failed
+   163→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   164→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   165→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   166→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   167→ [90m 29 |[39m
+   168→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   169→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   170→
+   171→Expected ident
+   172→
+   173→Import traces:
+   174→  Client Component Browser:
+   175→    ./src/store/lawyer-store.ts [Client Component Browser]
+   176→    ./src/app/page.tsx [Client Component Browser]
+   177→    ./src/app/page.tsx [Server Component]
+   178→
+   179→  Client Component SSR:
+   180→    ./src/store/lawyer-store.ts [Client Component SSR]
+   181→    ./src/app/page.tsx [Client Component SSR]
+   182→    ./src/app/page.tsx [Server Component]
+   183→
+   184→
+   185→ GET / 500 in 16ms (compile: 8ms, render: 9ms)
+   186→⨯ ./src/store/lawyer-store.ts:28:17
+   187→Parsing ecmascript source code failed
+   188→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   189→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   190→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   191→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   192→ [90m 29 |[39m
+   193→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   194→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   195→
+   196→Expected ident
+   197→
+   198→Import traces:
+   199→  Client Component Browser:
+   200→    ./src/store/lawyer-store.ts [Client Component Browser]
+   201→    ./src/app/page.tsx [Client Component Browser]
+   202→    ./src/app/page.tsx [Server Component]
+   203→
+   204→  Client Component SSR:
+   205→    ./src/store/lawyer-store.ts [Client Component SSR]
+   206→    ./src/app/page.tsx [Client Component SSR]
+   207→    ./src/app/page.tsx [Server Component]
+   208→
+   209→
+   210→ GET / 500 in 14ms (compile: 7ms, render: 7ms)
+   211→⨯ ./src/store/lawyer-store.ts:28:17
+   212→Parsing ecmascript source code failed
+   213→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   214→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   215→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   216→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   217→ [90m 29 |[39m
+   218→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   219→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   220→
+   221→Expected ident
+   222→
+   223→Import traces:
+   224→  Client Component Browser:
+   225→    ./src/store/lawyer-store.ts [Client Component Browser]
+   226→    ./src/app/page.tsx [Client Component Browser]
+   227→    ./src/app/page.tsx [Server Component]
+   228→
+   229→  Client Component SSR:
+   230→    ./src/store/lawyer-store.ts [Client Component SSR]
+   231→    ./src/app/page.tsx [Client Component SSR]
+   232→    ./src/app/page.tsx [Server Component]
+   233→
+   234→
+   235→ GET / 500 in 19ms (compile: 12ms, render: 7ms)
+   236→⨯ ./src/store/lawyer-store.ts:28:17
+   237→Parsing ecmascript source code failed
+   238→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   239→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   240→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   241→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   242→ [90m 29 |[39m
+   243→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   244→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   245→
+   246→Expected ident
+   247→
+   248→Import traces:
+   249→  Client Component Browser:
+   250→    ./src/store/lawyer-store.ts [Client Component Browser]
+   251→    ./src/app/page.tsx [Client Component Browser]
+   252→    ./src/app/page.tsx [Server Component]
+   253→
+   254→  Client Component SSR:
+   255→    ./src/store/lawyer-store.ts [Client Component SSR]
+   256→    ./src/app/page.tsx [Client Component SSR]
+   257→    ./src/app/page.tsx [Server Component]
+   258→
+   259→
+   260→ GET / 500 in 17ms (compile: 9ms, render: 8ms)
+   261→⨯ ./src/store/lawyer-store.ts:28:17
+   262→Parsing ecmascript source code failed
+   263→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   264→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   265→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   266→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   267→ [90m 29 |[39m
+   268→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   269→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   270→
+   271→Expected ident
+   272→
+   273→Import traces:
+   274→  Client Component Browser:
+   275→    ./src/store/lawyer-store.ts [Client Component Browser]
+   276→    ./src/app/page.tsx [Client Component Browser]
+   277→    ./src/app/page.tsx [Server Component]
+   278→
+   279→  Client Component SSR:
+   280→    ./src/store/lawyer-store.ts [Client Component SSR]
+   281→    ./src/app/page.tsx [Client Component SSR]
+   282→    ./src/app/page.tsx [Server Component]
+   283→
+   284→
+   285→ GET / 500 in 17ms (compile: 9ms, render: 8ms)
+   286→⨯ ./src/store/lawyer-store.ts:28:17
+   287→Parsing ecmascript source code failed
+   288→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   289→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   290→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   291→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   292→ [90m 29 |[39m
+   293→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   294→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   295→
+   296→Expected ident
+   297→
+   298→Import traces:
+   299→  Client Component Browser:
+   300→    ./src/store/lawyer-store.ts [Client Component Browser]
+   301→    ./src/app/page.tsx [Client Component Browser]
+   302→    ./src/app/page.tsx [Server Component]
+   303→
+   304→  Client Component SSR:
+   305→    ./src/store/lawyer-store.ts [Client Component SSR]
+   306→    ./src/app/page.tsx [Client Component SSR]
+   307→    ./src/app/page.tsx [Server Component]
+   308→
+   309→
+   310→ GET / 500 in 14ms (compile: 8ms, render: 7ms)
+   311→⨯ ./src/store/lawyer-store.ts:28:17
+   312→Parsing ecmascript source code failed
+   313→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   314→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   315→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   316→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   317→ [90m 29 |[39m
+   318→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   319→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   320→
+   321→Expected ident
+   322→
+   323→Import traces:
+   324→  Client Component Browser:
+   325→    ./src/store/lawyer-store.ts [Client Component Browser]
+   326→    ./src/app/page.tsx [Client Component Browser]
+   327→    ./src/app/page.tsx [Server Component]
+   328→
+   329→  Client Component SSR:
+   330→    ./src/store/lawyer-store.ts [Client Component SSR]
+   331→    ./src/app/page.tsx [Client Component SSR]
+   332→    ./src/app/page.tsx [Server Component]
+   333→
+   334→
+   335→ GET / 500 in 24ms (compile: 16ms, render: 8ms)
+   336→⨯ ./src/components/lawyer/CaseDetail.tsx:20:9
+   337→Ecmascript file had an error
+   338→[0m [90m 18 |[39m   [36mconst[39m deleteCase [33m=[39m useLawyerStore(s [33m=>[39m s[33m.[39mdeleteCase)[33m;[39m
+   339→ [90m 19 |[39m   [36mconst[39m restoreCase [33m=[39m useLawyerStore(s [33m=>[39m s[33m.[39mrestoreCase)[33m;[39m
+   340→[31m[1m>[22m[39m[90m 20 |[39m   [36mconst[39m restoreCase [33m=[39m useLawyerStore(s [33m=>[39m s[33m.[39mrestoreCase)[33m;[39m
+   341→ [90m    |[39m         [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   342→ [90m 21 |[39m
+   343→ [90m 22 |[39m   [36mconst[39m [tab[33m,[39m setTab] [33m=[39m useState[33m<[39m[33mTabType[39m[33m>[39m([32m'info'[39m)[33m;[39m
+   344→ [90m 23 |[39m   [36mconst[39m [remark[33m,[39m setRemark] [33m=[39m useState([32m''[39m)[33m;[39m[0m
+   345→
+   346→the name `restoreCase` is defined multiple times
+   347→
+   348→Import traces:
+   349→  Client Component Browser:
+   350→    ./src/components/lawyer/CaseDetail.tsx [Client Component Browser]
+   351→    ./src/app/page.tsx [Client Component Browser]
+   352→    ./src/app/page.tsx [Server Component]
+   353→
+   354→  Client Component SSR:
+   355→    ./src/components/lawyer/CaseDetail.tsx [Client Component SSR]
+   356→    ./src/app/page.tsx [Client Component SSR]
+   357→    ./src/app/page.tsx [Server Component]
+   358→
+   359→
+   360→
+   361→./src/store/lawyer-store.ts:28:17
+   362→Parsing ecmascript source code failed
+   363→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   364→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   365→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   366→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   367→ [90m 29 |[39m
+   368→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   369→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   370→
+   371→Expected ident
+   372→
+   373→Import traces:
+   374→  Client Component Browser:
+   375→    ./src/store/lawyer-store.ts [Client Component Browser]
+   376→    ./src/app/page.tsx [Client Component Browser]
+   377→    ./src/app/page.tsx [Server Component]
+   378→
+   379→  Client Component SSR:
+   380→    ./src/store/lawyer-store.ts [Client Component SSR]
+   381→    ./src/app/page.tsx [Client Component SSR]
+   382→    ./src/app/page.tsx [Server Component]
+   383→
+   384→
+   385→ GET / 500 in 33ms (compile: 26ms, render: 7ms)
+   386→⨯ ./src/components/lawyer/CaseDetail.tsx:20:9
+   387→Ecmascript file had an error
+   388→[0m [90m 18 |[39m   [36mconst[39m deleteCase [33m=[39m useLawyerStore(s [33m=>[39m s[33m.[39mdeleteCase)[33m;[39m
+   389→ [90m 19 |[39m   [36mconst[39m restoreCase [33m=[39m useLawyerStore(s [33m=>[39m s[33m.[39mrestoreCase)[33m;[39m
+   390→[31m[1m>[22m[39m[90m 20 |[39m   [36mconst[39m restoreCase [33m=[39m useLawyerStore(s [33m=>[39m s[33m.[39mrestoreCase)[33m;[39m
+   391→ [90m    |[39m         [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   392→ [90m 21 |[39m
+   393→ [90m 22 |[39m   [36mconst[39m [tab[33m,[39m setTab] [33m=[39m useState[33m<[39m[33mTabType[39m[33m>[39m([32m'info'[39m)[33m;[39m
+   394→ [90m 23 |[39m   [36mconst[39m [remark[33m,[39m setRemark] [33m=[39m useState([32m''[39m)[33m;[39m[0m
+   395→
+   396→the name `restoreCase` is defined multiple times
+   397→
+   398→Import traces:
+   399→  Client Component Browser:
+   400→    ./src/components/lawyer/CaseDetail.tsx [Client Component Browser]
+   401→    ./src/app/page.tsx [Client Component Browser]
+   402→    ./src/app/page.tsx [Server Component]
+   403→
+   404→  Client Component SSR:
+   405→    ./src/components/lawyer/CaseDetail.tsx [Client Component SSR]
+   406→    ./src/app/page.tsx [Client Component SSR]
+   407→    ./src/app/page.tsx [Server Component]
+   408→
+   409→
+   410→
+   411→./src/store/lawyer-store.ts:28:17
+   412→Parsing ecmascript source code failed
+   413→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   414→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   415→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   416→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   417→ [90m 29 |[39m
+   418→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   419→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   420→
+   421→Expected ident
+   422→
+   423→Import traces:
+   424→  Client Component Browser:
+   425→    ./src/store/lawyer-store.ts [Client Component Browser]
+   426→    ./src/app/page.tsx [Client Component Browser]
+   427→    ./src/app/page.tsx [Server Component]
+   428→
+   429→  Client Component SSR:
+   430→    ./src/store/lawyer-store.ts [Client Component SSR]
+   431→    ./src/app/page.tsx [Client Component SSR]
+   432→    ./src/app/page.tsx [Server Component]
+   433→
+   434→
+   435→ GET / 500 in 17ms (compile: 11ms, render: 6ms)
+   436→⨯ ./src/store/lawyer-store.ts:28:17
+   437→Parsing ecmascript source code failed
+   438→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   439→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   440→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   441→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   442→ [90m 29 |[39m
+   443→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   444→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   445→
+   446→Expected ident
+   447→
+   448→Import traces:
+   449→  Client Component Browser:
+   450→    ./src/store/lawyer-store.ts [Client Component Browser]
+   451→    ./src/app/page.tsx [Client Component Browser]
+   452→    ./src/app/page.tsx [Server Component]
+   453→
+   454→  Client Component SSR:
+   455→    ./src/store/lawyer-store.ts [Client Component SSR]
+   456→    ./src/app/page.tsx [Client Component SSR]
+   457→    ./src/app/page.tsx [Server Component]
+   458→
+   459→
+   460→ GET / 500 in 26ms (compile: 19ms, render: 7ms)
+   461→⨯ ./src/store/lawyer-store.ts:28:17
+   462→Parsing ecmascript source code failed
+   463→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   464→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   465→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   466→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   467→ [90m 29 |[39m
+   468→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   469→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   470→
+   471→Expected ident
+   472→
+   473→Import traces:
+   474→  Client Component Browser:
+   475→    ./src/store/lawyer-store.ts [Client Component Browser]
+   476→    ./src/app/page.tsx [Client Component Browser]
+   477→    ./src/app/page.tsx [Server Component]
+   478→
+   479→  Client Component SSR:
+   480→    ./src/store/lawyer-store.ts [Client Component SSR]
+   481→    ./src/app/page.tsx [Client Component SSR]
+   482→    ./src/app/page.tsx [Server Component]
+   483→
+   484→
+   485→ GET / 500 in 12ms (compile: 7ms, render: 6ms)
+   486→⨯ ./src/store/lawyer-store.ts:28:17
+   487→Parsing ecmascript source code failed
+   488→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   489→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   490→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   491→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   492→ [90m 29 |[39m
+   493→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   494→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   495→
+   496→Expected ident
+   497→
+   498→Import traces:
+   499→  Client Component Browser:
+   500→    ./src/store/lawyer-store.ts [Client Component Browser]
+   501→    ./src/app/page.tsx [Client Component Browser]
+   502→    ./src/app/page.tsx [Server Component]
+   503→
+   504→  Client Component SSR:
+   505→    ./src/store/lawyer-store.ts [Client Component SSR]
+   506→    ./src/app/page.tsx [Client Component SSR]
+   507→    ./src/app/page.tsx [Server Component]
+   508→
+   509→
+   510→ GET / 500 in 35ms (compile: 29ms, render: 6ms)
+   511→⨯ ./src/store/lawyer-store.ts:28:17
+   512→Parsing ecmascript source code failed
+   513→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   514→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   515→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   516→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   517→ [90m 29 |[39m
+   518→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   519→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   520→
+   521→Expected ident
+   522→
+   523→Import traces:
+   524→  Client Component Browser:
+   525→    ./src/store/lawyer-store.ts [Client Component Browser]
+   526→    ./src/app/page.tsx [Client Component Browser]
+   527→    ./src/app/page.tsx [Server Component]
+   528→
+   529→  Client Component SSR:
+   530→    ./src/store/lawyer-store.ts [Client Component SSR]
+   531→    ./src/app/page.tsx [Client Component SSR]
+   532→    ./src/app/page.tsx [Server Component]
+   533→
+   534→
+   535→⨯ ./src/store/lawyer-store.ts:28:17
+   536→Parsing ecmascript source code failed
+   537→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   538→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   539→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   540→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   541→ [90m 29 |[39m
+   542→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   543→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   544→
+   545→Expected ident
+   546→
+   547→Import traces:
+   548→  Client Component Browser:
+   549→    ./src/store/lawyer-store.ts [Client Component Browser]
+   550→    ./src/app/page.tsx [Client Component Browser]
+   551→    ./src/app/page.tsx [Server Component]
+   552→
+   553→  Client Component SSR:
+   554→    ./src/store/lawyer-store.ts [Client Component SSR]
+   555→    ./src/app/page.tsx [Client Component SSR]
+   556→    ./src/app/page.tsx [Server Component]
+   557→
+   558→
+   559→ GET / 500 in 113ms (compile: 98ms, render: 15ms)
+   560→ GET / 500 in 150ms (compile: 141ms, render: 9ms)
+   561→⨯ ./src/store/lawyer-store.ts:28:17
+   562→Parsing ecmascript source code failed
+   563→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   564→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   565→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   566→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   567→ [90m 29 |[39m
+   568→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   569→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   570→
+   571→Expected ident
+   572→
+   573→Import traces:
+   574→  Client Component Browser:
+   575→    ./src/store/lawyer-store.ts [Client Component Browser]
+   576→    ./src/app/page.tsx [Client Component Browser]
+   577→    ./src/app/page.tsx [Server Component]
+   578→
+   579→  Client Component SSR:
+   580→    ./src/store/lawyer-store.ts [Client Component SSR]
+   581→    ./src/app/page.tsx [Client Component SSR]
+   582→    ./src/app/page.tsx [Server Component]
+   583→
+   584→
+   585→ GET / 500 in 31ms (compile: 25ms, render: 6ms)
+   586→⨯ ./src/store/lawyer-store.ts:28:17
+   587→Parsing ecmascript source code failed
+   588→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   589→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   590→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   591→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   592→ [90m 29 |[39m
+   593→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   594→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   595→
+   596→Expected ident
+   597→
+   598→Import traces:
+   599→  Client Component Browser:
+   600→    ./src/store/lawyer-store.ts [Client Component Browser]
+   601→    ./src/app/page.tsx [Client Component Browser]
+   602→    ./src/app/page.tsx [Server Component]
+   603→
+   604→  Client Component SSR:
+   605→    ./src/store/lawyer-store.ts [Client Component SSR]
+   606→    ./src/app/page.tsx [Client Component SSR]
+   607→    ./src/app/page.tsx [Server Component]
+   608→
+   609→
+   610→ GET / 500 in 12ms (compile: 6ms, render: 6ms)
+   611→⨯ ./src/store/lawyer-store.ts:28:17
+   612→Parsing ecmascript source code failed
+   613→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   614→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   615→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   616→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   617→ [90m 29 |[39m
+   618→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   619→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   620→
+   621→Expected ident
+   622→
+   623→Import traces:
+   624→  Client Component Browser:
+   625→    ./src/store/lawyer-store.ts [Client Component Browser]
+   626→    ./src/app/page.tsx [Client Component Browser]
+   627→    ./src/app/page.tsx [Server Component]
+   628→
+   629→  Client Component SSR:
+   630→    ./src/store/lawyer-store.ts [Client Component SSR]
+   631→    ./src/app/page.tsx [Client Component SSR]
+   632→    ./src/app/page.tsx [Server Component]
+   633→
+   634→
+   635→ GET / 500 in 31ms (compile: 25ms, render: 5ms)
+   636→⨯ ./src/store/lawyer-store.ts:28:17
+   637→Parsing ecmascript source code failed
+   638→[0m [90m 26 |[39m   addExpense[33m:[39m (caseId[33m:[39m string[33m,[39m lawyerName[33m:[39m string[33m,[39m partyName[33m:[39m string[33m,[39m description[33m:[39m string[33m,[39m amount[33m:[39m number[33m,[39m date[33m:[39m string[33m,[39m category[33m:[39m [33mExpenseCategory[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   639→ [90m 27 |[39m   deleteCase[33m:[39m (caseId[33m:[39m string) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   640→[31m[1m>[22m[39m[90m 28 |[39m   restoreCase[33m:[39m ([36mcase[39m[33m:[39m [33mCaseEntry[39m) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m
+   641→ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+   642→ [90m 29 |[39m
+   643→ [90m 30 |[39m   getCasesForSync[33m:[39m () [33m=>[39m { cases[33m:[39m [33mCaseEntry[39m[][33m;[39m expenses[33m:[39m [33mExpenseEntry[39m[] }[33m;[39m
+   644→ [90m 31 |[39m   importFromSync[33m:[39m (cases[33m:[39m [33mCaseEntry[39m[][33m,[39m expenses[33m:[39m [33mExpenseEntry[39m[]) [33m=>[39m [33mPromise[39m[33m<[39m[33mboolean[39m[33m>[39m[33m;[39m[0m
+   645→
+   646→Expected ident
+   647→
+   648→Import traces:
+   649→  Client Component Browser:
+   650→    ./src/store/lawyer-store.ts [Client Component Browser]
+   651→    ./src/app/page.tsx [Client Component Browser]
+   652→    ./src/app/page.tsx [Server Component]
+   653→
+   654→  Client Component SSR:
+   655→    ./src/store/lawyer-store.ts [Client Component SSR]
+   656→    ./src/app/page.tsx [Client Component SSR]
+   657→    ./src/app/page.tsx [Server Component]
+   658→
+   659→
+   660→ GET / 500 in 12ms (compile: 7ms, render: 6ms)
+   661→✓ Compiled in 174ms
+   662→ GET / 200 in 466ms (compile: 65ms, render: 401ms)
+   663→✓ Compiled in 164ms
+   664→⚠ Fast Refresh had to perform a full reload when ./src/store/lawyer-store.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+   665→ GET / 200 in 432ms (compile: 67ms, render: 366ms)
+   666→✓ Compiled in 145ms
+   667→⚠ Fast Refresh had to perform a full reload when ./src/store/lawyer-store.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+   668→ GET / 200 in 370ms (compile: 55ms, render: 315ms)
+   669→ GET / 200 in 72ms (compile: 3ms, render: 68ms)
+   670→ GET / 200 in 34ms (compile: 1879µs, render: 32ms)
+   671→ GET / 200 in 32ms (compile: 2ms, render: 30ms)
+   672→ GET / 200 in 27ms (compile: 1996µs, render: 25ms)
+   673→ GET / 200 in 32ms (compile: 3ms, render: 29ms)
+   674→
