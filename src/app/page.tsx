@@ -213,13 +213,21 @@ function isOverlayStatus(s: string): boolean {
 }
 
 // Auto-backup: silently saves to localStorage (500ms) + Firebase (20s if undo pending, else 3s)
+let _undoPaused = false;
+let _cloudTimer: ReturnType<typeof setTimeout> | null = null;
+
+const pauseCloudForUndoExport = () => {
+  _undoPaused = true;
+  if (_cloudTimer) { clearTimeout(_cloudTimer); _cloudTimer = null; }
+  setTimeout(() => { _undoPaused = false; }, 20000);
+};
+export { pauseCloudForUndoExport as pauseCloudForUndo };
+
 const autoBackup = (() => {
   let lastLocalJson = '';
   let localTimer: ReturnType<typeof setTimeout> | null = null;
 
   let lastCloudJson = '';
-  let cloudTimer: ReturnType<typeof setTimeout> | null = null;
-  let undoPaused = false;
 
   return (cases: unknown[], expenses: unknown[], userName: string, userId: string | null) => {
     const data = JSON.stringify({ cases, expenses });
@@ -237,26 +245,15 @@ const autoBackup = (() => {
 
     // Cloud backup — 20s when undo active (give user time), else 3s
     if (!userId) return;
-    if (cloudTimer) clearTimeout(cloudTimer);
-    const cloudDelay = undoPaused ? 20000 : 3000;
-    cloudTimer = setTimeout(() => {
+    if (_cloudTimer) clearTimeout(_cloudTimer);
+    const cloudDelay = _undoPaused ? 20000 : 3000;
+    _cloudTimer = setTimeout(() => {
       if (data === lastCloudJson) return;
       lastCloudJson = data;
       saveToCloud(userId, cases, expenses).catch(() => {});
     }, cloudDelay);
   };
-
-  // Call this to pause cloud backup for 20s (undo window)
-  autoBackup.pauseForUndo = () => {
-    undoPaused = true;
-    // Clear any pending cloud timer
-    if (cloudTimer) { clearTimeout(cloudTimer); cloudTimer = null; }
-    setTimeout(() => { undoPaused = false; }, 20000);
-  };
 })();
-
-// Export pauseForUndo so delete screens can use it
-export const pauseCloudForUndo = () => autoBackup.pauseForUndo();
 
 export default function Home() {
   const init = useLawyerStore(s => s.init);
