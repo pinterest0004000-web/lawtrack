@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthStore } from '@/store/auth-store';
 import { regenerateAccessCode, updateUserPin } from '@/lib/auth';
-import { Shield, Lock, Eye, EyeOff, AlertTriangle, ArrowLeft, Copy, RefreshCw, Trash2, Key, Users, UserPlus, X, Pencil, Check, Crown } from 'lucide-react';
+import { Shield, Lock, Eye, EyeOff, AlertTriangle, ArrowLeft, Copy, RefreshCw, Trash2, Key, Users, UserPlus, X, Pencil, Check, Crown, CloudDownload } from 'lucide-react';
+import { getRawBackup, isCloudReady } from '@/lib/cloud-backup';
 
 function PinDots({ filled, shake }: { filled: number; shake: boolean }) {
   return (
@@ -398,6 +399,7 @@ function ManageUsersOverlay() {
   const [editingPin, setEditingPin] = useState<string | null>(null);
   const [newPin, setNewPin] = useState('');
   const [pinSaving, setPinSaving] = useState(false);
+  const [downloading, setDownloading] = useState<string | null>(null);
 
   const regularUsers = users.filter(u => !u.isAdmin);
 
@@ -430,6 +432,27 @@ function ManageUsersOverlay() {
 
   const handleAddUser = () => {
     useAuthStore.setState({ authStatus: 'add-user' });
+  };
+
+  const handleDownloadBackup = async (userId: string, userName: string) => {
+    if (!isCloudReady()) return;
+    setDownloading(userId);
+    try {
+      const raw = await getRawBackup(userId);
+      if (!raw) { setDownloading(null); return; }
+      // Download as encrypted JSON file
+      const fileData = JSON.stringify({ _type: 'lawtrack_backup', _user: userName, _downloaded: Date.now(), encrypted: raw.encrypted, timestamp: raw.timestamp, caseCount: raw.caseCount, expenseCount: raw.expenseCount }, null, 2);
+      const blob = new Blob([fileData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `LawTrack_Backup_${userName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch { /* silent */ }
+    setDownloading(null);
   };
 
   return (
@@ -470,6 +493,10 @@ function ManageUsersOverlay() {
                     </button>
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button onClick={() => handleDownloadBackup(user.id, user.name)} disabled={downloading === user.id || !isCloudReady()}
+                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-sky-400 transition-colors disabled:opacity-30" title="Cloud Backup Download">
+                      {downloading === user.id ? <div className="w-3.5 h-3.5 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" /> : <CloudDownload className="w-3.5 h-3.5" />}
+                    </button>
                     <button onClick={() => { setEditingPin(user.id); setNewPin(''); }}
                       className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-amber-400 transition-colors" title="PIN Badlo">
                       <Pencil className="w-3.5 h-3.5" />

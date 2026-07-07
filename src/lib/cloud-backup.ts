@@ -103,3 +103,27 @@ export async function getCloudInfo(userId: string): Promise<CloudBackupInfo> {
 export function isCloudReady(): boolean {
   return isFirebaseReady();
 }
+
+/** Get raw (encrypted) backup data + metadata — for admin download */
+export async function getRawBackup(userId: string): Promise<{
+  encrypted: string;
+  timestamp: number;
+  caseCount: number;
+  expenseCount: number;
+} | null> {
+  if (!isFirebaseReady()) return null;
+  try {
+    const snap = await getDoc(doc(db!, 'backups', userId));
+    if (!snap.exists()) return null;
+    const d = snap.data();
+    if (!d?.d) return null;
+    return {
+      encrypted: d.d,
+      timestamp: d.t || 0,
+      caseCount: d.c || 0,
+      expenseCount: d.e || 0,
+    };
+  } catch {
+    return null;
+  }
+}
