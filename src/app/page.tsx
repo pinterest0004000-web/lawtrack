@@ -219,7 +219,7 @@ let _cloudTimer: ReturnType<typeof setTimeout> | null = null;
 const pauseCloudForUndoExport = () => {
   _undoPaused = true;
   if (_cloudTimer) { clearTimeout(_cloudTimer); _cloudTimer = null; }
-  setTimeout(() => { _undoPaused = false; }, 20000);
+  setTimeout(() => { _undoPaused = false; }, 10000);
 };
 export { pauseCloudForUndoExport as pauseCloudForUndo };
 

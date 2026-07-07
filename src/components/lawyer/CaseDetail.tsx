@@ -129,8 +129,8 @@ export default function CaseDetail() {
     if (ok) {
       setConfirmDelete(false);
       toast('Case deleted', {
-        description: `20s me undo kar sakte ho — ${deletedCase.partyName} vs ${deletedCase.opponentName}`,
-        duration: 20000,
+        description: `10s me undo kar sakte ho — ${deletedCase.partyName} vs ${deletedCase.opponentName}`,
+        duration: 10000,
         action: {
           label: 'Undo',
           onClick: async () => {

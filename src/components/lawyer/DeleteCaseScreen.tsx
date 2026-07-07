@@ -51,10 +51,10 @@ export default function DeleteCaseScreen() {
     const ok = await deleteCase(caseId);
     if (ok) {
       setConfirmId(null);
-      // Undo toast — 20 second window
+      // Undo toast — 10 second window
       toast('Case deleted', {
-        description: `20s me undo kar sakte ho — ${caseData.partyName} vs ${caseData.opponentName}`,
-        duration: 20000,
+        description: `10s me undo kar sakte ho — ${caseData.partyName} vs ${caseData.opponentName}`,
+        duration: 10000,
         action: {
           label: 'Undo',
           onClick: async () => {
