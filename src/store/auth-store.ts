@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { hasAnyUser, createAdmin, createUserAsAdmin, verifyUserPin, getUserByAccessCode, lockApp, isUnlocked, getCurrentUserId, getCurrentUserName, isCurrentUserAdmin, getUsers, deleteUser, regenerateAccessCode, updateUserPin, type UserProfile } from '@/lib/auth';
+import { firebaseAnonSignIn, firebaseSignOut } from '@/lib/firebase';
 
 type AuthStatus = 'checking' | 'setup-admin' | 'admin-login' | 'code-login' | 'user-created' | 'manage-users' | 'locked' | 'unlocked';
 
@@ -95,6 +96,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           error: '',
           lastActivity: Date.now(),
         });
+        firebaseAnonSignIn(user.id).catch(() => {});
         return { ok: true, user };
       }
       set({ error: 'Failed. Try again.' });
@@ -120,6 +122,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
           selectedUser: null,
           lockoutRemaining: 0,
         });
+        firebaseAnonSignIn(selectedUser.id).catch(() => {});
         return true;
       }
       if (result.locked) {
@@ -177,6 +180,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   logout: () => {
     lockApp();
+    firebaseSignOut().catch(() => {});
     if (typeof window !== 'undefined' && window.location.search.includes('code=')) {
       window.history.replaceState({}, '', window.location.pathname);
     }
@@ -192,6 +196,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     if (s.authStatus !== 'unlocked') return false;
     if (Date.now() - s.lastActivity >= 5 * 60 * 1000) {
       lockApp();
+      firebaseSignOut().catch(() => {});
       if (typeof window !== 'undefined' && window.location.search.includes('code=')) {
         window.history.replaceState({}, '', window.location.pathname);
       }
