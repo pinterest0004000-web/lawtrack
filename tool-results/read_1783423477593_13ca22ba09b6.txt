@@ -1,0 +1,588 @@
+     1→'use client';
+     2→
+     3→import React, { useState, useEffect, useCallback, useRef } from 'react';
+     4→import { useAuthStore } from '@/store/auth-store';
+     5→import { regenerateAccessCode, updateUserPin } from '@/lib/auth';
+     6→import { Shield, Lock, Eye, EyeOff, AlertTriangle, ArrowLeft, Copy, RefreshCw, Trash2, Key, Users, UserPlus, X, Pencil, Check, Crown, CloudDownload } from 'lucide-react';
+     7→import { getRawBackup, isCloudReady } from '@/lib/cloud-backup';
+     8→
+     9→function PinDots({ filled, shake }: { filled: number; shake: boolean }) {
+    10→  return (
+    11→    <div className={`flex justify-center gap-4 mb-6 ${shake ? 'animate-pin-shake' : ''}`}>
+    12→      {[0,1,2,3].map(i => (
+    13→        <div key={i} className={`w-4 h-4 rounded-full transition-all duration-200 ${
+    14→          i < filled ? 'bg-violet-500 shadow-[0_0_12px_rgba(139,92,246,0.5)] scale-110' : 'bg-zinc-700 border border-zinc-600'
+    15→        }`} />
+    16→      ))}
+    17→    </div>
+    18→  );
+    19→}
+    20→
+    21→function Numpad({ onDigit, onDelete, disabled }: { onDigit: (d: string) => void; onDelete: () => void; disabled: boolean }) {
+    22→  const keys = ['1','2','3','4','5','6','7','8','9','','0','del'];
+    23→  return (
+    24→    <div className="grid grid-cols-3 gap-3 max-w-[280px] mx-auto">
+    25→      {keys.map((key, i) => {
+    26→        if (key === '') return <div key={`e-${i}`} />;
+    27→        if (key === 'del') return (
+    28→          <button key="del" onClick={onDelete} disabled={disabled}
+    29→            className="h-14 rounded-2xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center active:bg-zinc-700/60 transition-colors disabled:opacity-40" aria-label="Delete">
+    30→            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-400">
+    31→              <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/>
+    32→            </svg>
+    33→          </button>
+    34→        );
+    35→        return (
+    36→          <button key={key} onClick={() => onDigit(key)} disabled={disabled}
+    37→            className="h-14 rounded-2xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center text-xl font-semibold text-white active:bg-violet-600/20 active:border-violet-500/30 transition-colors disabled:opacity-40">
+    38→            {key}
+    39→          </button>
+    40→        );
+    41→      })}
+    42→    </div>
+    43→  );
+    44→}
+    45→
+    46→// ============ ADMIN SETUP (first time) ============
+    47→function AdminSetupScreen() {
+    48→  const { setupAdmin, error } = useAuthStore();
+    49→  const [name, setName] = useState('');
+    50→  const [pin, setPin] = useState('');
+    51→  const [confirmPin, setConfirmPin] = useState('');
+    52→  const [step, setStep] = useState<'name' | 'pin' | 'confirm'>('name');
+    53→  const [shake, setShake] = useState(false);
+    54→  const [showPin, setShowPin] = useState(false);
+    55→  const [saving, setSaving] = useState(false);
+    56→
+    57→  const triggerShake = useCallback(() => { setShake(true); setTimeout(() => setShake(false), 500); }, []);
+    58→
+    59→  const submitName = () => {
+    60→    if (name.trim().length < 2) return;
+    61→    useAuthStore.setState({ error: '' });
+    62→    setStep('pin');
+    63→  };
+    64→
+    65→  const handleDigit = useCallback((d: string) => {
+    66→    if (step === 'pin') {
+    67→      const p = pin + d;
+    68→      if (p.length <= 4) { setPin(p); if (p.length === 4) { setStep('confirm'); setConfirmPin(''); } }
+    69→    } else {
+    70→      const c = confirmPin + d;
+    71→      if (c.length <= 4) {
+    72→        setConfirmPin(c);
+    73→        if (c.length === 4) {
+    74→          if (c === pin) {
+    75→            setSaving(true);
+    76→            setupAdmin(name.trim(), pin).then(res => { if (!res.ok) { triggerShake(); setSaving(false); } });
+    77→          } else {
+    78→            triggerShake();
+    79→            setTimeout(() => { setStep('pin'); setPin(''); setConfirmPin(''); useAuthStore.setState({ error: 'PIN match nahi hua. Dobara daalo.' }); }, 500);
+    80→          }
+    81→        }
+    82→      }
+    83→    }
+    84→  }, [step, pin, confirmPin, name, setupAdmin, triggerShake]);
+    85→
+    86→  const handleDelete = useCallback(() => {
+    87→    if (step === 'confirm') setConfirmPin(p => p.slice(0, -1));
+    88→    else setPin(p => p.slice(0, -1));
+    89→  }, [step]);
+    90→
+    91→  const len = step === 'confirm' ? confirmPin.length : pin.length;
+    92→
+    93→  return (
+    94→    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+    95→      <div className="flex-1 flex flex-col items-center justify-center px-6">
+    96→        {step !== 'name' && (
+    97→          <button onClick={() => { setStep(step === 'confirm' ? 'pin' : 'name'); useAuthStore.setState({ error: '' }); }}
+    98→            className="absolute top-4 left-4 w-9 h-9 rounded-xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center z-10">
+    99→            <ArrowLeft className="w-4 h-4 text-zinc-400" />
+   100→          </button>
+   101→        )}
+   102→
+   103→        <div className="w-20 h-20 rounded-3xl bg-amber-600/15 border border-amber-500/20 flex items-center justify-center mb-6">
+   104→          <Crown className="w-10 h-10 text-amber-400" />
+   105→        </div>
+   106→
+   107→        {step === 'name' ? (
+   108→          <>
+   109→            <h1 className="text-xl font-bold text-white mb-1">Admin Setup</h1>
+   110→            <p className="text-sm text-zinc-400 mb-6">Apna naam aur PIN set karo — yeh tumhari app hai</p>
+   111→            <div className="max-w-[300px] w-full">
+   112→              <input type="text" value={name} onChange={e => { setName(e.target.value); useAuthStore.setState({ error: '' }); }}
+   113→                onKeyDown={e => e.key === 'Enter' && submitName()} placeholder="Apna naam likho"
+   114→                className="w-full px-4 py-3.5 rounded-xl bg-zinc-800/80 border border-zinc-700/50 text-white text-base placeholder-zinc-500 outline-none focus:border-violet-500/40 transition-colors"
+   115→                maxLength={20} autoFocus />
+   116→              <button onClick={submitName} disabled={name.trim().length < 2}
+   117→                className="w-full mt-3 py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm disabled:opacity-40 active:bg-violet-700 transition-colors">
+   118→                Aage Badho
+   119→              </button>
+   120→            </div>
+   121→          </>
+   122→        ) : (
+   123→          <>
+   124→            <h1 className="text-xl font-bold text-white mb-0.5">{step === 'pin' ? 'Apna PIN Set Karo' : 'PIN Confirm Karo'}</h1>
+   125→            <p className="text-sm text-zinc-400 mb-3">{step === 'pin' ? '4-digit PIN daalo' : 'Wahi PIN dobara daalo'}</p>
+   126→            <button onClick={() => setShowPin(p => !p)} className="flex items-center gap-1.5 text-xs text-zinc-500 mb-4">
+   127→              {showPin ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+   128→              {showPin ? 'Chhupo' : 'Dikhao'}
+   129→            </button>
+   130→            {showPin ? (
+   131→              <div className={`flex justify-center gap-4 mb-6 font-mono text-2xl tracking-[0.5em] text-white ${shake ? 'animate-pin-shake' : ''}`}>
+   132→                {(step === 'confirm' ? confirmPin : pin).padEnd(4, '·')}
+   133→              </div>
+   134→            ) : <PinDots filled={len} shake={shake} />}
+   135→            {error && (
+   136→              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
+   137→                <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+   138→                <p className="text-xs text-red-400 text-center">{error}</p>
+   139→              </div>
+   140→            )}
+   141→          </>
+   142→        )}
+   143→      </div>
+   144→      {step !== 'name' && (
+   145→        <div className="pb-8 pt-4 px-6">
+   146→          <Numpad onDigit={handleDigit} onDelete={handleDelete} disabled={saving} />
+   147→        </div>
+   148→      )}
+   149→      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+   150→        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Secured with AES-256 Encryption</p>
+   151→      </footer>
+   152→    </div>
+   153→  );
+   154→}
+   155→
+   156→// ============ PIN LOGIN (admin or user via code) ============
+   157→function PinLoginScreen() {
+   158→  const { loginWithPin, error, selectedUser, lockoutRemaining, checkAuth } = useAuthStore();
+   159→  const [pin, setPin] = useState('');
+   160→  const [shake, setShake] = useState(false);
+   161→  const [showPin, setShowPin] = useState(false);
+   162→  const [tick, setTick] = useState(0);
+   163→  const tickRef = useRef(0);
+   164→  const userName = selectedUser?.name || '';
+   165→
+   166→  const isLockedOut = lockoutRemaining > 0 && tick < lockoutRemaining;
+   167→
+   168→  useEffect(() => {
+   169→    if (lockoutRemaining <= 0) { tickRef.current = 0; return; }
+   170→    tickRef.current = 0;
+   171→    const t = setInterval(() => {
+   172→      tickRef.current++;
+   173→      setTick(tickRef.current);
+   174→      if (tickRef.current >= lockoutRemaining) { clearInterval(t); checkAuth(); }
+   175→    }, 1000);
+   176→    return () => clearInterval(t);
+   177→  }, [lockoutRemaining, checkAuth]);
+   178→
+   179→  const triggerShake = useCallback(() => { setShake(true); setTimeout(() => setShake(false), 500); }, []);
+   180→
+   181→  const handleDigit = useCallback((d: string) => {
+   182→    if (isLockedOut) return;
+   183→    const p = pin + d;
+   184→    if (p.length <= 4) {
+   185→      setPin(p);
+   186→      if (p.length === 4) {
+   187→        loginWithPin(p).then(ok => { if (!ok) { triggerShake(); setTimeout(() => setPin(''), 500); } });
+   188→      }
+   189→    }
+   190→  }, [pin, loginWithPin, triggerShake, isLockedOut]);
+   191→
+   192→  const handleDelete = useCallback(() => { if (!isLockedOut) setPin(p => p.slice(0, -1)); }, [isLockedOut]);
+   193→
+   194→  return (
+   195→    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+   196→      <div className="flex-1 flex flex-col items-center justify-center px-6">
+   197→        {userName ? (
+   198→          <div className="w-20 h-20 rounded-3xl bg-violet-600/15 border border-violet-500/20 flex items-center justify-center mb-4">
+   199→            <span className="text-2xl font-bold text-violet-300">{userName.slice(0, 2).toUpperCase()}</span>
+   200→          </div>
+   201→        ) : (
+   202→          <div className="w-20 h-20 rounded-3xl bg-violet-600/15 border border-violet-500/20 flex items-center justify-center mb-6">
+   203→            <Lock className="w-10 h-10 text-violet-400" />
+   204→          </div>
+   205→        )}
+   206→
+   207→        <h1 className="text-xl font-bold text-white mb-0.5">
+   208→          {userName ? `${userName}, PIN Daalo` : 'PIN Daalo'}
+   209→        </h1>
+   210→        <p className="text-sm text-zinc-400 mb-3">4-digit PIN enter karo</p>
+   211→
+   212→        <button onClick={() => setShowPin(p => !p)} className="flex items-center gap-1.5 text-xs text-zinc-500 mb-4">
+   213→          {showPin ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+   214→          {showPin ? 'Chhupo' : 'Dikhao'}
+   215→        </button>
+   216→
+   217→        {showPin ? (
+   218→          <div className={`flex justify-center gap-4 mb-6 font-mono text-2xl tracking-[0.5em] text-white ${shake ? 'animate-pin-shake' : ''}`}>
+   219→            {pin.padEnd(4, '·')}
+   220→          </div>
+   221→        ) : <PinDots filled={pin.length} shake={shake} />}
+   222→
+   223→        {error && !isLockedOut && (
+   224→          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
+   225→            <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+   226→            <p className="text-xs text-red-400 text-center">{error}</p>
+   227→          </div>
+   228→        )}
+   229→
+   230→        {isLockedOut && (
+   231→          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 max-w-[300px] w-full">
+   232→            <Lock className="w-4 h-4 text-amber-400 flex-shrink-0" />
+   233→            <p className="text-xs text-amber-400 text-center">
+   234→              {error || `Locked. ${Math.max(0, lockoutRemaining - tick)}s baad try karo`}
+   235→            </p>
+   236→          </div>
+   237→        )}
+   238→      </div>
+   239→
+   240→      <div className="pb-4 pt-4 px-6">
+   241→        <Numpad onDigit={handleDigit} onDelete={handleDelete} disabled={isLockedOut} />
+   242→      </div>
+   243→
+   244→      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+   245→        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Secured with AES-256 Encryption</p>
+   246→      </footer>
+   247→    </div>
+   248→  );
+   249→}
+   250→
+   251→// ============ ADD USER (admin sets name + PIN) ============
+   252→function AddUserScreen() {
+   253→  const { addUserAsAdmin, error, dismissManageUsers } = useAuthStore();
+   254→  const [name, setName] = useState('');
+   255→  const [pin, setPin] = useState('');
+   256→  const [step, setStep] = useState<'name' | 'pin'>('name');
+   257→  const [shake, setShake] = useState(false);
+   258→  const [saving, setSaving] = useState(false);
+   259→
+   260→  const submitName = () => {
+   261→    if (name.trim().length < 2) return;
+   262→    useAuthStore.setState({ error: '' });
+   263→    setStep('pin');
+   264→  };
+   265→
+   266→  const handleDigit = useCallback((d: string) => {
+   267→    const p = pin + d;
+   268→    if (p.length <= 4) {
+   269→      setPin(p);
+   270→      if (p.length === 4) {
+   271→        setSaving(true);
+   272→        addUserAsAdmin(name.trim(), p).then(res => {
+   273→          if (!res.ok) { setShake(true); setTimeout(() => setShake(false), 500); setSaving(false); setPin(''); }
+   274→          // On success, store handles transition to user-created
+   275→        });
+   276→      }
+   277→    }
+   278→  }, [pin, name, addUserAsAdmin]);
+   279→
+   280→  const handleDelete = useCallback(() => setPin(p => p.slice(0, -1)), []);
+   281→
+   282→  return (
+   283→    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+   284→      <div className="flex-1 flex flex-col items-center justify-center px-6">
+   285→        <button onClick={dismissManageUsers}
+   286→          className="absolute top-4 left-4 w-9 h-9 rounded-xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center z-10">
+   287→          <X className="w-4 h-4 text-zinc-400" />
+   288→        </button>
+   289→
+   290→        <div className="w-20 h-20 rounded-3xl bg-violet-600/15 border border-violet-500/20 flex items-center justify-center mb-6">
+   291→          <UserPlus className="w-10 h-10 text-violet-400" />
+   292→        </div>
+   293→
+   294→        {step === 'name' ? (
+   295→          <>
+   296→            <h1 className="text-xl font-bold text-white mb-1">User Ka Naam</h1>
+   297→            <p className="text-sm text-zinc-400 mb-6">Jis user ko add karna hai uska naam</p>
+   298→            <div className="max-w-[300px] w-full">
+   299→              <input type="text" value={name} onChange={e => { setName(e.target.value); useAuthStore.setState({ error: '' }); }}
+   300→                onKeyDown={e => e.key === 'Enter' && submitName()} placeholder="User ka naam"
+   301→                className="w-full px-4 py-3.5 rounded-xl bg-zinc-800/80 border border-zinc-700/50 text-white text-base placeholder-zinc-500 outline-none focus:border-violet-500/40 transition-colors"
+   302→                maxLength={20} autoFocus />
+   303→              <button onClick={submitName} disabled={name.trim().length < 2}
+   304→                className="w-full mt-3 py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm disabled:opacity-40 active:bg-violet-700 transition-colors">
+   305→                Aage Badho — PIN Set Karo
+   306→              </button>
+   307→            </div>
+   308→          </>
+   309→        ) : (
+   310→          <>
+   311→            <h1 className="text-xl font-bold text-white mb-0.5">{name.trim()} Ka PIN</h1>
+   312→            <p className="text-sm text-zinc-400 mb-3">Is user ke liye 4-digit PIN set karo</p>
+   313→            <PinDots filled={pin.length} shake={shake} />
+   314→            {error && (
+   315→              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
+   316→                <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+   317→                <p className="text-xs text-red-400 text-center">{error}</p>
+   318→              </div>
+   319→            )}
+   320→          </>
+   321→        )}
+   322→      </div>
+   323→      {step === 'pin' && (
+   324→        <div className="pb-8 pt-4 px-6">
+   325→          <Numpad onDigit={handleDigit} onDelete={handleDelete} disabled={saving} />
+   326→        </div>
+   327→      )}
+   328→      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+   329→        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Secured with AES-256 Encryption</p>
+   330→      </footer>
+   331→    </div>
+   332→  );
+   333→}
+   334→
+   335→// ============ USER CREATED — show code+PIN to admin ============
+   336→function UserCreatedScreen() {
+   337→  const { lastCreatedUser, dismissManageUsers } = useAuthStore();
+   338→  const [copied, setCopied] = useState(false);
+   339→  const code = lastCreatedUser?.accessCode || '';
+   340→  const name = lastCreatedUser?.name || '';
+   341→
+   342→  const handleCopy = async () => {
+   343→    const url = `${window.location.origin}${window.location.pathname}?code=${code}`;
+   344→    try { await navigator.clipboard.writeText(url); } catch { /* ignore */ }
+   345→    setCopied(true);
+   346→    setTimeout(() => setCopied(false), 1500);
+   347→  };
+   348→
+   349→  if (!lastCreatedUser) return null;
+   350→  return (
+   351→    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+   352→      <div className="flex-1 flex flex-col items-center justify-center px-6">
+   353→        <div className="w-20 h-20 rounded-3xl bg-emerald-600/15 border border-emerald-500/20 flex items-center justify-center mb-6">
+   354→          <Shield className="w-10 h-10 text-emerald-400" />
+   355→        </div>
+   356→        <h1 className="text-xl font-bold text-white mb-1">User Ban Gaya! ✅</h1>
+   357→        <p className="text-sm text-zinc-400 mb-6">{name} ka account ready hai</p>
+   358→
+   359→        <div className="bg-zinc-800/60 border border-zinc-700/50 rounded-2xl p-4 max-w-[320px] w-full mb-4 space-y-4">
+   360→          <div>
+   361→            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-2">Access Code (Link)</p>
+   362→            <div className="flex items-center justify-between">
+   363→              <span className="text-lg font-mono font-bold text-emerald-400 tracking-[0.3em]">{code}</span>
+   364→              <button onClick={handleCopy} className="p-2 rounded-xl bg-zinc-700/50 text-zinc-400 hover:text-white transition-colors">
+   365→                {copied ? <span className="text-[11px] text-emerald-400">Copied!</span> : <Copy className="w-4 h-4" />}
+   366→              </button>
+   367→            </div>
+   368→          </div>
+   369→          <div className="border-t border-zinc-700/50 pt-3">
+   370→            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">PIN</p>
+   371→            <p className="text-xs text-zinc-300">Is user ko link + PIN dono do</p>
+   372→          </div>
+   373→        </div>
+   374→
+   375→        <div className="flex flex-col gap-2 max-w-[320px] w-full">
+   376→          <button onClick={() => { useAuthStore.setState({ authStatus: 'add-user', lastCreatedUser: null }); }}
+   377→            className="w-full py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm active:bg-violet-700 transition-colors">
+   378→            Aur User Add Karo
+   379→          </button>
+   380→          <button onClick={dismissManageUsers}
+   381→            className="w-full py-3 rounded-xl bg-zinc-800/60 border border-zinc-700/50 text-sm text-zinc-300 active:bg-zinc-700/40 transition-colors">
+   382→            Wapas Jaao
+   383→          </button>
+   384→        </div>
+   385→      </div>
+   386→      <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
+   387→        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Secured with AES-256 Encryption</p>
+   388→      </footer>
+   389→    </div>
+   390→  );
+   391→}
+   392→
+   393→// ============ MANAGE USERS (admin only, overlay) ============
+   394→function ManageUsersOverlay() {
+   395→  const { users, removeUser, regenerateCode, refreshUsers, dismissManageUsers, addUserAsAdmin } = useAuthStore();
+   396→  const [deleting, setDeleting] = useState<string | null>(null);
+   397→  const [showCodes, setShowCodes] = useState<Record<string, boolean>>({});
+   398→  const [copiedId, setCopiedId] = useState<string | null>(null);
+   399→  const [editingPin, setEditingPin] = useState<string | null>(null);
+   400→  const [newPin, setNewPin] = useState('');
+   401→  const [pinSaving, setPinSaving] = useState(false);
+   402→  const [downloading, setDownloading] = useState<string | null>(null);
+   403→
+   404→  const regularUsers = users.filter(u => !u.isAdmin);
+   405→
+   406→  const handleDelete = async (userId: string) => {
+   407→    setDeleting(userId);
+   408→    await removeUser(userId);
+   409→    setDeleting(null);
+   410→  };
+   411→
+   412→  const handleCopy = async (code: string, userId: string) => {
+   413→    const url = `${window.location.origin}${window.location.pathname}?code=${code}`;
+   414→    try { await navigator.clipboard.writeText(url); } catch { /* ignore */ }
+   415→    setCopiedId(userId);
+   416→    setTimeout(() => setCopiedId(null), 1500);
+   417→  };
+   418→
+   419→  const handleRegenerate = async (userId: string) => {
+   420→    await regenerateCode(userId);
+   421→    await refreshUsers();
+   422→  };
+   423→
+   424→  const handleSavePin = async (userId: string) => {
+   425→    if (newPin.length !== 4) return;
+   426→    setPinSaving(true);
+   427→    await useAuthStore.getState().changeUserPin(userId, newPin);
+   428→    setPinSaving(false);
+   429→    setEditingPin(null);
+   430→    setNewPin('');
+   431→  };
+   432→
+   433→  const handleAddUser = () => {
+   434→    useAuthStore.setState({ authStatus: 'add-user' });
+   435→  };
+   436→
+   437→  const handleDownloadBackup = async (userId: string, userName: string) => {
+   438→    if (!isCloudReady()) return;
+   439→    setDownloading(userId);
+   440→    try {
+   441→      const raw = await getRawBackup(userId);
+   442→      if (!raw) { setDownloading(null); return; }
+   443→      // Download as encrypted JSON file
+   444→      const fileData = JSON.stringify({ _type: 'lawtrack_backup', _user: userName, _downloaded: Date.now(), encrypted: raw.encrypted, timestamp: raw.timestamp, caseCount: raw.caseCount, expenseCount: raw.expenseCount }, null, 2);
+   445→      const blob = new Blob([fileData], { type: 'application/json' });
+   446→      const url = URL.createObjectURL(blob);
+   447→      const a = document.createElement('a');
+   448→      a.href = url;
+   449→      a.download = `LawTrack_Backup_${userName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`;
+   450→      document.body.appendChild(a);
+   451→      a.click();
+   452→      document.body.removeChild(a);
+   453→      URL.revokeObjectURL(url);
+   454→    } catch { /* silent */ }
+   455→    setDownloading(null);
+   456→  };
+   457→
+   458→  return (
+   459→    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center">
+   460→      <div className="w-full max-w-[400px] max-h-[85vh] bg-[#0f0f18] border border-zinc-800 rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden">
+   461→        {/* Header */}
+   462→        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 flex-shrink-0">
+   463→          <div className="flex items-center gap-2">
+   464→            <Users className="w-5 h-5 text-violet-400" />
+   465→            <h2 className="text-base font-bold text-white">Users Manage Karo</h2>
+   466→          </div>
+   467→          <button onClick={dismissManageUsers} className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+   468→            <X className="w-4 h-4 text-zinc-400" />
+   469→          </button>
+   470→        </div>
+   471→
+   472→        {/* User List */}
+   473→        <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+   474→          {regularUsers.length === 0 ? (
+   475→            <div className="text-center py-8">
+   476→              <Users className="w-10 h-10 text-zinc-700 mx-auto mb-2" />
+   477→              <p className="text-sm text-zinc-500">Koi user nahi hai</p>
+   478→              <p className="text-xs text-zinc-600 mt-1">Naye users add karo neeche button se</p>
+   479→            </div>
+   480→          ) : (
+   481→            regularUsers.map(user => (
+   482→              <div key={user.id} className="bg-zinc-800/50 border border-zinc-700/50 rounded-2xl p-3.5">
+   483→                <div className="flex items-center gap-3">
+   484→                  <div className="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
+   485→                    <span className="text-sm font-bold text-violet-300">{user.name.slice(0, 2).toUpperCase()}</span>
+   486→                  </div>
+   487→                  <div className="flex-1 min-w-0">
+   488→                    <p className="text-sm font-semibold text-white truncate">{user.name}</p>
+   489→                    <button onClick={() => setShowCodes(prev => ({ ...prev, [user.id]: !prev[user.id] }))}
+   490→                      className="flex items-center gap-1 text-[10px] text-zinc-500 hover:text-zinc-400 transition-colors mt-0.5">
+   491→                      <Key className="w-2.5 h-2.5" />
+   492→                      {showCodes[user.id] ? 'Chhupo' : 'Code + Link Dekho'}
+   493→                    </button>
+   494→                  </div>
+   495→                  <div className="flex items-center gap-1.5 flex-shrink-0">
+   496→                    <button onClick={() => { setEditingPin(user.id); setNewPin(''); }}
+   497→                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-amber-400 transition-colors" title="PIN Badlo">
+   498→                      <Pencil className="w-3.5 h-3.5" />
+   499→                    </button>
+   500→                    <button onClick={() => handleRegenerate(user.id)}
+   501→                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-violet-400 transition-colors" title="Naya Code">
+   502→                      <RefreshCw className="w-3.5 h-3.5" />
+   503→                    </button>
+   504→                    <button onClick={() => handleDelete(user.id)} disabled={deleting === user.id}
+   505→                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors disabled:opacity-40" title="Delete">
+   506→                      {deleting === user.id ? <div className="w-3.5 h-3.5 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+   507→                    </button>
+   508→                  </div>
+   509→                </div>
+   510→
+   511→                {/* Show code + copy */}
+   512→                {showCodes[user.id] && (
+   513→                  <div className="mt-3 pt-3 border-t border-zinc-700/50 flex items-center justify-between">
+   514→                    <div>
+   515→                      <span className="text-[11px] font-mono font-bold text-emerald-400 tracking-wider">{user.accessCode}</span>
+   516→                      {copiedId === user.id && <span className="text-[9px] text-emerald-400 ml-2">Copied!</span>}
+   517→                    </div>
+   518→                    <button onClick={() => handleCopy(user.accessCode, user.id)}
+   519→                      className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-400 font-medium">
+   520→                      Copy Link
+   521→                    </button>
+   522→                  </div>
+   523→                )}
+   524→
+   525→                {/* Edit PIN inline */}
+   526→                {editingPin === user.id && (
+   527→                  <div className="mt-3 pt-3 border-t border-zinc-700/50">
+   528→                    <p className="text-[10px] text-zinc-500 mb-2">Naya PIN (4-digit):</p>
+   529→                    <div className="flex items-center gap-2">
+   530→                      <input type="text" inputMode="numeric" maxLength={4} value={newPin}
+   531→                        onChange={e => setNewPin(e.target.value.replace(/\D/g, ''))}
+   532→                        placeholder="••••"
+   533→                        className="flex-1 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm font-mono tracking-widest text-center outline-none focus:border-violet-500/40" />
+   534→                      <button onClick={() => handleSavePin(user.id)} disabled={newPin.length !== 4 || pinSaving}
+   535→                        className="w-9 h-9 rounded-lg bg-violet-600 flex items-center justify-center disabled:opacity-40">
+   536→                        {pinSaving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4 text-white" />}
+   537→                      </button>
+   538→                      <button onClick={() => { setEditingPin(null); setNewPin(''); }}
+   539→                        className="w-9 h-9 rounded-lg bg-zinc-700/50 flex items-center justify-center">
+   540→                        <X className="w-4 h-4 text-zinc-400" />
+   541→                      </button>
+   542→                    </div>
+   543→                  </div>
+   544→                )}
+   545→              </div>
+   546→            ))
+   547→          )}
+   548→        </div>
+   549→
+   550→        {/* Add user button */}
+   551→        <div className="p-4 border-t border-zinc-800 flex-shrink-0">
+   552→          <button onClick={handleAddUser}
+   553→            className="w-full py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm active:bg-violet-700 transition-colors flex items-center justify-center gap-2">
+   554→            <UserPlus className="w-4 h-4" />
+   555→            Naya User Add Karo
+   556→          </button>
+   557→        </div>
+   558→      </div>
+   559→    </div>
+   560→  );
+   561→}
+   562→
+   563→// ============ ADD USER (full screen, triggered from manage overlay) ============
+   564→// Reuses AddUserScreen above
+   565→
+   566→// ============ MAIN ============
+   567→const OVERLAY = new Set(['manage-users', 'add-user', 'user-created']);
+   568→
+   569→export default function LoginScreen() {
+   570→  const { authStatus, checkAuth } = useAuthStore();
+   571→  useEffect(() => {
+   572→    // Don't re-check auth when showing as overlay (admin is still unlocked)
+   573→    if (!OVERLAY.has(authStatus)) checkAuth();
+   574→  }, [checkAuth, authStatus]);
+   575→
+   576→  if (authStatus === 'checking') return (
+   577→    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0f]">
+   578→      <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+   579→    </div>
+   580→  );
+   581→
+   582→  if (authStatus === 'setup-admin') return <AdminSetupScreen />;
+   583→  if (authStatus === 'add-user') return <AddUserScreen />;
+   584→  if (authStatus === 'user-created') return <UserCreatedScreen />;
+   585→  if (authStatus === 'manage-users') return <ManageUsersOverlay />;
+   586→  // admin-login, code-login, locked — all show PIN screen
+   587→  return <PinLoginScreen />;
+   588→}

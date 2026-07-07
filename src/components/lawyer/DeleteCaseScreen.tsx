@@ -4,9 +4,9 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { useLawyerStore } from '@/store/lawyer-store';
 import type { CaseEntry } from '@/lib/types';
 import { formatCurrency, formatDate } from '@/lib/utils-lawyer';
-import { ArrowLeft, Trash2, Search, AlertTriangle, Undo2 } from 'lucide-react';
+import { ArrowLeft, Trash2, Search, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
-import { pauseCloudForUndo } from '@/app/page';
+import { pauseCloudForUndo } from '@/lib/cloud-backup';
 
 export default function DeleteCaseScreen() {
   const cases = useLawyerStore(s => s.cases);

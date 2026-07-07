@@ -37,3 +37,25 @@ Stage Summary:
 - DSN configured, error reporting active
 - Local fallback (last 50 errors in localStorage) still works
 - App runs clean with zero errors
+
+---
+Task ID: 2
+Agent: Main
+Task: Final quality audit and bug fixes
+
+Work Log:
+- Ran comprehensive code review (20 files reviewed)
+- Fixed CRITICAL: Wrong Toaster component — layout.tsx imported shadcn `toaster` instead of sonner `Toaster`, making ALL toasts invisible
+- Fixed: Moved `pauseCloudForUndo` from page.tsx (architectural anti-pattern) to cloud-backup.ts utility
+- Fixed: Delete case now also removes associated expenses from Zustand store (prevented orphaned expenses)
+- Fixed: Removed duplicate `initSentry()` call with PLACEHOLDER DSN in page.tsx
+- Fixed: Removed invalid `enablePerformanceMonitoring` Sentry option
+- Fixed: Cleaned unused imports — `Undo2` (DeleteCaseScreen), `resetKey`/`innerKey` (CaseDetail), `getAnalytics`/`isSupported`/`initAnalytics` (firebase.ts)
+- Fixed: Removed Prisma `log: ['query']` that was logging all sensitive data to console
+- Fixed: Incorrect comment "20s" → "10s" in autoBackup
+
+Stage Summary:
+- 10 issues fixed (1 critical, 4 high, 5 medium/low)
+- Zero lint errors, zero console errors, zero dev log errors
+- App verified in browser: renders correctly, 4-digit PIN, sonner toasts active
+- Architecture improved: no more cross-page imports for utility functions

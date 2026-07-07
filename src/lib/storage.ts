@@ -312,6 +312,8 @@ export async function deleteCaseFromDB(caseId: string): Promise<boolean> {
   } catch { return false; }
 }
 
+
+
 // ============ EXPENSES ============
 
 export async function loadExpenses(): Promise<ExpenseEntry[]> {

@@ -13,8 +13,6 @@ export const initSentry = () => {
     environment: process.env.NODE_ENV || 'development',
     // Capture 100% of errors in dev, 50% in prod to save quota
     tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.5 : 1.0,
-    // Only send errors, not performance (saves quota)
-    enablePerformanceMonitoring: false,
     // Group similar errors
     maxBreadcrumbs: 5,
     // Don't send local dev URLs

@@ -105,6 +105,29 @@ export function isCloudReady(): boolean {
   return isFirebaseReady();
 }
 
+// ============ UNDO-PAUSE STATE ============
+// When a case is deleted with undo, cloud backup is paused for 10s
+// so the deleted case isn't immediately backed up to cloud
+let _undoPaused = false;
+let _undoTimer: ReturnType<typeof setTimeout> | null = null;
+
+/** Pause cloud backup for 10 seconds (called before case delete) */
+export function pauseCloudForUndo(): void {
+  _undoPaused = true;
+  if (_undoTimer) { clearTimeout(_undoTimer); _undoTimer = null; }
+  _undoTimer = setTimeout(() => { _undoPaused = false; }, 10000);
+}
+
+/** Check if cloud backup is currently paused for undo */
+export function isUndoPaused(): boolean {
+  return _undoPaused;
+}
+
+/** Clear the cloud timer (called by autoBackup before setting a new one) */
+export function clearCloudUndoTimer(): void {
+  if (_undoTimer) { clearTimeout(_undoTimer); _undoTimer = null; }
+}
+
 /** Get raw (encrypted) backup data + metadata — for admin download */
 export async function getRawBackup(userId: string): Promise<{
   encrypted: string;

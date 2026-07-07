@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/auth-store';
 import { getTodayCases } from '@/lib/utils-lawyer';
 import { saveCases, saveExpenses } from '@/lib/storage';
 import { hasEncryptionKey, getCurrentUserId } from '@/lib/auth';
-import { saveToCloud, loadFromCloud, getCloudInfo, isCloudReady, type CloudBackupInfo } from '@/lib/cloud-backup';
+import { saveToCloud, loadFromCloud, getCloudInfo, isCloudReady, isUndoPaused, clearCloudUndoTimer, type CloudBackupInfo } from '@/lib/cloud-backup';
 import HomeScreen from '@/components/lawyer/HomeScreen';
 import CaseList from '@/components/lawyer/CaseList';
 import PendingFeeList from '@/components/lawyer/PendingFeeList';
@@ -212,22 +212,12 @@ function isOverlayStatus(s: string): boolean {
   return (OVERLAY_STATUSES as readonly string[]).includes(s);
 }
 
-// Auto-backup: silently saves to localStorage (500ms) + Firebase (20s if undo pending, else 3s)
-let _undoPaused = false;
-let _cloudTimer: ReturnType<typeof setTimeout> | null = null;
-
-const pauseCloudForUndoExport = () => {
-  _undoPaused = true;
-  if (_cloudTimer) { clearTimeout(_cloudTimer); _cloudTimer = null; }
-  setTimeout(() => { _undoPaused = false; }, 10000);
-};
-export { pauseCloudForUndoExport as pauseCloudForUndo };
-
 const autoBackup = (() => {
   let lastLocalJson = '';
   let localTimer: ReturnType<typeof setTimeout> | null = null;
 
   let lastCloudJson = '';
+  let cloudTimer: ReturnType<typeof setTimeout> | null = null;
 
   return (cases: unknown[], expenses: unknown[], userName: string, userId: string | null) => {
     const data = JSON.stringify({ cases, expenses });
@@ -243,11 +233,12 @@ const autoBackup = (() => {
       } catch { /* storage full */ }
     }, 500);
 
-    // Cloud backup — 20s when undo active (give user time), else 3s
+    // Cloud backup — 10s when undo active (give user time), else 3s
     if (!userId) return;
-    if (_cloudTimer) clearTimeout(_cloudTimer);
-    const cloudDelay = _undoPaused ? 10000 : 3000;
-    _cloudTimer = setTimeout(() => {
+    if (cloudTimer) clearTimeout(cloudTimer);
+    clearCloudUndoTimer();
+    const cloudDelay = isUndoPaused() ? 10000 : 3000;
+    cloudTimer = setTimeout(() => {
       if (data === lastCloudJson) return;
       lastCloudJson = data;
       saveToCloud(userId, cases, expenses).catch(() => {});
@@ -273,11 +264,6 @@ export default function Home() {
   const [cloudRestoring, setCloudRestoring] = useState(false);
   const [showCloudPrompt, setShowCloudPrompt] = useState(false);
   const [cloudCaseCount, setCloudCaseCount] = useState(0);
-
-  // Init Sentry on mount
-  useEffect(() => {
-    import('@/lib/sentry').then(m => m.initSentry('https://PLACEHOLDER@sentry.io/PLACEHOLDER')).catch(() => {});
-  }, []);
 
   useEffect(() => { checkAuth(); }, [checkAuth]);
 

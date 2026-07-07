@@ -197,7 +197,9 @@ export const useLawyerStore = create<LawyerStore>((set, get) => ({
     try {
       const state = get();
       const newCases = state.cases.filter(c => c.caseId !== caseId);
-      set({ cases: newCases, currentView: 'home' });
+      // Also remove associated expenses so they don't become orphaned
+      const newExpenses = state.expenses.filter(e => e.caseId !== caseId);
+      set({ cases: newCases, expenses: newExpenses, currentView: 'home' });
       deleteCaseFromDB(caseId).catch(() => {});
       return true;
     } catch {

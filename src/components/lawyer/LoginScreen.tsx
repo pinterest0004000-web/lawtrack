@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthStore } from '@/store/auth-store';
 import { regenerateAccessCode, updateUserPin } from '@/lib/auth';
-import { Shield, Lock, Eye, EyeOff, AlertTriangle, ArrowLeft, Copy, RefreshCw, Trash2, Key, Users, UserPlus, X, Pencil, Check, Crown, CloudDownload } from 'lucide-react';
-import { getRawBackup, isCloudReady } from '@/lib/cloud-backup';
+import { Shield, Lock, Eye, EyeOff, AlertTriangle, ArrowLeft, Copy, RefreshCw, Trash2, Key, Users, UserPlus, X, Pencil, Check, Crown } from 'lucide-react';
+
 
 function PinDots({ filled, shake }: { filled: number; shake: boolean }) {
   return (
@@ -399,7 +399,6 @@ function ManageUsersOverlay() {
   const [editingPin, setEditingPin] = useState<string | null>(null);
   const [newPin, setNewPin] = useState('');
   const [pinSaving, setPinSaving] = useState(false);
-  const [downloading, setDownloading] = useState<string | null>(null);
 
   const regularUsers = users.filter(u => !u.isAdmin);
 
@@ -434,26 +433,7 @@ function ManageUsersOverlay() {
     useAuthStore.setState({ authStatus: 'add-user' });
   };
 
-  const handleDownloadBackup = async (userId: string, userName: string) => {
-    if (!isCloudReady()) return;
-    setDownloading(userId);
-    try {
-      const raw = await getRawBackup(userId);
-      if (!raw) { setDownloading(null); return; }
-      // Download as encrypted JSON file
-      const fileData = JSON.stringify({ _type: 'lawtrack_backup', _user: userName, _downloaded: Date.now(), encrypted: raw.encrypted, timestamp: raw.timestamp, caseCount: raw.caseCount, expenseCount: raw.expenseCount }, null, 2);
-      const blob = new Blob([fileData], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `LawTrack_Backup_${userName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch { /* silent */ }
-    setDownloading(null);
-  };
+
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center">

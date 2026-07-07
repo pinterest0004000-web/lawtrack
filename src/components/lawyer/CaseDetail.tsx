@@ -5,7 +5,7 @@ import { useLawyerStore } from '@/store/lawyer-store';
 import { formatCurrency, formatDate, getTodayStr } from '@/lib/utils-lawyer';
 import { ArrowLeft, Phone, Calendar, MapPin, Scale, Shield, FileText, IndianRupee, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { pauseCloudForUndo } from '@/app/page';
+import { pauseCloudForUndo } from '@/lib/cloud-backup';
 
 type TabType = 'info' | 'history' | 'fee' | 'expense';
 
@@ -29,15 +29,11 @@ export default function CaseDetail() {
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [historyPage, setHistoryPage] = useState(0);
-  const [resetKey, setResetKey] = useState(0);
   const mountedRef = useRef(true);
 
   useEffect(() => {
     return () => { mountedRef.current = false; };
   }, []);
-
-  // Use selectedCaseId as a key for inner component to reset
-  const innerKey = selectedCaseId || 'none';
 
   const caseData = useMemo(() => {
     if (!selectedCaseId) return null;

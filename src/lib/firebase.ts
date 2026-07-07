@@ -1,5 +1,4 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth, signInAnonymously, onAuthStateChanged, type User } from 'firebase/auth';
 
@@ -52,18 +51,6 @@ export async function firebaseSignOut(): Promise<void> {
   try { await auth.signOut(); } catch { /* silent */ }
   firebaseUser = null;
 }
-
-// Analytics (only if supported)
-export const initAnalytics = async () => {
-  try {
-    if (typeof window === 'undefined' || !app) return null;
-    const supported = await isSupported();
-    if (supported) return getAnalytics(app);
-    return null;
-  } catch {
-    return null;
-  }
-};
 
 // Error reporting — sends to Sentry + stores locally as fallback
 export const reportError = (error: Error, context?: string) => {
