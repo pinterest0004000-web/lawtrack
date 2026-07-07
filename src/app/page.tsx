@@ -7,6 +7,7 @@ import { getTodayCases } from '@/lib/utils-lawyer';
 import { saveCases, saveExpenses } from '@/lib/storage';
 import { hasEncryptionKey, getCurrentUserId } from '@/lib/auth';
 import { saveToCloud, loadFromCloud, getCloudInfo, isCloudReady, isUndoPaused, clearCloudUndoTimer, type CloudBackupInfo } from '@/lib/cloud-backup';
+import { initAutoSync, destroyAutoSync, markDirty, onSyncStatusChange, type SyncStatus } from '@/lib/offline-sync';
 import HomeScreen from '@/components/lawyer/HomeScreen';
 import CaseList from '@/components/lawyer/CaseList';
 import PendingFeeList from '@/components/lawyer/PendingFeeList';
@@ -18,7 +19,7 @@ import CaseDetail from '@/components/lawyer/CaseDetail';
 import DeleteCaseScreen from '@/components/lawyer/DeleteCaseScreen';
 import LoginScreen from '@/components/lawyer/LoginScreen';
 import { reportError } from '@/lib/firebase';
-import { LogOut, Users, Cloud, CloudOff, HardDriveDownload } from 'lucide-react';
+import { LogOut, Users, Cloud, CloudOff, HardDriveDownload, Wifi, WifiOff, RefreshCw, CheckCircle2 } from 'lucide-react';
 import AppToaster, { toast } from '@/components/AppToaster';
 
 function ViewRouter() {
@@ -205,6 +206,42 @@ function HeaderMenu() {
   );
 }
 
+// ============ SYNC STATUS INDICATOR ============
+function SyncIndicator() {
+  const [status, setStatus] = useState<SyncStatus>('synced');
+  const [online, setOnline] = useState(true);
+
+  useEffect(() => {
+    const unsub = onSyncStatusChange((s, o) => {
+      setStatus(s);
+      setOnline(o);
+    });
+    return unsub;
+  }, []);
+
+  // Don't show if cloud is not configured
+  if (!isCloudReady()) return null;
+  // Don't show when synced and online (clean state)
+  if (status === 'synced' && online) return null;
+
+  const config = {
+    synced: { icon: <CheckCircle2 className="w-3 h-3 text-emerald-400" />, text: 'Synced', color: 'text-emerald-400' },
+    syncing: { icon: <RefreshCw className="w-3 h-3 text-sky-400 animate-spin" />, text: 'Syncing...', color: 'text-sky-400' },
+    pending: { icon: <Cloud className="w-3 h-3 text-amber-400" />, text: 'Pending sync', color: 'text-amber-400' },
+    offline: { icon: <WifiOff className="w-3 h-3 text-orange-400" />, text: 'Offline - auto sync jab internet aayega', color: 'text-orange-400' },
+    error: { icon: <Wifi className="w-3 h-3 text-red-400" />, text: 'Sync error - retrying...', color: 'text-red-400' },
+  };
+
+  const c = config[status] || config.offline;
+
+  return (
+    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/5">
+      {c.icon}
+      <span className={`text-[10px] font-medium ${c.color}`}>{c.text}</span>
+    </div>
+  );
+}
+
 // These statuses show as overlay on top of the unlocked app
 const OVERLAY_STATUSES = ['manage-users', 'add-user', 'user-created'] as const;
 
@@ -233,7 +270,7 @@ const autoBackup = (() => {
       } catch { /* storage full */ }
     }, 500);
 
-    // Cloud backup — 10s when undo active (give user time), else 3s
+    // Cloud backup — handled by offline-sync module (auto-syncs when online)
     if (!userId) return;
     if (cloudTimer) clearTimeout(cloudTimer);
     clearCloudUndoTimer();
@@ -241,7 +278,9 @@ const autoBackup = (() => {
     cloudTimer = setTimeout(() => {
       if (data === lastCloudJson) return;
       lastCloudJson = data;
-      saveToCloud(userId, cases, expenses).catch(() => {});
+      // Use markDirty instead of direct saveToCloud
+      // This will queue sync if offline, or sync now if online
+      markDirty();
     }, cloudDelay);
   };
 })();
@@ -266,6 +305,29 @@ export default function Home() {
   const [cloudCaseCount, setCloudCaseCount] = useState(0);
 
   useEffect(() => { checkAuth(); }, [checkAuth]);
+
+  // Initialize auto-sync after unlock
+  useEffect(() => {
+    if (authStatus !== 'unlocked') {
+      destroyAutoSync();
+      return;
+    }
+    const userId = getCurrentUserId();
+    if (!userId || !isCloudReady()) return;
+
+    initAutoSync(
+      (cases, expenses) => saveToCloud(userId, cases, expenses),
+      () => {
+        const s = useLawyerStore.getState();
+        return { cases: s.cases, expenses: s.expenses };
+      }
+    );
+
+    // Do an initial sync
+    markDirty();
+
+    return () => destroyAutoSync();
+  }, [authStatus]);
 
   // Register service worker for offline support
   useEffect(() => {
@@ -384,10 +446,13 @@ export default function Home() {
         <div className="w-10 flex-shrink-0 flex justify-start">
           <HeaderMenu />
         </div>
-        {/* Center: INSAF + icon */}
-        <div className="flex-1 flex items-center justify-center gap-2">
-          <span className="text-[26px] leading-none">⚖️</span>
-          <h1 className="text-2xl font-black text-white tracking-tight leading-none" style={{ textShadow: '0 0 30px rgba(255,255,255,0.06)' }}>INSAF</h1>
+        {/* Center: INSAF + icon + sync status */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-0.5">
+          <div className="flex items-center gap-2">
+            <span className="text-[26px] leading-none">⚖️</span>
+            <h1 className="text-2xl font-black text-white tracking-tight leading-none" style={{ textShadow: '0 0 30px rgba(255,255,255,0.06)' }}>INSAF</h1>
+          </div>
+          <SyncIndicator />
         </div>
         {/* Right spacer for centering */}
         <div className="w-10 flex-shrink-0" />
