@@ -43,6 +43,7 @@ db/
 # tool results & screenshots
 tool-results/
 *.png
+!public/logo.png
 *.webm
 
 # typescript
