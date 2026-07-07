@@ -121,7 +121,7 @@ export default function DeleteCaseScreen() {
       {/* Warning */}
       <div className="flex items-center gap-2 mb-3 px-1">
         <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-        <p className="text-[11px] text-amber-400/80">Tap twice to delete • Undo available for 5 sec</p>
+        <p className="text-[11px] text-amber-400/80">Tap twice to delete • Undo available for 10 sec</p>
       </div>
 
       {/* List */}
