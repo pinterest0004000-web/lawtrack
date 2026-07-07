@@ -246,7 +246,7 @@ const autoBackup = (() => {
     // Cloud backup — 20s when undo active (give user time), else 3s
     if (!userId) return;
     if (_cloudTimer) clearTimeout(_cloudTimer);
-    const cloudDelay = _undoPaused ? 20000 : 3000;
+    const cloudDelay = _undoPaused ? 10000 : 3000;
     _cloudTimer = setTimeout(() => {
       if (data === lastCloudJson) return;
       lastCloudJson = data;
