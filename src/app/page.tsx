@@ -377,10 +377,10 @@ export default function Home() {
         <div className="w-10 flex-shrink-0 flex justify-start">
           <HeaderMenu />
         </div>
-        {/* Center: LawTrack + icon */}
+        {/* Center: INSAF + icon */}
         <div className="flex-1 flex items-center justify-center gap-2">
           <span className="text-[26px] leading-none">⚖️</span>
-          <h1 className="text-2xl font-black text-white tracking-tight leading-none" style={{ textShadow: '0 0 30px rgba(255,255,255,0.06)' }}>LawTrack</h1>
+          <h1 className="text-2xl font-black text-white tracking-tight leading-none" style={{ textShadow: '0 0 30px rgba(255,255,255,0.06)' }}>INSAF</h1>
         </div>
         {/* Right spacer for centering */}
         <div className="w-10 flex-shrink-0" />

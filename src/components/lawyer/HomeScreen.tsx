@@ -78,9 +78,9 @@ export default function HomeScreen() {
     <div className="animate-fade-in px-3 sm:px-4 pt-3 pb-2">
       {/* Header with Logo */}
       <div className="mb-4 flex items-center gap-3">
-        <img src="/logo.png" alt="LawTrack" className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl" />
+        <img src="/logo.png" alt="INSAF" className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl" />
         <div>
-          <h1 className="text-lg sm:text-xl font-bold text-white">LawTrack</h1>
+          <h1 className="text-lg sm:text-xl font-bold text-white">INSAF</h1>
           <p className="text-xs sm:text-sm text-zinc-500">
             {new Date(todayStr + 'T00:00:00').toLocaleDateString('en-IN', {
               weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'

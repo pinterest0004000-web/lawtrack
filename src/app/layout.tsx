@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LawTrack - Lawyer Case Manager",
+  title: "INSAF - Lawyer Case Manager",
   description: "Professional case management for lawyers",
   icons: {
     icon: "/logo.png",

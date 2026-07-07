@@ -33,7 +33,7 @@ export const captureError = (error: Error, context?: string) => {
   initSentry(); // ensure init
   Sentry.captureException(error, {
     tags: {
-      app: 'LawTrack',
+      app: 'INSAF',
       context: context || 'unknown',
     },
     extra: {

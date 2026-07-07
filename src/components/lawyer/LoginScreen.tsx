@@ -147,7 +147,7 @@ function AdminSetupScreen() {
         </div>
       )}
       <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
-        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Secured with AES-256 Encryption</p>
+        <p className="text-[10px] text-zinc-700 text-center">INSAF • Secured with AES-256 Encryption</p>
       </footer>
     </div>
   );
@@ -242,7 +242,7 @@ function PinLoginScreen() {
       </div>
 
       <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
-        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Secured with AES-256 Encryption</p>
+        <p className="text-[10px] text-zinc-700 text-center">INSAF • Secured with AES-256 Encryption</p>
       </footer>
     </div>
   );
@@ -326,7 +326,7 @@ function AddUserScreen() {
         </div>
       )}
       <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
-        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Secured with AES-256 Encryption</p>
+        <p className="text-[10px] text-zinc-700 text-center">INSAF • Secured with AES-256 Encryption</p>
       </footer>
     </div>
   );
@@ -384,7 +384,7 @@ function UserCreatedScreen() {
         </div>
       </div>
       <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
-        <p className="text-[10px] text-zinc-700 text-center">LawTrack • Secured with AES-256 Encryption</p>
+        <p className="text-[10px] text-zinc-700 text-center">INSAF • Secured with AES-256 Encryption</p>
       </footer>
     </div>
   );

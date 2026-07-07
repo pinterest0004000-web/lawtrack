@@ -97,7 +97,7 @@ export async function firebaseSignOut(): Promise<void> {
 // Error reporting — sends to Sentry + stores locally as fallback
 export const reportError = (error: Error, context?: string) => {
   try {
-    const msg = `[LawTrack Error${context ? ` - ${context}` : ''}] ${error.message}`;
+    const msg = `[INSAF Error${context ? ` - ${context}` : ''}] ${error.message}`;
     console.error(msg, error.stack);
 
     // Send to Sentry (client-side only)
