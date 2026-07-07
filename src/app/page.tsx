@@ -267,6 +267,13 @@ export default function Home() {
 
   useEffect(() => { checkAuth(); }, [checkAuth]);
 
+  // Register service worker for offline support
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  }, []);
+
   // Init data store after auth becomes unlocked, reset on user change
   useEffect(() => {
     if (authStatus !== 'unlocked' && !isOverlayStatus(authStatus)) {

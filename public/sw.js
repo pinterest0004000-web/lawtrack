@@ -1,5 +1,5 @@
 // INSAF - Service Worker for Offline Support
-const CACHE_NAME = 'insaf-v3';
+const CACHE_NAME = 'insaf-v4';
 
 // Pre-cache critical assets on install
 const PRECACHE_URLS = [
