@@ -181,6 +181,7 @@ export async function createAdmin(name: string, pin: string): Promise<UserProfil
     _currentUserId = user.id;
     _currentUserName = user.name;
     _currentIsAdmin = true;
+    import('./firebase').then(m => m.firebaseAnonSignIn(user.id)).catch(() => {});
     return user;
   } catch { return null; }
 }
@@ -259,6 +260,8 @@ export async function verifyUserPin(userId: string, pin: string): Promise<{
     _currentUserId = userId;
     _currentUserName = user.name;
     _currentIsAdmin = user.isAdmin;
+    // Firebase anonymous auth for Firestore rules
+    import('./firebase').then(m => m.firebaseAnonSignIn(userId)).catch(() => {});
     return { success: true, locked: false, remainingAttempts: MAX_ATTEMPTS, lockoutRemaining: 0, userName: user.name, isAdmin: user.isAdmin };
   }
 
@@ -299,5 +302,6 @@ export async function regenerateAccessCode(userId: string): Promise<string | nul
 export function lockApp(): void {
   _encryptionKey = null;
   _currentIsAdmin = false;
+  if (typeof window !== 'undefined') import('./firebase').then(m => m.firebaseSignOut()).catch(() => {});
 }
 export function isUnlocked(): boolean { return _encryptionKey !== null; }

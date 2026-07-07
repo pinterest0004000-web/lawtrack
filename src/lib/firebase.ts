@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged, type User } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCrpK5HE3a29d84peHoxerpbybeXulKla4",
@@ -20,8 +21,37 @@ try {
   console.error('Firebase init error:', e);
 }
 
+// Auth
+export const auth = app ? getAuth(app) : null;
+
 // Firestore for cloud backup
 export const db = app ? getFirestore(app) : null;
+
+// Track Firebase auth state
+export let firebaseUser: User | null = null;
+if (typeof window !== 'undefined' && auth) {
+  onAuthStateChanged(auth, (user) => { firebaseUser = user; });
+}
+
+/** Sign in anonymously to Firebase Auth — used after PIN verification */
+export async function firebaseAnonSignIn(userId: string): Promise<boolean> {
+  if (!auth) return false;
+  try {
+    // Check if already signed in
+    if (auth.currentUser) return true;
+    await signInAnonymously(auth);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Sign out from Firebase Auth */
+export async function firebaseSignOut(): Promise<void> {
+  if (!auth) return;
+  try { await auth.signOut(); } catch { /* silent */ }
+  firebaseUser = null;
+}
 
 // Analytics (only if supported)
 export const initAnalytics = async () => {

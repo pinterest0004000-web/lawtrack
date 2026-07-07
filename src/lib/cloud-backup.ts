@@ -7,7 +7,7 @@
  */
 
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { db, default as firebaseApp } from './firebase';
+import { db, auth, default as firebaseApp } from './firebase';
 import { encryptData, decryptData } from './auth';
 
 export interface CloudBackupInfo {
@@ -20,7 +20,8 @@ export interface CloudBackupInfo {
 
 // Check if Firebase has real (non-placeholder) config
 function isFirebaseReady(): boolean {
-  if (!db || !firebaseApp) return false;
+  if (!db || !auth) return false;
+  if (!auth.currentUser) return false;
   try {
     const opts = firebaseApp.options;
     if (!opts) return false;
