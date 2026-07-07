@@ -1,6 +1,6 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth, signInAnonymously, onAuthStateChanged, type User } from 'firebase/auth';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged, type Auth, type User } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
@@ -12,33 +12,74 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || ""
 };
 
-let app = null;
+// Lazy initialization — only runs on client side
+let _app: FirebaseApp | null = null;
+let _auth: Auth | null = null;
+let _db: Firestore | null = null;
+let _initAttempted = false;
 
-try {
-  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-} catch (e) {
-  console.error('Firebase init error:', e);
+function initFirebase() {
+  if (_initAttempted || typeof window === 'undefined') return;
+  _initAttempted = true;
+
+  // Skip if no API key configured
+  if (!firebaseConfig.apiKey) {
+    console.warn('Firebase: No API key configured. Cloud backup disabled.');
+    return;
+  }
+
+  try {
+    _app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    _auth = getAuth(_app);
+    _db = getFirestore(_app);
+  } catch (e) {
+    console.error('Firebase init error:', e);
+  }
 }
 
-// Auth
-export const auth = app ? getAuth(app) : null;
+// Getters that lazily initialize
+export function getFirebaseApp(): FirebaseApp | null {
+  initFirebase();
+  return _app;
+}
 
-// Firestore for cloud backup
-export const db = app ? getFirestore(app) : null;
+export function getFirebaseAuth(): Auth | null {
+  initFirebase();
+  return _auth;
+}
+
+export function getFirebaseDb(): Firestore | null {
+  initFirebase();
+  return _db;
+}
 
 // Track Firebase auth state
 export let firebaseUser: User | null = null;
-if (typeof window !== 'undefined' && auth) {
-  onAuthStateChanged(auth, (user) => { firebaseUser = user; });
+if (typeof window !== 'undefined') {
+  // Delay listener setup to avoid SSR issues
+  if (typeof window !== 'undefined') {
+    const checkAuth = () => {
+      const a = getFirebaseAuth();
+      if (a) {
+        onAuthStateChanged(a, (user) => { firebaseUser = user; });
+      }
+    };
+    // Run after page loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkAuth);
+    } else {
+      checkAuth();
+    }
+  }
 }
 
 /** Sign in anonymously to Firebase Auth — used after PIN verification */
 export async function firebaseAnonSignIn(userId: string): Promise<boolean> {
-  if (!auth) return false;
+  const a = getFirebaseAuth();
+  if (!a) return false;
   try {
-    // Check if already signed in
-    if (auth.currentUser) return true;
-    await signInAnonymously(auth);
+    if (a.currentUser) return true;
+    await signInAnonymously(a);
     return true;
   } catch {
     return false;
@@ -47,8 +88,9 @@ export async function firebaseAnonSignIn(userId: string): Promise<boolean> {
 
 /** Sign out from Firebase Auth */
 export async function firebaseSignOut(): Promise<void> {
-  if (!auth) return;
-  try { await auth.signOut(); } catch { /* silent */ }
+  const a = getFirebaseAuth();
+  if (!a) return;
+  try { await a.signOut(); } catch { /* silent */ }
   firebaseUser = null;
 }
 
@@ -88,5 +130,3 @@ export const reportError = (error: Error, context?: string) => {
     }
   } catch { /* silent */ }
 };
-
-export default app;

@@ -7,7 +7,7 @@
  */
 
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { db, auth, default as firebaseApp } from './firebase';
+import { getFirebaseDb, getFirebaseAuth, getFirebaseApp } from './firebase';
 import { encryptData, decryptData } from './auth';
 
 export interface CloudBackupInfo {
@@ -20,13 +20,15 @@ export interface CloudBackupInfo {
 
 // Check if Firebase has real (non-placeholder) config
 function isFirebaseReady(): boolean {
+  const db = getFirebaseDb();
+  const auth = getFirebaseAuth();
   if (!db || !auth) return false;
   if (!auth.currentUser) return false;
   try {
-    const opts = firebaseApp.options;
+    const app = getFirebaseApp();
+    const opts = app?.options;
     if (!opts) return false;
     const key = opts.apiKey || '';
-    // Placeholder detection
     if (key.includes('placeholder') || key.includes('000000') || key.length < 20) return false;
     return true;
   } catch {
@@ -40,11 +42,12 @@ export async function saveToCloud(
   cases: unknown[],
   expenses: unknown[]
 ): Promise<boolean> {
-  if (!isFirebaseReady()) return false;
+  const db = getFirebaseDb();
+  if (!isFirebaseReady() || !db) return false;
   try {
     const json = JSON.stringify({ cases, expenses });
     const encrypted = await encryptData(json);
-    await setDoc(doc(db!, 'backups', userId), {
+    await setDoc(doc(db, 'backups', userId), {
       d: encrypted,
       t: Date.now(),
       c: cases.length,
@@ -60,9 +63,10 @@ export async function saveToCloud(
 export async function loadFromCloud(
   userId: string
 ): Promise<{ cases: unknown[]; expenses: unknown[] } | null> {
-  if (!isFirebaseReady()) return null;
+  const db = getFirebaseDb();
+  if (!isFirebaseReady() || !db) return null;
   try {
-    const snap = await getDoc(doc(db!, 'backups', userId));
+    const snap = await getDoc(doc(db, 'backups', userId));
     if (!snap.exists()) return null;
     const data = snap.data();
     if (!data?.d) return null;
@@ -80,11 +84,12 @@ export async function loadFromCloud(
 
 /** Get backup metadata without decrypting */
 export async function getCloudInfo(userId: string): Promise<CloudBackupInfo> {
-  if (!isFirebaseReady()) {
+  const db = getFirebaseDb();
+  if (!isFirebaseReady() || !db) {
     return { exists: false, timestamp: null, caseCount: 0, expenseCount: 0, configured: false };
   }
   try {
-    const snap = await getDoc(doc(db!, 'backups', userId));
+    const snap = await getDoc(doc(db, 'backups', userId));
     if (!snap.exists()) {
       return { exists: false, timestamp: null, caseCount: 0, expenseCount: 0, configured: true };
     }
@@ -135,9 +140,10 @@ export async function getRawBackup(userId: string): Promise<{
   caseCount: number;
   expenseCount: number;
 } | null> {
-  if (!isFirebaseReady()) return null;
+  const db = getFirebaseDb();
+  if (!isFirebaseReady() || !db) return null;
   try {
-    const snap = await getDoc(doc(db!, 'backups', userId));
+    const snap = await getDoc(doc(db, 'backups', userId));
     if (!snap.exists()) return null;
     const d = snap.data();
     if (!d?.d) return null;
