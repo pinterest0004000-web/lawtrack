@@ -466,7 +466,7 @@ export default function Home() {
         </div>
         {/* Center: Logo + INSAF + subtitle */}
         <div className="flex-1 flex items-center gap-2.5 justify-center">
-          <img src="/logo.png" alt="INSAF" className="w-9 h-9 rounded-full logo-glow" />
+          <img src="/logo.png" alt="INSAF" className="w-9 h-9 rounded-full logo-glow" suppressHydrationWarning />
           <div className="flex flex-col justify-center">
             <h1 className="text-xl font-bold text-[#D4A843] tracking-tight leading-none">INSAF</h1>
             <p className="text-[10px] text-slate-500 mt-0.5">Daily Case Manager</p>
