@@ -3,11 +3,178 @@
 import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import { formatCurrency, formatDate, getTodayStr } from '@/lib/utils-lawyer';
-import { ArrowLeft, Phone, Calendar, MapPin, Scale, Shield, FileText, IndianRupee, Trash2, Plus } from 'lucide-react';
+import { ArrowLeft, Phone, Calendar, MapPin, Scale, Shield, FileText, IndianRupee, Trash2, Plus, Download } from 'lucide-react';
 import { toast } from '@/components/AppToaster';
 import { pauseCloudForUndo } from '@/lib/cloud-backup';
 
 type TabType = 'info' | 'history' | 'fee' | 'expense';
+
+async function generateCasePDF(c: NonNullable<ReturnType<typeof useLawyerStore.getState>['cases'][number]>) {
+  const { default: jsPDF } = await import('jspdf');
+  const doc = new jsPDF();
+  const gold = [212, 168, 67];
+  const dark = [20, 28, 43];
+  const pageW = doc.internal.pageSize.getWidth();
+
+  // Header bar
+  doc.setFillColor(...dark);
+  doc.rect(0, 0, pageW, 38, 'F');
+  doc.setFillColor(...gold);
+  doc.rect(0, 38, pageW, 2, 'F');
+
+  // Title
+  doc.setTextColor(...gold);
+  doc.setFontSize(20);
+  doc.setFont('helvetica', 'bold');
+  doc.text('INSAF', 14, 18);
+  doc.setFontSize(9);
+  doc.setTextColor(180, 180, 180);
+  doc.text('Daily Case Manager', 14, 26);
+
+  // Case ID badge
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(12);
+  doc.text(`Case #${c.caseId}`, 14, 34);
+
+  let y = 50;
+  const lh = 8;
+  const left = 14;
+  const right = pageW - 14;
+
+  // Section helper
+  const section = (title: string) => {
+    if (y > 265) { doc.addPage(); y = 20; }
+    doc.setFillColor(...dark);
+    doc.roundedRect(left - 2, y - 4, right - left + 4, 8, 2, 2, 'F');
+    doc.setTextColor(...gold);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, left + 4, y + 1);
+    y += 12;
+  };
+
+  const row = (label: string, value: string, color: number[] = [220, 220, 220]) => {
+    if (y > 275) { doc.addPage(); y = 20; }
+    doc.setTextColor(140, 140, 140);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(label, left, y);
+    doc.setTextColor(...color);
+    doc.setFont('helvetica', 'bold');
+    doc.text(String(value || '-'), left + 40, y);
+    y += lh;
+  };
+
+  // Case Info
+  section('Case Information');
+  row('Case ID:', c.caseId);
+  row('Party Name:', c.partyName);
+  row('Opponent:', c.opponentName);
+  if (c.caseType) row('Case Type:', c.caseType);
+  if (c.section) row('Section:', c.section);
+  row('Police Station:', c.policeStation);
+  row('Entering Date:', formatDate(c.enteringDate));
+  row('Next Date:', formatDate(c.nextDate), gold);
+  if (c.phone) row('Phone:', c.phone);
+
+  y += 4;
+  section('Lawyer & Court');
+  row('Lawyer Name:', c.lawyerName, gold);
+  if (c.judgeName) row('Judge Name:', c.judgeName);
+  if (c.judgeRemarks) {
+    y += 2;
+    doc.setTextColor(140, 140, 140);
+    doc.setFontSize(9);
+    doc.text('Judge Remarks:', left, y);
+    y += lh;
+    doc.setTextColor(220, 220, 220);
+    doc.setFont('helvetica', 'normal');
+    const lines = doc.splitTextToSize(c.judgeRemarks, right - left - 4);
+    for (const line of lines) {
+      if (y > 275) { doc.addPage(); y = 20; }
+      doc.text(line, left + 4, y);
+      y += lh;
+    }
+  }
+
+  y += 4;
+  section('Fee Summary');
+  const totalFee = (c.pendingFee || 0) + (c.totalFeeReceived || 0);
+  row('Total Fee:', formatCurrency(totalFee));
+  row('Received:', formatCurrency(c.totalFeeReceived), [52, 199, 89]);
+  row('Pending:', formatCurrency(c.pendingFee), [255, 107, 107]);
+
+  // Fee History
+  const feeHistory = (c.history || []).filter(h => h.type === 'fee');
+  if (feeHistory.length > 0) {
+    y += 4;
+    section('Fee History');
+    for (const h of feeHistory) {
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.setTextColor(140, 140, 140);
+      doc.setFontSize(8);
+      doc.text(formatDate(h.date), left, y);
+      doc.setTextColor(200, 200, 200);
+      doc.text(h.description, left + 30, y);
+      if (h.amount) {
+        doc.setTextColor(255, 107, 107);
+        doc.text(formatCurrency(h.amount), right, y, { align: 'right' });
+      }
+      y += 7;
+    }
+  }
+
+  // Expense History
+  const expHistory = (c.history || []).filter(h => h.type === 'expense' || h.type === 'case_expense');
+  if (expHistory.length > 0) {
+    y += 4;
+    section('Expense History');
+    for (const h of expHistory) {
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.setTextColor(140, 140, 140);
+      doc.setFontSize(8);
+      doc.text(formatDate(h.date), left, y);
+      doc.setTextColor(200, 200, 200);
+      doc.text(h.description, left + 30, y);
+      if (h.amount) {
+        doc.setTextColor(255, 107, 107);
+        doc.text('-' + formatCurrency(h.amount), right, y, { align: 'right' });
+      }
+      y += 7;
+    }
+  }
+
+  // All Remarks History
+  const remarkHistory = (c.history || []).filter(h => h.type === 'remark');
+  if (remarkHistory.length > 0) {
+    y += 4;
+    section('Remarks History');
+    for (const h of remarkHistory) {
+      if (y > 268) { doc.addPage(); y = 20; }
+      doc.setTextColor(140, 140, 140);
+      doc.setFontSize(8);
+      doc.text(formatDate(h.date), left, y);
+      const remarkLines = doc.splitTextToSize(h.remark || h.description, right - left - 30);
+      doc.setTextColor(200, 200, 200);
+      for (let i = 0; i < Math.min(remarkLines.length, 2); i++) {
+        doc.text(remarkLines[i], left + 30, y);
+        y += 6;
+      }
+      y += 2;
+    }
+  }
+
+  // Footer
+  const pages = doc.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(7);
+    doc.text(`INSAF - Case #${c.caseId} | Generated: ${new Date().toLocaleString('en-IN')}`, pageW / 2, 290, { align: 'center' });
+  }
+
+  doc.save(`INSAF_Case_${c.caseId}.pdf`);
+}
 
 export default function CaseDetail() {
   const selectedCaseId = useLawyerStore(s => s.selectedCaseId);
@@ -187,6 +354,13 @@ export default function CaseDetail() {
           </div>
           <p className="text-xs text-zinc-500 truncate">{caseData.partyName} vs {caseData.opponentName}</p>
         </div>
+        <button
+          onClick={async () => { try { await generateCasePDF(caseData); toast.success('PDF ready!'); } catch { toast.error('PDF fail'); } }}
+          className="feature-box w-9 h-9 rounded-xl bg-[#141c2b] flex items-center justify-center"
+          aria-label="Download PDF"
+        >
+          <Download className="w-4 h-4 text-[#D4A843]" />
+        </button>
       </div>
 
       {/* Tabs */}

@@ -57,7 +57,7 @@ export default function HomeScreen() {
   return (
     <div className="animate-fade-in px-4 pt-3 pb-2">
       {/* Date */}
-      <p className="text-[11px] text-zinc-500 mb-3">
+      <p className="text-[11px] text-zinc-500 mb-3" suppressHydrationWarning>
         {new Date(todayStr + 'T00:00:00').toLocaleDateString('en-IN', {
           weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
         })}
