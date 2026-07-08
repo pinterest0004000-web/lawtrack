@@ -16,6 +16,7 @@ const INITIAL_FORM = {
   enteringDate: getTodayStr(),
   nextDate: '',
   phone: '',
+  judgeName: '',
   judgeRemarks: '',
   totalFee: '',
   paidFee: '',
@@ -90,6 +91,7 @@ export default function AddCaseForm() {
       enteringDate: form.enteringDate,
       nextDate: form.nextDate,
       phone: form.phone.trim(),
+      judgeName: form.judgeName.trim(),
       judgeRemarks: form.judgeRemarks.trim(),
       totalFee: parseFloat(form.totalFee) || 0,
       paidFee: parseFloat(form.paidFee) || 0,
@@ -232,6 +234,12 @@ export default function AddCaseForm() {
                 {formatCurrency(Math.max(0, (parseFloat(form.totalFee) || 0) - (parseFloat(form.paidFee) || 0)))}
               </div>
             </div>
+          </div>
+
+          {/* Judge Name */}
+          <div>
+            <label className="text-xs text-zinc-500 mb-1 block">Judge Name</label>
+            <input type="text" value={form.judgeName} onChange={e => updateField('judgeName', e.target.value)} placeholder="Enter judge name" className={inputClass} />
           </div>
 
           {/* Judge Remarks */}

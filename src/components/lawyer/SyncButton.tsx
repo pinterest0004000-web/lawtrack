@@ -28,6 +28,7 @@ const mapCase = (c: Record<string, unknown>) => ({
   enteringDate: String(c.enteringDate || ''),
   nextDate: String(c.nextDate || ''),
   phone: String(c.phone || ''),
+  judgeName: String(c.judgeName || ''),
   judgeRemarks: String(c.judgeRemarks || ''),
   pendingFee: Number(c.pendingFee) || 0,
   totalFeeReceived: Number(c.totalFeeReceived) || 0,

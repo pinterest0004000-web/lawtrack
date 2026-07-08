@@ -218,6 +218,7 @@ export default function CaseDetail() {
               <InfoRow icon={<Calendar className="w-4 h-4 text-blue-400" />} label="Entered" value={formatDate(caseData.enteringDate)} />
               <InfoRow icon={<Calendar className="w-4 h-4 text-[#D4A843]" />} label="Next Date" value={formatDate(caseData.nextDate)} />
               {caseData.phone && <InfoRow icon={<Phone className="w-4 h-4 text-green-400" />} value={caseData.phone} />}
+              {caseData.judgeName && <InfoRow icon={<Scale className="w-4 h-4 text-purple-400" />} label="Judge" value={caseData.judgeName} />}
             </div>
 
             {/* Current Remarks */}

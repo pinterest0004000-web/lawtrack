@@ -9,6 +9,7 @@ export interface CaseEntry {
   enteringDate: string;
   nextDate: string;
   phone: string;
+  judgeName: string;
   judgeRemarks: string;
   pendingFee: number;
   totalFeeReceived: number;
