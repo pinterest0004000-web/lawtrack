@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import type { ViewType } from '@/lib/types';
 import { getTodayStr, getTodayCases, getCasesWithPendingFee, getTodayExpenses, formatCurrency } from '@/lib/utils-lawyer';
@@ -51,13 +51,10 @@ export default function HomeScreen() {
   const totalPendingAmount = useMemo(() => cases.reduce((s, c) => s + (c.pendingFee || 0), 0), [cases]);
   const todayExpenseAmount = useMemo(() => getTodayExpenses(expenses).reduce((s, e) => s + (e.amount || 0), 0), [expenses]);
   const todayStr = useMemo(() => getTodayStr(), []);
-  const [dateText, setDateText] = useState('');
 
-  useEffect(() => {
-    setDateText(new Date(todayStr + 'T00:00:00').toLocaleDateString('en-IN', {
-      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-    }));
-  }, [todayStr]);
+  const dateText = useMemo(() => new Date(todayStr + 'T00:00:00').toLocaleDateString('en-IN', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  }), [todayStr]);
 
   const navigate = useCallback((view: ViewType) => { setCurrentView(view); }, [setCurrentView]);
 

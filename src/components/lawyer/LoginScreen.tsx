@@ -100,7 +100,7 @@ function AdminSetupScreen() {
           </button>
         )}
 
-        <img src="/logo.png" suppressHydrationWarning alt="INSAF" className="w-24 h-24 rounded-full mb-4 logo-glow" />
+        <img src="/logo.png" alt="INSAF" className="w-24 h-24 rounded-full mb-4 logo-glow" />
 
         {step === 'name' ? (
           <>
@@ -197,7 +197,7 @@ function PinLoginScreen() {
             <span className="text-2xl font-bold text-amber-300">{userName.slice(0, 2).toUpperCase()}</span>
           </div>
         ) : (
-          <img src="/logo.png" suppressHydrationWarning alt="INSAF" className="w-20 h-20 rounded-full mb-3 logo-glow" />
+          <img src="/logo.png" alt="INSAF" className="w-20 h-20 rounded-full mb-3 logo-glow" />
         )}
 
         <h1 className="text-xl font-bold text-white mb-0.5">
