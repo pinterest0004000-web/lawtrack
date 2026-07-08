@@ -44,7 +44,7 @@ const COLORS = {
   success: 'bg-emerald-600 border-emerald-500/50',
   error: 'bg-red-600 border-red-500/50',
   info: 'bg-zinc-800 border-zinc-700/50',
-  warning: 'bg-amber-600 border-amber-500/50',
+  warning: 'bg-[#B8922E] border-[#D4A843]/50',
 };
 
 const ICONS = {
