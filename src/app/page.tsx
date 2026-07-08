@@ -297,6 +297,9 @@ const autoBackup = (() => {
 })();
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   const init = useLawyerStore(s => s.init);
   const initialized = useLawyerStore(s => s.initialized);
   const cases = useLawyerStore(s => s.cases);
@@ -444,6 +447,17 @@ export default function Home() {
     window.addEventListener('unhandledrejection', rej);
     return () => { window.removeEventListener('error', handler); window.removeEventListener('unhandledrejection', rej); };
   }, []);
+
+  // Wait for client mount to avoid any hydration mismatches
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#0a0f1a]">
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="w-6 h-6 text-zinc-500 animate-spin" />
+        </div>
+      </div>
+    );
+  }
 
   // Full auth screens (not overlay)
   if (authStatus !== 'unlocked' && !isOverlayStatus(authStatus)) return (
