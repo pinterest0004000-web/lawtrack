@@ -11,7 +11,7 @@ function PinDots({ filled, shake }: { filled: number; shake: boolean }) {
     <div className={`flex justify-center gap-4 mb-6 ${shake ? 'animate-pin-shake' : ''}`}>
       {[0,1,2,3].map(i => (
         <div key={i} className={`w-4 h-4 rounded-full transition-all duration-200 ${
-          i < filled ? 'bg-violet-500 shadow-[0_0_12px_rgba(139,92,246,0.5)] scale-110' : 'bg-zinc-700 border border-zinc-600'
+          i < filled ? 'bg-amber-500 shadow-[0_0_12px_rgba(251,191,36,0.5)] scale-110' : 'bg-zinc-700 border border-zinc-600'
         }`} />
       ))}
     </div>
@@ -26,7 +26,7 @@ function Numpad({ onDigit, onDelete, disabled }: { onDigit: (d: string) => void;
         if (key === '') return <div key={`e-${i}`} />;
         if (key === 'del') return (
           <button key="del" onClick={onDelete} disabled={disabled}
-            className="h-14 rounded-2xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center active:bg-zinc-700/60 transition-colors disabled:opacity-40" aria-label="Delete">
+            className="h-14 rounded-2xl bg-[#1e2a3a]/80 border border-white/10 flex items-center justify-center active:bg-[#2a3a4e]/80 transition-colors disabled:opacity-40" aria-label="Delete">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-zinc-400">
               <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/>
             </svg>
@@ -34,7 +34,7 @@ function Numpad({ onDigit, onDelete, disabled }: { onDigit: (d: string) => void;
         );
         return (
           <button key={key} onClick={() => onDigit(key)} disabled={disabled}
-            className="h-14 rounded-2xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center text-xl font-semibold text-white active:bg-violet-600/20 active:border-violet-500/30 transition-colors disabled:opacity-40">
+            className="h-14 rounded-2xl bg-[#1e2a3a]/80 border border-white/10 flex items-center justify-center text-xl font-semibold text-white active:bg-amber-500/20 active:border-amber-500/30 transition-colors disabled:opacity-40">
             {key}
           </button>
         );
@@ -91,11 +91,11 @@ function AdminSetupScreen() {
   const len = step === 'confirm' ? confirmPin.length : pin.length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+    <div className="min-h-screen flex flex-col bg-[#121218]">
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         {step !== 'name' && (
           <button onClick={() => { setStep(step === 'confirm' ? 'pin' : 'name'); useAuthStore.setState({ error: '' }); }}
-            className="absolute top-4 left-4 w-9 h-9 rounded-xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center z-10">
+            className="absolute top-4 left-4 w-9 h-9 rounded-xl bg-[#1e2a3a]/80 border border-white/10 flex items-center justify-center z-10">
             <ArrowLeft className="w-4 h-4 text-zinc-400" />
           </button>
         )}
@@ -111,10 +111,10 @@ function AdminSetupScreen() {
             <div className="max-w-[300px] w-full">
               <input type="text" value={name} onChange={e => { setName(e.target.value); useAuthStore.setState({ error: '' }); }}
                 onKeyDown={e => e.key === 'Enter' && submitName()} placeholder="Apna naam likho"
-                className="w-full px-4 py-3.5 rounded-xl bg-zinc-800/80 border border-zinc-700/50 text-white text-base placeholder-zinc-500 outline-none focus:border-violet-500/40 transition-colors"
+                className="w-full px-4 py-3.5 rounded-xl bg-[#1e2a3a] border border-white/10 text-white text-base placeholder-zinc-500 outline-none focus:border-amber-500/40 transition-colors"
                 maxLength={20} autoFocus />
               <button onClick={submitName} disabled={name.trim().length < 2}
-                className="w-full mt-3 py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm disabled:opacity-40 active:bg-violet-700 transition-colors">
+                className="w-full mt-3 py-3.5 rounded-xl bg-amber-500 text-white font-semibold text-sm disabled:opacity-40 active:bg-amber-700 transition-colors">
                 Aage Badho
               </button>
             </div>
@@ -133,7 +133,7 @@ function AdminSetupScreen() {
               </div>
             ) : <PinDots filled={len} shake={shake} />}
             {error && (
-              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
+              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 max-w-[300px] w-full">
                 <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
                 <p className="text-xs text-red-400 text-center">{error}</p>
               </div>
@@ -192,15 +192,15 @@ function PinLoginScreen() {
   const handleDelete = useCallback(() => { if (!isLockedOut) setPin(p => p.slice(0, -1)); }, [isLockedOut]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+    <div className="min-h-screen flex flex-col bg-[#121218]">
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         {userName ? (
-          <div className="w-20 h-20 rounded-3xl bg-violet-600/15 border border-violet-500/20 flex items-center justify-center mb-4">
-            <span className="text-2xl font-bold text-violet-300">{userName.slice(0, 2).toUpperCase()}</span>
+          <div className="w-20 h-20 rounded-3xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center mb-4">
+            <span className="text-2xl font-bold text-amber-300">{userName.slice(0, 2).toUpperCase()}</span>
           </div>
         ) : (
-          <div className="w-20 h-20 rounded-3xl bg-violet-600/15 border border-violet-500/20 flex items-center justify-center mb-6">
-            <Lock className="w-10 h-10 text-violet-400" />
+          <div className="w-20 h-20 rounded-3xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center mb-6">
+            <Lock className="w-10 h-10 text-amber-400" />
           </div>
         )}
 
@@ -221,7 +221,7 @@ function PinLoginScreen() {
         ) : <PinDots filled={pin.length} shake={shake} />}
 
         {error && !isLockedOut && (
-          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
+          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 max-w-[300px] w-full">
             <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
             <p className="text-xs text-red-400 text-center">{error}</p>
           </div>
@@ -280,15 +280,15 @@ function AddUserScreen() {
   const handleDelete = useCallback(() => setPin(p => p.slice(0, -1)), []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+    <div className="min-h-screen flex flex-col bg-[#121218]">
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <button onClick={dismissManageUsers}
-          className="absolute top-4 left-4 w-9 h-9 rounded-xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center z-10">
+          className="absolute top-4 left-4 w-9 h-9 rounded-xl bg-[#1e2a3a]/80 border border-white/10 flex items-center justify-center z-10">
           <X className="w-4 h-4 text-zinc-400" />
         </button>
 
-        <div className="w-20 h-20 rounded-3xl bg-violet-600/15 border border-violet-500/20 flex items-center justify-center mb-6">
-          <UserPlus className="w-10 h-10 text-violet-400" />
+        <div className="w-20 h-20 rounded-3xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center mb-6">
+          <UserPlus className="w-10 h-10 text-amber-400" />
         </div>
 
         {step === 'name' ? (
@@ -298,10 +298,10 @@ function AddUserScreen() {
             <div className="max-w-[300px] w-full">
               <input type="text" value={name} onChange={e => { setName(e.target.value); useAuthStore.setState({ error: '' }); }}
                 onKeyDown={e => e.key === 'Enter' && submitName()} placeholder="User ka naam"
-                className="w-full px-4 py-3.5 rounded-xl bg-zinc-800/80 border border-zinc-700/50 text-white text-base placeholder-zinc-500 outline-none focus:border-violet-500/40 transition-colors"
+                className="w-full px-4 py-3.5 rounded-xl bg-[#1e2a3a] border border-white/10 text-white text-base placeholder-zinc-500 outline-none focus:border-amber-500/40 transition-colors"
                 maxLength={20} autoFocus />
               <button onClick={submitName} disabled={name.trim().length < 2}
-                className="w-full mt-3 py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm disabled:opacity-40 active:bg-violet-700 transition-colors">
+                className="w-full mt-3 py-3.5 rounded-xl bg-amber-500 text-white font-semibold text-sm disabled:opacity-40 active:bg-amber-700 transition-colors">
                 Aage Badho — PIN Set Karo
               </button>
             </div>
@@ -312,7 +312,7 @@ function AddUserScreen() {
             <p className="text-sm text-zinc-400 mb-3">Is user ke liye 4-digit PIN set karo</p>
             <PinDots filled={pin.length} shake={shake} />
             {error && (
-              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 max-w-[300px] w-full">
+              <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 max-w-[300px] w-full">
                 <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
                 <p className="text-xs text-red-400 text-center">{error}</p>
               </div>
@@ -348,25 +348,25 @@ function UserCreatedScreen() {
 
   if (!lastCreatedUser) return null;
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+    <div className="min-h-screen flex flex-col bg-[#121218]">
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="w-20 h-20 rounded-3xl bg-emerald-600/15 border border-emerald-500/20 flex items-center justify-center mb-6">
-          <Shield className="w-10 h-10 text-emerald-400" />
+          <Shield className="w-10 h-10 text-amber-400" />
         </div>
         <h1 className="text-xl font-bold text-white mb-1">User Ban Gaya! ✅</h1>
         <p className="text-sm text-zinc-400 mb-6">{name} ka account ready hai</p>
 
-        <div className="bg-zinc-800/60 border border-zinc-700/50 rounded-2xl p-4 max-w-[320px] w-full mb-4 space-y-4">
+        <div className="bg-[#1e2a3a]/80 border border-white/10 rounded-2xl p-4 max-w-[320px] w-full mb-4 space-y-4">
           <div>
             <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-2">Access Code (Link)</p>
             <div className="flex items-center justify-between">
-              <span className="text-lg font-mono font-bold text-emerald-400 tracking-[0.3em]">{code}</span>
-              <button onClick={handleCopy} className="p-2 rounded-xl bg-zinc-700/50 text-zinc-400 hover:text-white transition-colors">
-                {copied ? <span className="text-[11px] text-emerald-400">Copied!</span> : <Copy className="w-4 h-4" />}
+              <span className="text-lg font-mono font-bold text-amber-400 tracking-[0.3em]">{code}</span>
+              <button onClick={handleCopy} className="p-2 rounded-xl bg-[#2a3a4e]/80 text-zinc-400 hover:text-white transition-colors">
+                {copied ? <span className="text-[11px] text-amber-400">Copied!</span> : <Copy className="w-4 h-4" />}
               </button>
             </div>
           </div>
-          <div className="border-t border-zinc-700/50 pt-3">
+          <div className="border-t border-white/10 pt-3">
             <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">PIN</p>
             <p className="text-xs text-zinc-300">Is user ko link + PIN dono do</p>
           </div>
@@ -374,11 +374,11 @@ function UserCreatedScreen() {
 
         <div className="flex flex-col gap-2 max-w-[320px] w-full">
           <button onClick={() => { useAuthStore.setState({ authStatus: 'add-user', lastCreatedUser: null }); }}
-            className="w-full py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm active:bg-violet-700 transition-colors">
+            className="w-full py-3.5 rounded-xl bg-amber-500 text-white font-semibold text-sm active:bg-amber-700 transition-colors">
             Aur User Add Karo
           </button>
           <button onClick={dismissManageUsers}
-            className="w-full py-3 rounded-xl bg-zinc-800/60 border border-zinc-700/50 text-sm text-zinc-300 active:bg-zinc-700/40 transition-colors">
+            className="w-full py-3 rounded-xl bg-[#1e2a3a]/80 border border-white/10 text-sm text-zinc-300 active:bg-[#2a3a4e]/60 transition-colors">
             Wapas Jaao
           </button>
         </div>
@@ -437,14 +437,14 @@ function ManageUsersOverlay() {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center">
-      <div className="w-full max-w-[400px] max-h-[85vh] bg-[#0f0f18] border border-zinc-800 rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-[400px] max-h-[85vh] bg-[#121218] border border-white/10 rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800 flex-shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-violet-400" />
+            <Users className="w-5 h-5 text-amber-400" />
             <h2 className="text-base font-bold text-white">Users Manage Karo</h2>
           </div>
-          <button onClick={dismissManageUsers} className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <button onClick={dismissManageUsers} className="w-8 h-8 rounded-lg bg-[#1e2a3a] flex items-center justify-center">
             <X className="w-4 h-4 text-zinc-400" />
           </button>
         </div>
@@ -459,10 +459,10 @@ function ManageUsersOverlay() {
             </div>
           ) : (
             regularUsers.map(user => (
-              <div key={user.id} className="bg-zinc-800/50 border border-zinc-700/50 rounded-2xl p-3.5">
+              <div key={user.id} className="bg-zinc-800/50 border border-white/10 rounded-2xl p-3.5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-violet-300">{user.name.slice(0, 2).toUpperCase()}</span>
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-bold text-amber-300">{user.name.slice(0, 2).toUpperCase()}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-white truncate">{user.name}</p>
@@ -474,29 +474,29 @@ function ManageUsersOverlay() {
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button onClick={() => { setEditingPin(user.id); setNewPin(''); }}
-                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-amber-400 transition-colors" title="PIN Badlo">
+                      className="w-8 h-8 rounded-lg bg-[#2a3a4e]/80 flex items-center justify-center text-zinc-500 hover:text-amber-400 transition-colors" title="PIN Badlo">
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button onClick={() => handleRegenerate(user.id)}
-                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-violet-400 transition-colors" title="Naya Code">
+                      className="w-8 h-8 rounded-lg bg-[#2a3a4e]/80 flex items-center justify-center text-zinc-500 hover:text-amber-400 transition-colors" title="Naya Code">
                       <RefreshCw className="w-3.5 h-3.5" />
                     </button>
                     <button onClick={() => handleDelete(user.id)} disabled={deleting === user.id}
-                      className="w-8 h-8 rounded-lg bg-zinc-700/50 flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors disabled:opacity-40" title="Delete">
-                      {deleting === user.id ? <div className="w-3.5 h-3.5 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                      className="w-8 h-8 rounded-lg bg-[#2a3a4e]/80 flex items-center justify-center text-zinc-500 hover:text-red-400 transition-colors disabled:opacity-40" title="Delete">
+                      {deleting === user.id ? <div className="w-3.5 h-3.5 border-2 border-amber-500/30 border-t-red-500 rounded-full animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                     </button>
                   </div>
                 </div>
 
                 {/* Show code + copy */}
                 {showCodes[user.id] && (
-                  <div className="mt-3 pt-3 border-t border-zinc-700/50 flex items-center justify-between">
+                  <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between">
                     <div>
-                      <span className="text-[11px] font-mono font-bold text-emerald-400 tracking-wider">{user.accessCode}</span>
-                      {copiedId === user.id && <span className="text-[9px] text-emerald-400 ml-2">Copied!</span>}
+                      <span className="text-[11px] font-mono font-bold text-amber-400 tracking-wider">{user.accessCode}</span>
+                      {copiedId === user.id && <span className="text-[9px] text-amber-400 ml-2">Copied!</span>}
                     </div>
                     <button onClick={() => handleCopy(user.accessCode, user.id)}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-400 font-medium">
+                      className="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-emerald-500/20 text-[11px] text-amber-400 font-medium">
                       Copy Link
                     </button>
                   </div>
@@ -504,19 +504,19 @@ function ManageUsersOverlay() {
 
                 {/* Edit PIN inline */}
                 {editingPin === user.id && (
-                  <div className="mt-3 pt-3 border-t border-zinc-700/50">
+                  <div className="mt-3 pt-3 border-t border-white/10">
                     <p className="text-[10px] text-zinc-500 mb-2">Naya PIN (4-digit):</p>
                     <div className="flex items-center gap-2">
                       <input type="text" inputMode="numeric" maxLength={4} value={newPin}
                         onChange={e => setNewPin(e.target.value.replace(/\D/g, ''))}
                         placeholder="••••"
-                        className="flex-1 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-white text-sm font-mono tracking-widest text-center outline-none focus:border-violet-500/40" />
+                        className="flex-1 px-3 py-2 rounded-lg bg-[#1e2a3a] border border-white/10 text-white text-sm font-mono tracking-widest text-center outline-none focus:border-amber-500/40" />
                       <button onClick={() => handleSavePin(user.id)} disabled={newPin.length !== 4 || pinSaving}
-                        className="w-9 h-9 rounded-lg bg-violet-600 flex items-center justify-center disabled:opacity-40">
+                        className="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center disabled:opacity-40">
                         {pinSaving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4 text-white" />}
                       </button>
                       <button onClick={() => { setEditingPin(null); setNewPin(''); }}
-                        className="w-9 h-9 rounded-lg bg-zinc-700/50 flex items-center justify-center">
+                        className="w-9 h-9 rounded-lg bg-[#2a3a4e]/80 flex items-center justify-center">
                         <X className="w-4 h-4 text-zinc-400" />
                       </button>
                     </div>
@@ -528,9 +528,9 @@ function ManageUsersOverlay() {
         </div>
 
         {/* Add user button */}
-        <div className="p-4 border-t border-zinc-800 flex-shrink-0">
+        <div className="p-4 border-t border-white/10 flex-shrink-0">
           <button onClick={handleAddUser}
-            className="w-full py-3.5 rounded-xl bg-violet-600 text-white font-semibold text-sm active:bg-violet-700 transition-colors flex items-center justify-center gap-2">
+            className="w-full py-3.5 rounded-xl bg-amber-500 text-white font-semibold text-sm active:bg-amber-700 transition-colors flex items-center justify-center gap-2">
             <UserPlus className="w-4 h-4" />
             Naya User Add Karo
           </button>
@@ -554,8 +554,8 @@ export default function LoginScreen() {
   }, [checkAuth, authStatus]);
 
   if (authStatus === 'checking') return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0f]">
-      <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#121218]">
+      <div className="w-8 h-8 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin" />
     </div>
   );
 

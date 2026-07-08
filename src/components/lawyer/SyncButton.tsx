@@ -72,10 +72,10 @@ export default function BackupButton() {
   return (
     <>
       <button onClick={() => setShowRestore(true)}
-        className="h-8 px-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1.5 active:bg-emerald-500/20 transition-colors"
+        className="h-8 px-2 rounded-lg bg-amber-500/10 border border-emerald-500/20 flex items-center gap-1.5 active:bg-emerald-500/20 transition-colors"
         aria-label="Auto-backup restore">
-        <RotateCcw className="w-3.5 h-3.5 text-emerald-400" />
-        <span className="text-[10px] sm:text-xs text-emerald-400">Restore</span>
+        <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
+        <span className="text-[10px] sm:text-xs text-amber-400">Restore</span>
       </button>
 
       {showRestore && (
@@ -85,7 +85,7 @@ export default function BackupButton() {
             <p className="text-xs text-zinc-400 mb-1">Last backup: {autoBak.time}</p>
             <p className="text-xs text-zinc-500 mb-4">{autoBak.cases.length} cases, {autoBak.expenses.length} expenses</p>
             <div className="flex gap-2">
-              <button onClick={() => setShowRestore(false)} className="flex-1 py-2.5 rounded-xl bg-zinc-800 border border-zinc-700 text-sm text-zinc-300">Nahi</button>
+              <button onClick={() => setShowRestore(false)} className="flex-1 py-2.5 rounded-xl bg-[#1e2a3a] border border-zinc-700 text-sm text-zinc-300">Nahi</button>
               <button onClick={handleRestore} disabled={restoring} className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-sm text-white font-medium disabled:opacity-50 flex items-center justify-center gap-1.5">
                 {restoring && <Loader2 className="w-4 h-4 animate-spin" />}
                 Haan, Restore

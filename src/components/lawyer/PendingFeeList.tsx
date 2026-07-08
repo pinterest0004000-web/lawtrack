@@ -52,7 +52,7 @@ export default function PendingFeeList() {
       <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
         <button
           onClick={() => setCurrentView('home')}
-          className="feature-box w-9 h-9 rounded-xl glass-card flex items-center justify-center"
+          className="feature-box w-9 h-9 rounded-xl bg-[#1e2a3a] flex items-center justify-center"
           aria-label="Go back"
         >
           <ArrowLeft className="w-4 h-4 text-zinc-400" />
@@ -64,7 +64,7 @@ export default function PendingFeeList() {
       </div>
 
       <div className="px-3 sm:px-4 mb-3">
-        <div className="glass-card rounded-xl flex items-center gap-2 px-3 py-2.5">
+        <div className="bg-[#1e2a3a] rounded-xl flex items-center gap-2 px-3 py-2.5">
           <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
           <input
             type="text"
@@ -105,10 +105,10 @@ export default function PendingFeeList() {
                       <button
                         key={c.caseId}
                         onClick={() => openCase(c.caseId)}
-                        className="feature-box w-full text-left glass-card rounded-xl p-3"
+                        className="feature-box w-full text-left bg-[#1e2a3a] rounded-xl p-3"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-mono text-violet-400">#{c.caseId}</span>
+                          <span className="text-xs font-mono text-amber-400">#{c.caseId}</span>
                           <span className="text-sm font-bold text-red-400">{formatCurrency(c.pendingFee)}</span>
                         </div>
                         <p className="text-sm font-semibold text-white mt-1 truncate">{c.partyName}</p>
@@ -120,7 +120,7 @@ export default function PendingFeeList() {
               );
             })}
             {hasMore && (
-              <button onClick={() => setPage(p => p + 1)} className="w-full text-center py-3 text-sm text-violet-400 font-medium">
+              <button onClick={() => setPage(p => p + 1)} className="w-full text-center py-3 text-sm text-amber-400 font-medium">
                 Load more...
               </button>
             )}

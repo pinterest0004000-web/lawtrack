@@ -45,11 +45,11 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #0a0a0f;
+  --background: #121218;
   --foreground: #e4e4e7;
-  --card: #13131a;
+  --card: #1e2a3a;
   --card-foreground: #e4e4e7;
-  --popover: #13131a;
+  --popover: #1e2a3a;
   --popover-foreground: #e4e4e7;
   --primary: #6d28d9;
   --primary-foreground: #ffffff;
@@ -91,11 +91,10 @@
   border-radius: 4px;
 }
 
-/* Glassmorphism card */
+/* Solid dark navy card */
 .glass-card {
-  background: rgba(19, 19, 26, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #1e2a3a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Feature box glow on tap */

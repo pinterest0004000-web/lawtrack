@@ -111,13 +111,13 @@ export default function ExpenseByCase() {
     setFormCaseId(caseId);
   }, []);
 
-  const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-violet-500/50 transition-colors";
+  const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-amber-500/50 transition-colors";
 
   return (
     <div className="animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
-        <button onClick={() => setCurrentView('expenses')} className="feature-box w-9 h-9 rounded-xl glass-card flex items-center justify-center" aria-label="Go back">
+        <button onClick={() => setCurrentView('expenses')} className="feature-box w-9 h-9 rounded-xl bg-[#1e2a3a] flex items-center justify-center" aria-label="Go back">
           <ArrowLeft className="w-4 h-4 text-zinc-400" />
         </button>
         <div className="flex-1">
@@ -129,14 +129,14 @@ export default function ExpenseByCase() {
           className="feature-box w-9 h-9 rounded-xl bg-emerald-600/20 flex items-center justify-center"
           aria-label="Add expense"
         >
-          <Plus className="w-5 h-5 text-emerald-400" />
+          <Plus className="w-5 h-5 text-amber-400" />
         </button>
       </div>
 
       {/* Add Form */}
       {showAddForm && (
         <div className="px-3 sm:px-4 mb-3 animate-slide-up">
-          <div className="glass-card rounded-2xl p-4 space-y-3">
+          <div className="bg-[#1e2a3a] rounded-2xl p-4 space-y-3">
             <p className="text-sm font-semibold text-white">Add Case Expense</p>
 
             {/* Lawyer Name */}
@@ -156,7 +156,7 @@ export default function ExpenseByCase() {
                 </button>
               )}
               {formLawyer && filteredLawyers.length > 0 && !cases.find(c => c.lawyerName === formLawyer) && (
-                <div className="absolute z-20 top-full left-0 right-0 mt-1 glass-card rounded-xl overflow-hidden border border-white/10 max-h-28 overflow-y-auto">
+                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[#1e2a3a] rounded-xl overflow-hidden border border-white/10 max-h-28 overflow-y-auto">
                   {filteredLawyers.map(name => (
                     <button key={name} type="button" onClick={() => selectLawyer(name)} className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5">
                       {name}
@@ -170,16 +170,16 @@ export default function ExpenseByCase() {
             {formLawyer && filteredCases.length > 0 && (
               <div>
                 <label className="text-xs text-zinc-500 mb-1 block">Select Case *</label>
-                <div className="glass-card rounded-xl max-h-36 overflow-y-auto">
+                <div className="bg-[#1e2a3a] rounded-xl max-h-36 overflow-y-auto">
                   {filteredCases.map(c => (
                     <button
                       key={c.caseId}
                       type="button"
                       onClick={() => selectCase(c.caseId)}
-                      className={`w-full text-left px-3 py-2.5 border-b border-white/5 last:border-0 transition-colors ${formCaseId === c.caseId ? 'bg-violet-600/20' : 'hover:bg-white/5'}`}
+                      className={`w-full text-left px-3 py-2.5 border-b border-white/5 last:border-0 transition-colors ${formCaseId === c.caseId ? 'bg-amber-500/20' : 'hover:bg-white/5'}`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono text-violet-400">#{c.caseId}</span>
+                        <span className="text-xs font-mono text-amber-400">#{c.caseId}</span>
                         <span className="text-[10px] text-zinc-500">{formatDate(c.nextDate)}</span>
                       </div>
                       <p className="text-sm text-white truncate">{c.partyName} vs {c.opponentName}</p>
@@ -242,18 +242,18 @@ export default function ExpenseByCase() {
                         <p className="text-[10px] text-zinc-500">{lawyerExpenses.length} expense{lawyerExpenses.length !== 1 ? 's' : ''}</p>
                       </div>
                     </div>
-                    <span className="text-sm font-bold text-emerald-400">{formatCurrency(lawyerTotal)}</span>
+                    <span className="text-sm font-bold text-amber-400">{formatCurrency(lawyerTotal)}</span>
                   </div>
                   <div className="flex flex-col gap-2">
                     {lawyerExpenses.map(e => (
                       <button
                         key={e.id}
                         onClick={() => openCase(e.caseId)}
-                        className="feature-box w-full text-left glass-card rounded-xl p-3"
+                        className="feature-box w-full text-left bg-[#1e2a3a] rounded-xl p-3"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-mono text-emerald-400">#{e.caseId}</span>
-                          <span className="text-sm font-bold text-emerald-400">-{formatCurrency(e.amount)}</span>
+                          <span className="text-xs font-mono text-amber-400">#{e.caseId}</span>
+                          <span className="text-sm font-bold text-amber-400">-{formatCurrency(e.amount)}</span>
                         </div>
                         <p className="text-sm text-white mt-1 truncate">{e.description}</p>
                         <p className="text-xs text-zinc-500 truncate">{e.partyName}</p>
@@ -264,7 +264,7 @@ export default function ExpenseByCase() {
               );
             })}
             {hasMore && (
-              <button onClick={() => setPage(p => p + 1)} className="w-full text-center py-3 text-sm text-violet-400 font-medium">
+              <button onClick={() => setPage(p => p + 1)} className="w-full text-center py-3 text-sm text-amber-400 font-medium">
                 Load more...
               </button>
             )}

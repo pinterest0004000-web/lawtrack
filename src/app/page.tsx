@@ -125,7 +125,7 @@ function HeaderMenu() {
       {open && (
         <div className="fixed inset-0 z-50" onClick={() => setOpen(false)}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          <div className="absolute left-2.5 top-14 w-64 bg-[#16162a] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-2xl shadow-black/60 animate-in fade-in slide-in-from-top-2 duration-150" onClick={e => e.stopPropagation()}>
+          <div className="absolute left-2.5 top-14 w-64 bg-[#1e2a3a] border border-white/5 rounded-2xl overflow-hidden shadow-2xl shadow-black/60 animate-in fade-in slide-in-from-top-2 duration-150" onClick={e => e.stopPropagation()}>
             {/* Cloud Backup Status */}
             <div className="px-4 py-3 border-b border-zinc-800/60">
               <div className="flex items-center gap-2">
@@ -447,7 +447,7 @@ export default function Home() {
 
   // Full auth screens (not overlay)
   if (authStatus !== 'unlocked' && !isOverlayStatus(authStatus)) return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+    <div className="min-h-screen flex flex-col bg-[#121218]">
       <React.Suspense fallback={<ViewFallback />}>
         <LoginScreen />
       </React.Suspense>
@@ -458,32 +458,34 @@ export default function Home() {
   const showOverlay = isOverlayStatus(authStatus);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
+    <div className="min-h-screen flex flex-col bg-[#121218]">
       <header className="flex items-center px-4 py-3 border-b border-white/5 flex-shrink-0 relative">
         {/* Left: hamburger menu */}
         <div className="w-10 flex-shrink-0 flex justify-start">
           <HeaderMenu />
         </div>
-        {/* Center: INSAF + icon + sync status */}
-        <div className="flex-1 flex flex-col items-center justify-center gap-0.5">
-          <div className="flex items-center gap-2">
-            <span className="text-[26px] leading-none">⚖️</span>
-            <h1 className="text-2xl font-black text-white tracking-tight leading-none" style={{ textShadow: '0 0 30px rgba(255,255,255,0.06)' }}>INSAF</h1>
-          </div>
+        {/* Center: INSAF + subtitle */}
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <h1 className="text-2xl font-bold text-amber-400 tracking-tight leading-none">INSAF</h1>
+          <p className="text-[11px] text-slate-400 mt-0.5">Case Management</p>
           <SyncIndicator />
         </div>
-        {/* Right spacer for centering */}
-        <div className="w-10 flex-shrink-0" />
+        {/* Right: Cloud sync icon */}
+        <div className="w-10 flex-shrink-0 flex justify-end">
+          <button className="w-10 h-10 rounded-xl flex items-center justify-center text-amber-400/70 active:bg-white/5 transition-colors" aria-label="Cloud Sync">
+            <Cloud className="w-5 h-5" />
+          </button>
+        </div>
       </header>
       <main className="flex-1 overflow-y-auto"><ViewRouter /></main>
       <footer className="flex-shrink-0 border-t border-white/5 px-4 py-2 mt-auto">
-        <p className="text-[10px] text-zinc-700 text-center">Lawyer Case Manager • Secured</p>
+        <p className="text-[10px] text-slate-500 text-center">Lawyer Case Manager • Secured</p>
       </footer>
 
       {/* Cloud restore prompt — when local empty but cloud has data */}
       {showCloudPrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#16162a] border border-zinc-800/80 rounded-2xl p-5 w-full max-w-xs text-center shadow-2xl">
+          <div className="bg-[#1e2a3a] border border-white/5 rounded-2xl p-5 w-full max-w-xs text-center shadow-2xl">
             <div className="w-12 h-12 rounded-full bg-sky-500/10 flex items-center justify-center mx-auto mb-3">
               <Cloud className="w-6 h-6 text-sky-400" />
             </div>
