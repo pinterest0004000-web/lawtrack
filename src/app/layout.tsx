@@ -23,7 +23,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "INSAF - Lawyer Case Manager",
+  title: "INSAF",
   description: "Professional case management for lawyers",
   manifest: "/manifest.json",
   icons: {
