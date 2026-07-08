@@ -6,45 +6,51 @@ import { useAuthStore } from '@/store/auth-store';
 import { getTodayCases } from '@/lib/utils-lawyer';
 import { saveCases, saveExpenses } from '@/lib/storage';
 import { hasEncryptionKey, getCurrentUserId } from '@/lib/auth';
-import { saveToCloud, loadFromCloud, getCloudInfo, isCloudReady, isUndoPaused, clearCloudUndoTimer, type CloudBackupInfo } from '@/lib/cloud-backup';
-import { initAutoSync, destroyAutoSync, markDirty, onSyncStatusChange, type SyncStatus } from '@/lib/offline-sync';
-import HomeScreen from '@/components/lawyer/HomeScreen';
-import CaseList from '@/components/lawyer/CaseList';
-import PendingFeeList from '@/components/lawyer/PendingFeeList';
-import ExpenseList from '@/components/lawyer/ExpenseList';
-import ExpenseByCase from '@/components/lawyer/ExpenseByCase';
-import ExpenseChamber from '@/components/lawyer/ExpenseChamber';
-import AddCaseForm from '@/components/lawyer/AddCaseForm';
-import CaseDetail from '@/components/lawyer/CaseDetail';
-import DeleteCaseScreen from '@/components/lawyer/DeleteCaseScreen';
-import LoginScreen from '@/components/lawyer/LoginScreen';
 import { reportError } from '@/lib/firebase';
-import { LogOut, Users, Cloud, CloudOff, HardDriveDownload, Wifi, WifiOff, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { LogOut, Users, Cloud, CloudOff, HardDriveDownload, Wifi, WifiOff, RefreshCw, CheckCircle2, Loader2 } from 'lucide-react';
 import AppToaster, { toast } from '@/components/AppToaster';
+
+// Lazy load all screen components — massive bundle size reduction
+const HomeScreen = React.lazy(() => import('@/components/lawyer/HomeScreen'));
+const CaseList = React.lazy(() => import('@/components/lawyer/CaseList'));
+const PendingFeeList = React.lazy(() => import('@/components/lawyer/PendingFeeList'));
+const ExpenseList = React.lazy(() => import('@/components/lawyer/ExpenseList'));
+const ExpenseByCase = React.lazy(() => import('@/components/lawyer/ExpenseByCase'));
+const ExpenseChamber = React.lazy(() => import('@/components/lawyer/ExpenseChamber'));
+const AddCaseForm = React.lazy(() => import('@/components/lawyer/AddCaseForm'));
+const CaseDetail = React.lazy(() => import('@/components/lawyer/CaseDetail'));
+const DeleteCaseScreen = React.lazy(() => import('@/components/lawyer/DeleteCaseScreen'));
+const LoginScreen = React.lazy(() => import('@/components/lawyer/LoginScreen'));
+
+function ViewFallback() {
+  return <div className="flex-1 flex items-center justify-center"><Loader2 className="w-6 h-6 text-zinc-500 animate-spin" /></div>;
+}
 
 function ViewRouter() {
   const currentView = useLawyerStore(s => s.currentView);
   const cases = useLawyerStore(s => s.cases);
   const getTodayCasesMemo = useCallback(() => getTodayCases(cases), [cases]);
 
-  switch (currentView) {
-    case 'home': return <HomeScreen />;
-    case 'today': return <CaseList title="Today's Cases" getCases={getTodayCasesMemo} showSearch />;
-    case 'all': return <CaseList title="All Cases" getCases={() => cases} showSearch />;
-    case 'pending-fee': return <PendingFeeList />;
-    case 'expenses': return <ExpenseList />;
-    case 'expenses-by-case': return <ExpenseByCase />;
-    case 'expenses-chamber': return <ExpenseChamber />;
-    case 'add-case': return <AddCaseForm />;
-    case 'case-detail': return <CaseDetail />;
-    case 'delete-case': return <DeleteCaseScreen />;
-    default: return <HomeScreen />;
-  }
+  return (
+    <React.Suspense fallback={<ViewFallback />}>
+      {currentView === 'home' && <HomeScreen />}
+      {currentView === 'today' && <CaseList title="Today's Cases" getCases={getTodayCasesMemo} showSearch />}
+      {currentView === 'all' && <CaseList title="All Cases" getCases={() => cases} showSearch />}
+      {currentView === 'pending-fee' && <PendingFeeList />}
+      {currentView === 'expenses' && <ExpenseList />}
+      {currentView === 'expenses-by-case' && <ExpenseByCase />}
+      {currentView === 'expenses-chamber' && <ExpenseChamber />}
+      {currentView === 'add-case' && <AddCaseForm />}
+      {currentView === 'case-detail' && <CaseDetail />}
+      {currentView === 'delete-case' && <DeleteCaseScreen />}
+      {!['home','today','all','pending-fee','expenses','expenses-by-case','expenses-chamber','add-case','case-detail','delete-case'].includes(currentView) && <HomeScreen />}
+    </React.Suspense>
+  );
 }
 
 function HeaderMenu() {
   const [open, setOpen] = React.useState(false);
-  const [cloudInfo, setCloudInfo] = useState<CloudBackupInfo | null>(null);
+  const [cloudInfo, setCloudInfo] = useState<{ exists: boolean; timestamp: number | null; caseCount: number } | null>(null);
   const [restoring, setRestoring] = useState(false);
   const isAdmin = useAuthStore(s => s.isAdmin);
   const logout = useAuthStore(s => s.logout);
@@ -52,14 +58,14 @@ function HeaderMenu() {
   const importFromSync = useLawyerStore(s => s.importFromSync);
   const currentUserName = useAuthStore(s => s.currentUserName);
 
-  const cloudReady = isCloudReady();
+  const [cloudReady, setCloudReady] = useState(false);
 
-  // Fetch cloud info when menu opens
   useEffect(() => {
+    import('@/lib/cloud-backup').then(m => setCloudReady(m.isCloudReady())).catch(() => {});
     if (!open) return;
     const userId = getCurrentUserId();
     if (!userId) return;
-    getCloudInfo(userId).then(setCloudInfo);
+    import('@/lib/cloud-backup').then(m => m.getCloudInfo(userId).then(setCloudInfo)).catch(() => {});
   }, [open]);
 
   const handleCloudRestore = async () => {
@@ -68,13 +74,13 @@ function HeaderMenu() {
     if (!confirm('Cloud se data restore karna hai? Current data replace hoga.')) return;
     setRestoring(true);
     try {
+      const { loadFromCloud, getCloudInfo } = await import('@/lib/cloud-backup');
       const data = await loadFromCloud(userId);
       if (!data) { toast.error('Cloud pe data nahi mila'); setRestoring(false); return; }
       const mc = (c: Record<string, unknown>) => ({ caseId: String(c.caseId||''), lawyerName: String(c.lawyerName||''), partyName: String(c.partyName||''), opponentName: String(c.opponentName||''), caseType: String(c.caseType||''), section: String(c.section||''), policeStation: String(c.policeStation||''), enteringDate: String(c.enteringDate||''), nextDate: String(c.nextDate||''), phone: String(c.phone||''), judgeRemarks: String(c.judgeRemarks||''), pendingFee: Number(c.pendingFee)||0, totalFeeReceived: Number(c.totalFeeReceived)||0, createdAt: Number(c.createdAt)||0, updatedAt: Number(c.updatedAt)||0, history: Array.isArray(c.history)?c.history:[] });
       const me = (e: Record<string, unknown>) => ({ id: String(e.id||''), caseId: String(e.caseId||''), lawyerName: String(e.lawyerName||''), partyName: String(e.partyName||''), description: String(e.description||''), amount: Number(e.amount)||0, date: String(e.date||''), createdAt: Number(e.createdAt)||0, category: String(e.category||'case_expense') });
       await importFromSync(data.cases.map(mc) as never[], (data.expenses||[]).map(me) as never[]);
       toast.success('Cloud se restore ho gaya!', { description: `${data.cases.length} cases` });
-      // Refresh cloud info
       getCloudInfo(userId).then(setCloudInfo);
     } catch { toast.error('Cloud restore fail'); }
     setRestoring(false);
@@ -208,23 +214,28 @@ function HeaderMenu() {
 
 // ============ SYNC STATUS INDICATOR ============
 function SyncIndicator() {
-  const [status, setStatus] = useState<SyncStatus>('synced');
+  const [status, setStatus] = useState<string>('synced');
   const [online, setOnline] = useState(true);
+  const [cloudOk, setCloudOk] = useState(false);
 
   useEffect(() => {
-    const unsub = onSyncStatusChange((s, o) => {
-      setStatus(s);
-      setOnline(o);
-    });
-    return unsub;
+    let unsub: (() => void) | null = null;
+    import('@/lib/offline-sync').then(m => {
+      setCloudOk(m.isOnline()); // trigger re-render
+      unsub = m.onSyncStatusChange((s: string, o: boolean) => {
+        setStatus(s);
+        setOnline(o);
+      });
+      // Also check cloud ready
+      import('@/lib/cloud-backup').then(cm => setCloudOk(cm.isCloudReady())).catch(() => {});
+    }).catch(() => {});
+    return () => { if (unsub) unsub(); };
   }, []);
 
-  // Don't show if cloud is not configured
-  if (!isCloudReady()) return null;
-  // Don't show when synced and online (clean state)
+  if (!cloudOk) return null;
   if (status === 'synced' && online) return null;
 
-  const config = {
+  const config: Record<string, { icon: React.ReactNode; text: string; color: string }> = {
     synced: { icon: <CheckCircle2 className="w-3 h-3 text-emerald-400" />, text: 'Synced', color: 'text-emerald-400' },
     syncing: { icon: <RefreshCw className="w-3 h-3 text-sky-400 animate-spin" />, text: 'Syncing...', color: 'text-sky-400' },
     pending: { icon: <Cloud className="w-3 h-3 text-amber-400" />, text: 'Pending sync', color: 'text-amber-400' },
@@ -273,15 +284,15 @@ const autoBackup = (() => {
     // Cloud backup — handled by offline-sync module (auto-syncs when online)
     if (!userId) return;
     if (cloudTimer) clearTimeout(cloudTimer);
-    clearCloudUndoTimer();
-    const cloudDelay = isUndoPaused() ? 10000 : 3000;
-    cloudTimer = setTimeout(() => {
-      if (data === lastCloudJson) return;
-      lastCloudJson = data;
-      // Use markDirty instead of direct saveToCloud
-      // This will queue sync if offline, or sync now if online
-      markDirty();
-    }, cloudDelay);
+    import('@/lib/cloud-backup').then(m => {
+      m.clearCloudUndoTimer();
+      const cloudDelay = m.isUndoPaused() ? 10000 : 3000;
+      cloudTimer = setTimeout(() => {
+        if (data === lastCloudJson) return;
+        lastCloudJson = data;
+        import('@/lib/offline-sync').then(sm => sm.markDirty()).catch(() => {});
+      }, cloudDelay);
+    }).catch(() => {});
   };
 })();
 
@@ -309,24 +320,28 @@ export default function Home() {
   // Initialize auto-sync after unlock
   useEffect(() => {
     if (authStatus !== 'unlocked') {
-      destroyAutoSync();
+      import('@/lib/offline-sync').then(m => m.destroyAutoSync()).catch(() => {});
       return;
     }
     const userId = getCurrentUserId();
-    if (!userId || !isCloudReady()) return;
+    if (!userId) return;
 
-    initAutoSync(
-      (cases, expenses) => saveToCloud(userId, cases, expenses),
-      () => {
-        const s = useLawyerStore.getState();
-        return { cases: s.cases, expenses: s.expenses };
-      }
-    );
+    Promise.all([
+      import('@/lib/cloud-backup'),
+      import('@/lib/offline-sync'),
+    ]).then(([cloudMod, syncMod]) => {
+      if (!cloudMod.isCloudReady()) return;
+      syncMod.initAutoSync(
+        (c, e) => cloudMod.saveToCloud(userId, c, e),
+        () => {
+          const s = useLawyerStore.getState();
+          return { cases: s.cases, expenses: s.expenses };
+        }
+      );
+      syncMod.markDirty();
+    }).catch(() => {});
 
-    // Do an initial sync
-    markDirty();
-
-    return () => destroyAutoSync();
+    return () => { import('@/lib/offline-sync').then(m => m.destroyAutoSync()).catch(() => {}); };
   }, [authStatus]);
 
   // Register service worker for offline support
@@ -356,24 +371,24 @@ export default function Home() {
     if (!initialized || !hasEncryptionKey()) return;
     if (reencryptRef.current) return;
 
-    // Mark re-encrypt done
     reencryptRef.current = true;
 
-    // If both empty, check cloud
     if (cases.length === 0 && expenses.length === 0) {
       const userId = getCurrentUserId();
-      if (!userId || !isCloudReady()) return;
+      if (!userId) return;
 
-      getCloudInfo(userId).then(async (info) => {
-        if (info.exists && info.caseCount > 0) {
-          setCloudCaseCount(info.caseCount);
-          setShowCloudPrompt(true);
-        }
-      });
+      import('@/lib/cloud-backup').then(m => {
+        if (!m.isCloudReady()) return;
+        m.getCloudInfo(userId).then((info) => {
+          if (info.exists && info.caseCount > 0) {
+            setCloudCaseCount(info.caseCount);
+            setShowCloudPrompt(true);
+          }
+        });
+      }).catch(() => {});
       return;
     }
 
-    // Data exists locally — re-encrypt + save
     Promise.all([saveCases(cases), saveExpenses(expenses)]).catch(() => {});
   }, [initialized, cases, expenses]);
 
@@ -390,6 +405,7 @@ export default function Home() {
     if (!userId) { setShowCloudPrompt(false); return; }
     setCloudRestoring(true);
     try {
+      const { loadFromCloud } = await import('@/lib/cloud-backup');
       const data = await loadFromCloud(userId);
       if (!data) { toast.error('Cloud pe data nahi mila'); setCloudRestoring(false); setShowCloudPrompt(false); return; }
       const mc = (c: Record<string, unknown>) => ({ caseId: String(c.caseId||''), lawyerName: String(c.lawyerName||''), partyName: String(c.partyName||''), opponentName: String(c.opponentName||''), caseType: String(c.caseType||''), section: String(c.section||''), policeStation: String(c.policeStation||''), enteringDate: String(c.enteringDate||''), nextDate: String(c.nextDate||''), phone: String(c.phone||''), judgeRemarks: String(c.judgeRemarks||''), pendingFee: Number(c.pendingFee)||0, totalFeeReceived: Number(c.totalFeeReceived)||0, createdAt: Number(c.createdAt)||0, updatedAt: Number(c.updatedAt)||0, history: Array.isArray(c.history)?c.history:[] });
@@ -432,7 +448,9 @@ export default function Home() {
   // Full auth screens (not overlay)
   if (authStatus !== 'unlocked' && !isOverlayStatus(authStatus)) return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
-      <LoginScreen />
+      <React.Suspense fallback={<ViewFallback />}>
+        <LoginScreen />
+      </React.Suspense>
       <AppToaster />
     </div>
   );
@@ -489,7 +507,11 @@ export default function Home() {
       )}
 
       {/* Overlay screens (manage users, add user, user created) */}
-      {showOverlay && <LoginScreen />}
+      {showOverlay && (
+        <React.Suspense fallback={<ViewFallback />}>
+          <LoginScreen />
+        </React.Suspense>
+      )}
       <AppToaster />
     </div>
   );
