@@ -1,17 +1,17 @@
 {
   "name": "INSAF",
   "short_name": "INSAF",
-  "description": "Lawyer Case Manager - Manage cases, expenses & fees",
+  "description": "INSAF - Daily Case Manager | Professional case management for lawyers",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#09090b",
-  "theme_color": "#09090b",
+  "background_color": "#0a0f1a",
+  "theme_color": "#0a0f1a",
   "orientation": "portrait",
   "icons": [
     {
       "src": "/logo.png",
       "sizes": "1024x1024",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
