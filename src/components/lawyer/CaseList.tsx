@@ -44,26 +44,31 @@ function CaseItem({ caseData }: { caseData: CaseEntry }) {
   const { caseId, partyName, opponentName, caseType, section, nextDate } = caseData;
 
   return (
-    <div className="feature-box w-full text-left bg-[#141c2b] rounded-xl p-3 relative">
-      <button onClick={handleTap} className="absolute inset-0 z-0 rounded-xl" aria-label={`Open case ${caseId}`} />
-      <div className="relative z-10">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-mono text-[#D4A843]">#{caseId}</span>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-zinc-500">{formatDate(nextDate)}</span>
-            <button onClick={handleShare} disabled={sharing} className="w-7 h-7 rounded-lg bg-[#D4A843]/10 flex items-center justify-center active:bg-[#D4A843]/20 transition-colors disabled:opacity-40" aria-label="Share PDF">
-              <Share2 className="w-3 h-3 text-[#D4A843]" />
-            </button>
-          </div>
-        </div>
-        <p className="text-sm font-semibold text-white mt-1 truncate">{partyName}</p>
-        <p className="text-xs text-zinc-500 truncate">vs {opponentName}</p>
-        <div className="flex items-center gap-2 mt-1.5">
-          {caseType && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">{caseType}</span>}
-          {section && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">Sec {section}</span>}
+    <button onClick={handleTap} className="feature-box w-full text-left bg-[#141c2b] rounded-xl p-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-mono text-[#D4A843]">#{caseId}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-zinc-500">{formatDate(nextDate)}</span>
+          <span
+            onClick={handleShare}
+            role="button"
+            aria-label="Share PDF"
+            className="w-7 h-7 rounded-lg bg-[#D4A843]/10 flex items-center justify-center active:bg-[#D4A843]/20 transition-colors disabled:opacity-40 inline-flex"
+          >
+            {sharing
+              ? <span className="w-3 h-3 border-2 border-[#D4A843]/30 border-t-[#D4A843] rounded-full animate-spin" />
+              : <Share2 className="w-3 h-3 text-[#D4A843]" />
+            }
+          </span>
         </div>
       </div>
-    </div>
+      <p className="text-sm font-semibold text-white mt-1 truncate">{partyName}</p>
+      <p className="text-xs text-zinc-500 truncate">vs {opponentName}</p>
+      <div className="flex items-center gap-2 mt-1.5">
+        {caseType && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">{caseType}</span>}
+        {section && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">Sec {section}</span>}
+      </div>
+    </button>
   );
 }
 
