@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import { formatCurrency, formatDate, getTodayStr } from '@/lib/utils-lawyer';
-import { ArrowLeft, Phone, Calendar, MapPin, Scale, Shield, FileText, IndianRupee, Trash2, Plus, Download } from 'lucide-react';
+import { ArrowLeft, Phone, Calendar, MapPin, Scale, Shield, FileText, IndianRupee, Trash2, Plus, Share2 } from 'lucide-react';
 import { toast } from '@/components/AppToaster';
 import { pauseCloudForUndo } from '@/lib/cloud-backup';
 
@@ -173,7 +173,31 @@ async function generateCasePDF(c: NonNullable<ReturnType<typeof useLawyerStore.g
     doc.text(`INSAF - Case #${c.caseId} | Generated: ${new Date().toLocaleString('en-IN')}`, pageW / 2, 290, { align: 'center' });
   }
 
-  doc.save(`INSAF_Case_${c.caseId}.pdf`);
+  return doc.output('blob');
+}
+
+export async function shareCasePDF(c: NonNullable<ReturnType<typeof useLawyerStore.getState>['cases'][number]>) {
+  const blob = await generateCasePDF(c);
+  const file = new File([blob], `INSAF_Case_${c.caseId}.pdf`, { type: 'application/pdf' });
+
+  // Try Web Share API (works on mobile — shows WhatsApp, Telegram, etc.)
+  if (navigator.share && navigator.canShare?.({ files: [file] })) {
+    await navigator.share({
+      title: `Case #${c.caseId} - ${c.partyName}`,
+      text: `INSAF Case: ${c.partyName} vs ${c.opponentName}\nCase #${c.caseId}\nNext Date: ${formatDate(c.nextDate)}`,
+      files: [file],
+    });
+    return 'shared';
+  }
+
+  // Fallback: download
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `INSAF_Case_${c.caseId}.pdf`;
+  a.click();
+  URL.revokeObjectURL(url);
+  return 'downloaded';
 }
 
 export default function CaseDetail() {
@@ -355,11 +379,18 @@ export default function CaseDetail() {
           <p className="text-xs text-zinc-500 truncate">{caseData.partyName} vs {caseData.opponentName}</p>
         </div>
         <button
-          onClick={async () => { try { await generateCasePDF(caseData); toast.success('PDF ready!'); } catch { toast.error('PDF fail'); } }}
-          className="feature-box w-9 h-9 rounded-xl bg-[#141c2b] flex items-center justify-center"
-          aria-label="Download PDF"
+          onClick={async () => {
+            try {
+              const result = await shareCasePDF(caseData);
+              toast.success(result === 'shared' ? 'WhatsApp pe share ho gaya!' : 'PDF download ho gaya!');
+            } catch (e: unknown) {
+              if (e instanceof Error && e.name !== 'AbortError') toast.error('PDF share fail');
+            }
+          }}
+          className="feature-box w-9 h-9 rounded-xl bg-[#D4A843]/15 border border-[#D4A843]/20 flex items-center justify-center"
+          aria-label="Share PDF via WhatsApp"
         >
-          <Download className="w-4 h-4 text-[#D4A843]" />
+          <Share2 className="w-4 h-4 text-[#D4A843]" />
         </button>
       </div>
 

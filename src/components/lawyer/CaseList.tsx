@@ -3,7 +3,8 @@
 import React, { useMemo, useCallback, useRef, useState } from 'react';
 import { useLawyerStore } from '@/store/lawyer-store';
 import { groupByLawyer, searchCases, formatDate } from '@/lib/utils-lawyer';
-import { ArrowLeft, Search } from 'lucide-react';
+import { ArrowLeft, Search, Share2 } from 'lucide-react';
+import { toast } from '@/components/AppToaster';
 import type { CaseEntry } from '@/lib/types';
 
 interface CaseListProps {
@@ -12,35 +13,57 @@ interface CaseListProps {
   showSearch?: boolean;
 }
 
-function CaseItem({ caseId, partyName, opponentName, caseType, section, nextDate }: {
-  caseId: string; partyName: string; opponentName: string; caseType: string; section: string; nextDate: string;
-}) {
+function CaseItem({ caseData }: { caseData: CaseEntry }) {
   const setSelectedCaseId = useLawyerStore(s => s.setSelectedCaseId);
   const setCurrentView = useLawyerStore(s => s.setCurrentView);
   const lastTap = useRef(0);
+  const [sharing, setSharing] = useState(false);
 
   const handleTap = useCallback(() => {
     const now = Date.now();
     if (now - lastTap.current > 300) {
       lastTap.current = now;
-      setSelectedCaseId(caseId);
+      setSelectedCaseId(caseData.caseId);
       setCurrentView('case-detail');
     }
-  }, [caseId, setSelectedCaseId, setCurrentView]);
+  }, [caseData.caseId, setSelectedCaseId, setCurrentView]);
+
+  const handleShare = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (sharing) return;
+    setSharing(true);
+    try {
+      const { shareCasePDF } = await import('@/components/lawyer/CaseDetail');
+      const result = await shareCasePDF(caseData);
+      toast.success(result === 'shared' ? 'WhatsApp pe share ho gaya!' : 'PDF download ho gaya!');
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name !== 'AbortError') toast.error('PDF share fail');
+    } finally { setSharing(false); }
+  }, [caseData, sharing]);
+
+  const { caseId, partyName, opponentName, caseType, section, nextDate } = caseData;
 
   return (
-    <button onClick={handleTap} className="feature-box w-full text-left bg-[#141c2b] rounded-xl p-3">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-mono text-[#D4A843]">#{caseId}</span>
-        <span className="text-[10px] text-zinc-500">{formatDate(nextDate)}</span>
+    <div className="feature-box w-full text-left bg-[#141c2b] rounded-xl p-3 relative">
+      <button onClick={handleTap} className="absolute inset-0 z-0 rounded-xl" aria-label={`Open case ${caseId}`} />
+      <div className="relative z-10">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-mono text-[#D4A843]">#{caseId}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-zinc-500">{formatDate(nextDate)}</span>
+            <button onClick={handleShare} disabled={sharing} className="w-7 h-7 rounded-lg bg-[#D4A843]/10 flex items-center justify-center active:bg-[#D4A843]/20 transition-colors disabled:opacity-40" aria-label="Share PDF">
+              <Share2 className="w-3 h-3 text-[#D4A843]" />
+            </button>
+          </div>
+        </div>
+        <p className="text-sm font-semibold text-white mt-1 truncate">{partyName}</p>
+        <p className="text-xs text-zinc-500 truncate">vs {opponentName}</p>
+        <div className="flex items-center gap-2 mt-1.5">
+          {caseType && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">{caseType}</span>}
+          {section && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">Sec {section}</span>}
+        </div>
       </div>
-      <p className="text-sm font-semibold text-white mt-1 truncate">{partyName}</p>
-      <p className="text-xs text-zinc-500 truncate">vs {opponentName}</p>
-      <div className="flex items-center gap-2 mt-1.5">
-        {caseType && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">{caseType}</span>}
-        {section && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-zinc-400">Sec {section}</span>}
-      </div>
-    </button>
+    </div>
   );
 }
 
@@ -58,15 +81,7 @@ function LawyerGroup({ lawyerName, items }: { lawyerName: string; items: CaseEnt
       </div>
       <div className="flex flex-col gap-2">
         {items.map(c => (
-          <CaseItem
-            key={c.caseId}
-            caseId={c.caseId}
-            partyName={c.partyName}
-            opponentName={c.opponentName}
-            caseType={c.caseType}
-            section={c.section}
-            nextDate={c.nextDate}
-          />
+          <CaseItem key={c.caseId} caseData={c} />
         ))}
       </div>
     </div>
