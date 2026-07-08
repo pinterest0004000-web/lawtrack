@@ -94,7 +94,7 @@ export default function ExpenseChamber() {
     <div className="animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
-        <button onClick={() => setCurrentView('expenses')} className="feature-box w-9 h-9 rounded-xl bg-[#1e2a3a] flex items-center justify-center" aria-label="Go back">
+        <button onClick={() => setCurrentView('expenses')} className="feature-box w-9 h-9 rounded-xl bg-[#141c2b] flex items-center justify-center" aria-label="Go back">
           <ArrowLeft className="w-4 h-4 text-zinc-400" />
         </button>
         <div className="flex-1">
@@ -113,7 +113,7 @@ export default function ExpenseChamber() {
       {/* Add Form */}
       {showAddForm && (
         <div className="px-3 sm:px-4 mb-3 animate-slide-up">
-          <div className="bg-[#1e2a3a] rounded-2xl p-4 space-y-3 border border-orange-500/10">
+          <div className="bg-[#141c2b] rounded-2xl p-4 space-y-3 border border-orange-500/10">
             <p className="text-sm font-semibold text-white">Add Chamber Expense</p>
 
             {/* Lawyer Name */}
@@ -133,7 +133,7 @@ export default function ExpenseChamber() {
                 </button>
               )}
               {formLawyer && filteredLawyers.length > 0 && !lawyerNames.includes(formLawyer.trim()) && (
-                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[#1e2a3a] rounded-xl overflow-hidden border border-white/10 max-h-28 overflow-y-auto">
+                <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[#141c2b] rounded-xl overflow-hidden border border-white/10 max-h-28 overflow-y-auto">
                   {filteredLawyers.map(name => (
                     <button key={name} type="button" onClick={() => setFormLawyer(name)} className="w-full text-left px-3 py-2 text-sm text-white hover:bg-white/5">
                       {name}
@@ -201,7 +201,7 @@ export default function ExpenseChamber() {
                   </div>
                   <div className="flex flex-col gap-2">
                     {lawyerExpenses.map(e => (
-                      <div key={e.id} className="bg-[#1e2a3a] rounded-xl p-3">
+                      <div key={e.id} className="bg-[#141c2b] rounded-xl p-3">
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-orange-400 font-medium">Chamber</span>
                           <span className="text-sm font-bold text-orange-400">-{formatCurrency(e.amount)}</span>
@@ -214,7 +214,7 @@ export default function ExpenseChamber() {
               );
             })}
             {hasMore && (
-              <button onClick={() => setPage(p => p + 1)} className="w-full text-center py-3 text-sm text-amber-400 font-medium">
+              <button onClick={() => setPage(p => p + 1)} className="w-full text-center py-3 text-sm text-[#D4A843] font-medium">
                 Load more...
               </button>
             )}

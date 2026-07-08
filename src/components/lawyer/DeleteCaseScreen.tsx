@@ -94,7 +94,7 @@ export default function DeleteCaseScreen() {
     <div className="animate-fade-in px-3 sm:px-4 pt-3 pb-4">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <button onClick={() => setCurrentView('home')} className="feature-box w-9 h-9 rounded-xl bg-[#1e2a3a] flex items-center justify-center" aria-label="Back">
+        <button onClick={() => setCurrentView('home')} className="feature-box w-9 h-9 rounded-xl bg-[#141c2b] flex items-center justify-center" aria-label="Back">
           <ArrowLeft className="w-4 h-4 text-zinc-400" />
         </button>
         <div className="flex-1">
@@ -114,14 +114,14 @@ export default function DeleteCaseScreen() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search case ID, party, lawyer, type..."
-          className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-amber-500/50 transition-colors"
+          className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-[#D4A843]/50 transition-colors"
         />
       </div>
 
       {/* Warning */}
       <div className="flex items-center gap-2 mb-3 px-1">
-        <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-        <p className="text-[11px] text-amber-400/80">Tap twice to delete • Undo available for 10 sec</p>
+        <AlertTriangle className="w-3.5 h-3.5 text-[#D4A843] flex-shrink-0" />
+        <p className="text-[11px] text-[#D4A843]/80">Tap twice to delete • Undo available for 10 sec</p>
       </div>
 
       {/* List */}
@@ -132,15 +132,15 @@ export default function DeleteCaseScreen() {
           Array.from(grouped.entries()).map(([lawyer, items]) => (
             <div key={lawyer}>
               <div className="flex items-center gap-2 mb-1.5 px-1">
-                <div className="w-6 h-6 rounded-full bg-amber-500/20 flex items-center justify-center">
-                  <span className="text-[10px] font-bold text-amber-400">{lawyer.charAt(0).toUpperCase()}</span>
+                <div className="w-6 h-6 rounded-full bg-[#D4A843]/20 flex items-center justify-center">
+                  <span className="text-[10px] font-bold text-[#D4A843]">{lawyer.charAt(0).toUpperCase()}</span>
                 </div>
                 <span className="text-xs font-semibold text-zinc-300">{lawyer}</span>
                 <span className="text-[10px] text-zinc-600">({items.length})</span>
               </div>
               <div className="space-y-1.5">
                 {items.map(c => (
-                  <div key={c.caseId} className="bg-[#1e2a3a] rounded-xl p-3 flex items-center gap-3">
+                  <div key={c.caseId} className="bg-[#141c2b] rounded-xl p-3 flex items-center gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-mono text-zinc-500">#{c.caseId}</span>

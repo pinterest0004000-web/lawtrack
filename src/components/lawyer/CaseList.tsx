@@ -29,9 +29,9 @@ function CaseItem({ caseId, partyName, opponentName, caseType, section, nextDate
   }, [caseId, setSelectedCaseId, setCurrentView]);
 
   return (
-    <button onClick={handleTap} className="feature-box w-full text-left bg-[#1e2a3a] rounded-xl p-3">
+    <button onClick={handleTap} className="feature-box w-full text-left bg-[#141c2b] rounded-xl p-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-mono text-amber-400">#{caseId}</span>
+        <span className="text-xs font-mono text-[#D4A843]">#{caseId}</span>
         <span className="text-[10px] text-zinc-500">{formatDate(nextDate)}</span>
       </div>
       <p className="text-sm font-semibold text-white mt-1 truncate">{partyName}</p>
@@ -48,7 +48,7 @@ function LawyerGroup({ lawyerName, items }: { lawyerName: string; items: CaseEnt
   return (
     <div className="mb-4 animate-slide-up">
       <div className="flex items-center gap-2 mb-2 px-1">
-        <div className="w-7 h-7 rounded-full bg-amber-500/30 flex items-center justify-center">
+        <div className="w-7 h-7 rounded-full bg-[#D4A843]/30 flex items-center justify-center">
           <span className="text-xs font-bold text-amber-300">{lawyerName.charAt(0).toUpperCase()}</span>
         </div>
         <div>
@@ -132,7 +132,7 @@ export default function CaseList({ title, getCases, showSearch = false }: CaseLi
       <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
         <button
           onClick={() => setCurrentView('home')}
-          className="feature-box w-9 h-9 rounded-xl bg-[#1e2a3a] flex items-center justify-center"
+          className="feature-box w-9 h-9 rounded-xl bg-[#141c2b] flex items-center justify-center"
           aria-label="Go back"
         >
           <ArrowLeft className="w-4 h-4 text-zinc-400" />
@@ -146,7 +146,7 @@ export default function CaseList({ title, getCases, showSearch = false }: CaseLi
       {/* Search */}
       {showSearch && (
         <div className="px-3 sm:px-4 mb-3">
-          <div className="bg-[#1e2a3a] rounded-xl flex items-center gap-2 px-3 py-2.5">
+          <div className="bg-[#141c2b] rounded-xl flex items-center gap-2 px-3 py-2.5">
             <Search className="w-4 h-4 text-zinc-500 flex-shrink-0" />
             <input
               type="text"
@@ -174,7 +174,7 @@ export default function CaseList({ title, getCases, showSearch = false }: CaseLi
               <button
                 onClick={loadMore}
                 disabled={loading}
-                className="w-full text-center py-3 text-sm text-amber-400 font-medium disabled:opacity-50"
+                className="w-full text-center py-3 text-sm text-[#D4A843] font-medium disabled:opacity-50"
               >
                 {loading ? 'Loading...' : `Load more (${filtered.length - visibleLawyers.reduce((s, n) => s + grouped[n].length, 0)} remaining)`}
               </button>

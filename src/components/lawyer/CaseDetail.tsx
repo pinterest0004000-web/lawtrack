@@ -153,7 +153,7 @@ export default function CaseDetail() {
     return (
       <div className="animate-fade-in px-4 pt-3">
         <div className="flex items-center gap-3 mb-4">
-          <button onClick={() => setCurrentView('home')} className="feature-box w-9 h-9 rounded-xl bg-[#1e2a3a] flex items-center justify-center">
+          <button onClick={() => setCurrentView('home')} className="feature-box w-9 h-9 rounded-xl bg-[#141c2b] flex items-center justify-center">
             <ArrowLeft className="w-4 h-4 text-zinc-400" />
           </button>
           <h2 className="text-lg font-bold text-white">Case Not Found</h2>
@@ -164,7 +164,7 @@ export default function CaseDetail() {
   }
 
   const isToday = caseData.nextDate === getTodayStr();
-  const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-amber-500/50 transition-colors";
+  const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-[#D4A843]/50 transition-colors";
 
   const tabs: { key: TabType; label: string }[] = [
     { key: 'info', label: 'Info' },
@@ -177,13 +177,13 @@ export default function CaseDetail() {
     <div className="animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
-        <button onClick={() => setCurrentView('home')} className="feature-box w-9 h-9 rounded-xl bg-[#1e2a3a] flex items-center justify-center" aria-label="Go back">
+        <button onClick={() => setCurrentView('home')} className="feature-box w-9 h-9 rounded-xl bg-[#141c2b] flex items-center justify-center" aria-label="Go back">
           <ArrowLeft className="w-4 h-4 text-zinc-400" />
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-white truncate">#{caseData.caseId}</h2>
-            {isToday && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-semibold flex-shrink-0">TODAY</span>}
+            {isToday && <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#D4A843]/20 text-[#D4A843] font-semibold flex-shrink-0">TODAY</span>}
           </div>
           <p className="text-xs text-zinc-500 truncate">{caseData.partyName} vs {caseData.opponentName}</p>
         </div>
@@ -196,7 +196,7 @@ export default function CaseDetail() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`feature-box px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
-              tab === t.key ? 'bg-amber-500 text-white' : 'bg-[#1e2a3a] text-zinc-400'
+              tab === t.key ? 'bg-[#D4A843] text-white' : 'bg-[#141c2b] text-zinc-400'
             }`}
           >
             {t.label}
@@ -208,28 +208,28 @@ export default function CaseDetail() {
         {/* INFO TAB */}
         {tab === 'info' && (
           <div className="space-y-3 animate-fade-in">
-            <div className="bg-[#1e2a3a] rounded-2xl p-4 space-y-3">
-              <InfoRow icon={<Scale className="w-4 h-4 text-amber-400" />} label="Lawyer" value={caseData.lawyerName} />
-              <InfoRow icon={<FileText className="w-4 h-4 text-amber-400" />} label="Party" value={caseData.partyName} />
+            <div className="bg-[#141c2b] rounded-2xl p-4 space-y-3">
+              <InfoRow icon={<Scale className="w-4 h-4 text-[#D4A843]" />} label="Lawyer" value={caseData.lawyerName} />
+              <InfoRow icon={<FileText className="w-4 h-4 text-[#D4A843]" />} label="Party" value={caseData.partyName} />
               <InfoRow icon={<FileText className="w-4 h-4 text-zinc-400" />} label="Opponent" value={caseData.opponentName} />
               {caseData.caseType && <InfoRow icon={<Shield className="w-4 h-4 text-cyan-400" />} label="Type" value={caseData.caseType} />}
-              {caseData.section && <InfoRow icon={<Shield className="w-4 h-4 text-amber-400" />} label="Section" value={caseData.section} />}
+              {caseData.section && <InfoRow icon={<Shield className="w-4 h-4 text-[#D4A843]" />} label="Section" value={caseData.section} />}
               {caseData.policeStation && <InfoRow icon={<MapPin className="w-4 h-4 text-red-400" />} label="PS" value={caseData.policeStation} />}
               <InfoRow icon={<Calendar className="w-4 h-4 text-blue-400" />} label="Entered" value={formatDate(caseData.enteringDate)} />
-              <InfoRow icon={<Calendar className="w-4 h-4 text-amber-400" />} label="Next Date" value={formatDate(caseData.nextDate)} />
+              <InfoRow icon={<Calendar className="w-4 h-4 text-[#D4A843]" />} label="Next Date" value={formatDate(caseData.nextDate)} />
               {caseData.phone && <InfoRow icon={<Phone className="w-4 h-4 text-green-400" />} value={caseData.phone} />}
             </div>
 
             {/* Current Remarks */}
             {caseData.judgeRemarks && (
-              <div className="bg-[#1e2a3a] rounded-2xl p-4">
+              <div className="bg-[#141c2b] rounded-2xl p-4">
                 <p className="text-xs text-zinc-500 mb-1">Latest Judge Remarks</p>
                 <p className="text-sm text-white">{caseData.judgeRemarks}</p>
               </div>
             )}
 
             {/* Fee Summary */}
-            <div className="bg-[#1e2a3a] rounded-2xl p-4">
+            <div className="bg-[#141c2b] rounded-2xl p-4">
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div>
                   <p className="text-xs text-zinc-500">Total Fee</p>
@@ -237,7 +237,7 @@ export default function CaseDetail() {
                 </div>
                 <div>
                   <p className="text-xs text-zinc-500">Paid</p>
-                  <p className="text-base font-bold text-amber-400">{formatCurrency(caseData.totalFeeReceived)}</p>
+                  <p className="text-base font-bold text-[#D4A843]">{formatCurrency(caseData.totalFeeReceived)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-zinc-500">Pending</p>
@@ -247,7 +247,7 @@ export default function CaseDetail() {
             </div>
 
             {/* Update Remarks & Next Date */}
-            <div className="bg-[#1e2a3a] rounded-2xl p-4 space-y-3">
+            <div className="bg-[#141c2b] rounded-2xl p-4 space-y-3">
               <p className="text-sm font-semibold text-white">Update Remarks & Next Date</p>
               <textarea
                 value={remark}
@@ -273,7 +273,7 @@ export default function CaseDetail() {
               <button
                 onClick={handleSaveRemarks}
                 disabled={saving || !remark.trim() || !newNextDate}
-                className="feature-box w-full bg-amber-500 hover:bg-amber-500 disabled:opacity-40 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
+                className="feature-box w-full bg-[#D4A843] hover:bg-[#B8922E] disabled:opacity-40 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
               >
                 {saving ? (
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block" />
@@ -287,7 +287,7 @@ export default function CaseDetail() {
             <button
               onClick={handleDelete}
               disabled={saving}
-              className="feature-box w-full border border-amber-500/20 text-red-400 font-medium py-2.5 rounded-xl text-sm flex items-center justify-center gap-2"
+              className="feature-box w-full border border-[#D4A843]/20 text-red-400 font-medium py-2.5 rounded-xl text-sm flex items-center justify-center gap-2"
             >
               <Trash2 className="w-4 h-4" />
               {confirmDelete ? 'Tap Again to Confirm Delete' : 'Delete Case'}
@@ -302,13 +302,13 @@ export default function CaseDetail() {
               <p className="text-center text-zinc-600 text-sm py-8">No history yet</p>
             ) : (
               visibleHistory.map(h => (
-                <div key={h.id} className="bg-[#1e2a3a] rounded-xl p-3">
+                <div key={h.id} className="bg-[#141c2b] rounded-xl p-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <HistoryBadge type={h.type} />
                       <p className="text-sm text-white mt-1">{h.description}</p>
                       {h.amount !== undefined && h.amount > 0 && (
-                        <p className="text-xs font-semibold mt-0.5 text-amber-400">{formatCurrency(h.amount)}</p>
+                        <p className="text-xs font-semibold mt-0.5 text-[#D4A843]">{formatCurrency(h.amount)}</p>
                       )}
                     </div>
                     <span className="text-[10px] text-zinc-600 flex-shrink-0">{formatDate(h.date)}</span>
@@ -317,7 +317,7 @@ export default function CaseDetail() {
               ))
             )}
             {hasMoreHistory && (
-              <button onClick={() => setHistoryPage(p => p + 1)} className="w-full text-center py-3 text-sm text-amber-400 font-medium">
+              <button onClick={() => setHistoryPage(p => p + 1)} className="w-full text-center py-3 text-sm text-[#D4A843] font-medium">
                 Load more history...
               </button>
             )}
@@ -327,14 +327,14 @@ export default function CaseDetail() {
         {/* FEE TAB */}
         {tab === 'fee' && (
           <div className="space-y-3 animate-fade-in">
-            <div className="bg-[#1e2a3a] rounded-2xl p-4 space-y-3">
+            <div className="bg-[#141c2b] rounded-2xl p-4 space-y-3">
               <p className="text-sm font-semibold text-white">Add Fee Record</p>
 
               <div className="flex gap-2">
                 <button
                   onClick={() => setFeeType('received')}
                   className={`feature-box flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    feeType === 'received' ? 'bg-emerald-600/30 text-amber-400 border border-emerald-500/30' : 'bg-[#1e2a3a] text-zinc-500'
+                    feeType === 'received' ? 'bg-emerald-600/30 text-[#D4A843] border border-emerald-500/30' : 'bg-[#141c2b] text-zinc-500'
                   }`}
                 >
                   Fee Received
@@ -342,7 +342,7 @@ export default function CaseDetail() {
                 <button
                   onClick={() => setFeeType('pending')}
                   className={`feature-box flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
-                    feeType === 'pending' ? 'bg-red-600/30 text-red-400 border border-amber-500/30' : 'bg-[#1e2a3a] text-zinc-500'
+                    feeType === 'pending' ? 'bg-red-600/30 text-red-400 border border-[#D4A843]/30' : 'bg-[#141c2b] text-zinc-500'
                   }`}
                 >
                   Add Pending
@@ -361,18 +361,18 @@ export default function CaseDetail() {
               <button
                 onClick={handleAddFee}
                 disabled={saving || !feeAmount}
-                className="feature-box w-full bg-amber-500 hover:bg-amber-500 disabled:opacity-40 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
+                className="feature-box w-full bg-[#D4A843] hover:bg-[#B8922E] disabled:opacity-40 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
               >
                 {saving ? 'Saving...' : `Add ${feeType === 'received' ? 'Received Fee' : 'Pending Fee'}`}
               </button>
             </div>
 
             {/* Fee Summary */}
-            <div className="bg-[#1e2a3a] rounded-2xl p-4">
+            <div className="bg-[#141c2b] rounded-2xl p-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className="text-xs text-zinc-500">Total Received</p>
-                  <p className="text-lg font-bold text-amber-400">{formatCurrency(caseData.totalFeeReceived)}</p>
+                  <p className="text-lg font-bold text-[#D4A843]">{formatCurrency(caseData.totalFeeReceived)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-zinc-500">Pending</p>
@@ -383,12 +383,12 @@ export default function CaseDetail() {
 
             {/* Fee History */}
             {sortedHistory.filter(h => h.type === 'fee').length > 0 && (
-              <div className="bg-[#1e2a3a] rounded-2xl p-4">
+              <div className="bg-[#141c2b] rounded-2xl p-4">
                 <p className="text-xs text-zinc-500 mb-2">Fee History</p>
                 {sortedHistory.filter(h => h.type === 'fee').slice(0, 20).map(h => (
                   <div key={h.id} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
                     <p className="text-sm text-zinc-300 truncate flex-1 mr-2">{h.description}</p>
-                    <span className="text-sm font-semibold text-amber-400 flex-shrink-0">
+                    <span className="text-sm font-semibold text-[#D4A843] flex-shrink-0">
                       {h.amount ? formatCurrency(h.amount) : ''}
                     </span>
                   </div>
@@ -401,7 +401,7 @@ export default function CaseDetail() {
         {/* EXPENSE TAB */}
         {tab === 'expense' && (
           <div className="space-y-3 animate-fade-in">
-            <div className="bg-[#1e2a3a] rounded-2xl p-4 space-y-3">
+            <div className="bg-[#141c2b] rounded-2xl p-4 space-y-3">
               <p className="text-sm font-semibold text-white">Add Today&apos;s Expense</p>
               <input
                 type="text"
@@ -421,7 +421,7 @@ export default function CaseDetail() {
               <button
                 onClick={handleAddExpense}
                 disabled={saving || !expDesc.trim() || !expAmount}
-                className="feature-box w-full bg-amber-500 hover:bg-amber-500 disabled:opacity-40 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
+                className="feature-box w-full bg-[#D4A843] hover:bg-[#B8922E] disabled:opacity-40 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
               >
                 {saving ? 'Saving...' : 'Add Expense'}
               </button>
@@ -429,7 +429,7 @@ export default function CaseDetail() {
 
             {/* Recent Expenses for this case */}
             {sortedHistory.filter(h => h.type === 'expense' || h.type === 'case_expense').length > 0 && (
-              <div className="bg-[#1e2a3a] rounded-2xl p-4">
+              <div className="bg-[#141c2b] rounded-2xl p-4">
                 <p className="text-xs text-zinc-500 mb-2">Recent Expenses</p>
                 {sortedHistory.filter(h => h.type === 'expense' || h.type === 'case_expense').slice(0, 20).map(h => (
                   <div key={h.id} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
@@ -464,13 +464,13 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label?: string
 
 function HistoryBadge({ type }: { type: string }) {
   const config: Record<string, { bg: string; text: string; label: string }> = {
-    created: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'Created' },
+    created: { bg: 'bg-[#D4A843]/20', text: 'text-[#D4A843]', label: 'Created' },
     remark: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: 'Remark' },
-    fee: { bg: 'bg-emerald-500/20', text: 'text-amber-400', label: 'Fee' },
+    fee: { bg: 'bg-emerald-500/20', text: 'text-[#D4A843]', label: 'Fee' },
     expense: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Expense' },
     case_expense: { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Expense' },
     chamber_expense: { bg: 'bg-orange-500/20', text: 'text-orange-400', label: 'Chamber' },
-    next_date: { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'Next Date' },
+    next_date: { bg: 'bg-[#D4A843]/20', text: 'text-[#D4A843]', label: 'Next Date' },
   };
   const c = config[type] || config.created;
   return <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.bg} ${c.text} font-medium inline-block`}>{c.label}</span>;

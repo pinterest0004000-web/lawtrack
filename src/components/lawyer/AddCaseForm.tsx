@@ -106,14 +106,14 @@ export default function AddCaseForm() {
     }
   }, [form, autoCaseId, addCase, setCurrentView]);
 
-  const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-amber-500/50 transition-colors";
+  const inputClass = "w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-[#D4A843]/50 transition-colors";
 
   return (
     <div className="animate-fade-in">
       <div className="flex items-center gap-3 px-3 sm:px-4 pt-3 pb-2">
         <button
           onClick={() => setCurrentView('home')}
-          className="feature-box w-9 h-9 rounded-xl bg-[#1e2a3a] flex items-center justify-center"
+          className="feature-box w-9 h-9 rounded-xl bg-[#141c2b] flex items-center justify-center"
           aria-label="Go back"
         >
           <ArrowLeft className="w-4 h-4 text-zinc-400" />
@@ -122,7 +122,7 @@ export default function AddCaseForm() {
       </div>
 
       <div className="px-3 sm:px-4 pb-4 max-h-[calc(100vh-120px)] overflow-y-auto" ref={formRef}>
-        <div className="bg-[#1e2a3a] rounded-2xl p-4 space-y-3">
+        <div className="bg-[#141c2b] rounded-2xl p-4 space-y-3">
           {/* Case ID */}
           <div>
             <label className="text-xs text-zinc-500 mb-1 block">Case ID (Auto)</label>
@@ -153,7 +153,7 @@ export default function AddCaseForm() {
               )}
             </div>
             {showLawyerSuggestions && filteredLawyers.length > 0 && (
-              <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[#1e2a3a] rounded-xl overflow-hidden border border-white/10 max-h-32 overflow-y-auto">
+              <div className="absolute z-20 top-full left-0 right-0 mt-1 bg-[#141c2b] rounded-xl overflow-hidden border border-white/10 max-h-32 overflow-y-auto">
                 {filteredLawyers.map(name => (
                   <button
                     key={name}
@@ -244,7 +244,7 @@ export default function AddCaseForm() {
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="feature-box w-full bg-amber-500 hover:bg-amber-500 disabled:opacity-50 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors mt-2"
+            className="feature-box w-full bg-[#D4A843] hover:bg-[#B8922E] disabled:opacity-50 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors mt-2"
           >
             {saving ? (
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

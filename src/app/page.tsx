@@ -125,7 +125,7 @@ function HeaderMenu() {
       {open && (
         <div className="fixed inset-0 z-50" onClick={() => setOpen(false)}>
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          <div className="absolute left-2.5 top-14 w-64 bg-[#1e2a3a] border border-white/5 rounded-2xl overflow-hidden shadow-2xl shadow-black/60 animate-in fade-in slide-in-from-top-2 duration-150" onClick={e => e.stopPropagation()}>
+          <div className="absolute left-2.5 top-14 w-64 bg-[#141c2b] border border-white/5 rounded-2xl overflow-hidden shadow-2xl shadow-black/60 animate-in fade-in slide-in-from-top-2 duration-150" onClick={e => e.stopPropagation()}>
             {/* Cloud Backup Status */}
             <div className="px-4 py-3 border-b border-zinc-800/60">
               <div className="flex items-center gap-2">
@@ -152,9 +152,9 @@ function HeaderMenu() {
 
             {isAdmin && (
               <button onClick={() => { setOpen(false); showManageUsers(); }}
-                className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-amber-500/5 transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                  <Users className="w-4 h-4 text-amber-400" />
+                className="w-full flex items-center gap-3.5 px-4 py-3.5 text-left active:bg-[#D4A843]/5 transition-colors">
+                <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center flex-shrink-0">
+                  <Users className="w-4 h-4 text-[#D4A843]" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-white">Admin</p>
@@ -238,7 +238,7 @@ function SyncIndicator() {
   const config: Record<string, { icon: React.ReactNode; text: string; color: string }> = {
     synced: { icon: <CheckCircle2 className="w-3 h-3 text-emerald-400" />, text: 'Synced', color: 'text-emerald-400' },
     syncing: { icon: <RefreshCw className="w-3 h-3 text-sky-400 animate-spin" />, text: 'Syncing...', color: 'text-sky-400' },
-    pending: { icon: <Cloud className="w-3 h-3 text-amber-400" />, text: 'Pending sync', color: 'text-amber-400' },
+    pending: { icon: <Cloud className="w-3 h-3 text-[#D4A843]" />, text: 'Pending sync', color: 'text-[#D4A843]' },
     offline: { icon: <WifiOff className="w-3 h-3 text-orange-400" />, text: 'Offline - auto sync jab internet aayega', color: 'text-orange-400' },
     error: { icon: <Wifi className="w-3 h-3 text-red-400" />, text: 'Sync error - retrying...', color: 'text-red-400' },
   };
@@ -447,7 +447,7 @@ export default function Home() {
 
   // Full auth screens (not overlay)
   if (authStatus !== 'unlocked' && !isOverlayStatus(authStatus)) return (
-    <div className="min-h-screen flex flex-col bg-[#121218]">
+    <div className="min-h-screen flex flex-col bg-[#0a0f1a]">
       <React.Suspense fallback={<ViewFallback />}>
         <LoginScreen />
       </React.Suspense>
@@ -458,21 +458,24 @@ export default function Home() {
   const showOverlay = isOverlayStatus(authStatus);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#121218]">
-      <header className="flex items-center px-4 py-3 border-b border-white/5 flex-shrink-0 relative">
+    <div className="min-h-screen flex flex-col bg-[#0a0f1a]">
+      <header className="flex items-center px-4 py-2.5 border-b border-[#D4A843]/10 flex-shrink-0 relative">
         {/* Left: hamburger menu */}
         <div className="w-10 flex-shrink-0 flex justify-start">
           <HeaderMenu />
         </div>
-        {/* Center: INSAF + subtitle */}
-        <div className="flex-1 flex flex-col items-center justify-center">
-          <h1 className="text-2xl font-bold text-amber-400 tracking-tight leading-none">INSAF</h1>
-          <p className="text-[11px] text-slate-400 mt-0.5">Case Management</p>
+        {/* Center: Logo + INSAF + subtitle */}
+        <div className="flex-1 flex items-center gap-2.5 justify-center">
+          <img src="/logo.png" alt="INSAF" className="w-9 h-9 rounded-full logo-glow" />
+          <div className="flex flex-col justify-center">
+            <h1 className="text-xl font-bold text-[#D4A843] tracking-tight leading-none">INSAF</h1>
+            <p className="text-[10px] text-slate-500 mt-0.5">Daily Case Manager</p>
+          </div>
           <SyncIndicator />
         </div>
         {/* Right: Cloud sync icon */}
         <div className="w-10 flex-shrink-0 flex justify-end">
-          <button className="w-10 h-10 rounded-xl flex items-center justify-center text-amber-400/70 active:bg-white/5 transition-colors" aria-label="Cloud Sync">
+          <button className="w-10 h-10 rounded-xl flex items-center justify-center text-[#D4A843]/60 active:bg-white/5 transition-colors" aria-label="Cloud Sync">
             <Cloud className="w-5 h-5" />
           </button>
         </div>
@@ -485,7 +488,7 @@ export default function Home() {
       {/* Cloud restore prompt — when local empty but cloud has data */}
       {showCloudPrompt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#1e2a3a] border border-white/5 rounded-2xl p-5 w-full max-w-xs text-center shadow-2xl">
+          <div className="bg-[#141c2b] border border-white/5 rounded-2xl p-5 w-full max-w-xs text-center shadow-2xl">
             <div className="w-12 h-12 rounded-full bg-sky-500/10 flex items-center justify-center mx-auto mb-3">
               <Cloud className="w-6 h-6 text-sky-400" />
             </div>
